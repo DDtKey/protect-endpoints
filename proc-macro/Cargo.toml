@@ -1,0 +1,17 @@
+[package]
+name = "actix-grants-proc-macro"
+version = "0.1.0"
+authors = ["DDtKey <ddttkey@gmail.com>"]
+description = "Proc macro to check user grants"
+keywords = ["actix", "security", "grants", "codegen", "proc_macro"]
+categories = ["web-programming::http-server"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1"
+proc-macro2 = "1.0"
+syn = "1.0"

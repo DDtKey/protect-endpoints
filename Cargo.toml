@@ -1,0 +1,26 @@
+[package]
+name = "actix-web-grants"
+version = "0.1.0"
+authors = ["DDtKey <ddttkey@gmail.com>"]
+description = "Authorization and user grants for Actix web"
+readme = "README.md"
+keywords = ["actix", "auth", "security", "grants", "proc_macro"]
+categories = ["web-programming::http-server"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+
+[lib]
+name = "actix_web_grants"
+path = "src/lib.rs"
+
+[dependencies]
+actix-web = { version = "3.0.0", default-features = false}
+actix-service = "1.0.6"
+actix-grants-proc-macro = { path = "proc-macro" }
+futures-util = { version = "0.3", default-features = false }
+
+[dev-dependencies]
+actix-rt = "1.1.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+futures = "0.3"
