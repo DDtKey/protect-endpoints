@@ -1,0 +1,30 @@
+[package]
+name = "poem-grants"
+version = "1.0.0-beta.1"
+authors = ["DDtKey <ddttkey@gmail.com>"]
+description = " Authorization extension for `poem` to validate user permissions "
+repository = "https://github.com/DDtKey/poem-grants"
+homepage = "https://github.com/DDtKey/poem-grants"
+readme = "README.md"
+keywords = ["poem", "authz", "security", "grants", "permissions"]
+categories = ["authentication"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+
+[lib]
+name = "poem_grants"
+path = "src/lib.rs"
+
+[features]
+default = ["macro-check"]
+macro-check = ["poem-grants-proc-macro"]
+
+[dependencies]
+poem = "1"
+poem-grants-proc-macro = { path = "./proc-macro", version = "1.0.0-beta.1", optional = true }
+thiserror = "1"
+
+[dev-dependencies]
+poem = {version = "1", features = ["test"]}
+serde = {version = "1.0", features = ["derive"]}
+tokio = {version = "1", features = ["rt-multi-thread"]}
