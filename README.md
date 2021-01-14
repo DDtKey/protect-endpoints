@@ -6,7 +6,7 @@
 [![Documentation](https://docs.rs/actix-web-grants/badge.svg)](https://docs.rs/actix-web-httpauth)
 ![Apache 2.0 or MIT licensed](https://img.shields.io/crates/l/actix-web-httpauth)
 
-To check user access to specific services, you can use built-in `proc-macro` and `AuthorityGuard` or manual.
+To check user access to specific services, you can use built-in `proc-macro`, `AuthorityGuard` or manual.
 
 The library can also be integrated with third-party solutions (like [`actix-web-httpauth`]).
 
