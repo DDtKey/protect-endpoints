@@ -12,6 +12,5 @@ Cargo.lock
 # IDEs
 /.idea/
 
-# Added by cargo
 
-/target
+.DS_Store
