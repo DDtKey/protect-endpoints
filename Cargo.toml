@@ -13,10 +13,14 @@ edition = "2018"
 name = "actix_web_grants"
 path = "src/lib.rs"
 
+[features]
+default = ["macro-check"]
+macro-check = ["actix-grants-proc-macro"]
+
 [dependencies]
 actix-web = { version = "3.0.0", default-features = false}
 actix-service = "1.0.6"
-actix-grants-proc-macro = { path = "proc-macro" }
+actix-grants-proc-macro = { path = "proc-macro", optional = true }
 futures-util = { version = "0.3", default-features = false }
 
 [dev-dependencies]

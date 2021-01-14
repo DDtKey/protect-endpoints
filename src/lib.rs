@@ -19,9 +19,12 @@ pub use middleware::GrantsMiddleware;
 
 
 /// Procedural macros for checking user authorities or roles.
-
+///
 /// # Examples
 /// ```
+/// use actix_web::{HttpResponse};
+/// use actix_web_grants::proc_macro::{has_authorities, has_roles};
+///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[has_authorities["ROLE_ADMIN", "OP_GET_SECRET"]]
 /// async fn macro_secured() -> HttpResponse {
@@ -35,6 +38,7 @@ pub use middleware::GrantsMiddleware;
 ///     HttpResponse::Ok().body("some secured info")
 /// }
 /// ```
+#[cfg(feature = "macro-check")]
 pub mod proc_macro {
     pub use actix_grants_proc_macro::*;
 }

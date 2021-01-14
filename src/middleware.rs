@@ -17,23 +17,19 @@ use std::task::{Context, Poll};
 /// # Examples
 /// ```
 /// use actix_web::dev::ServiceRequest;
-/// use actix_web::{get, App, Error, HttpResponse, HttpServer};
+/// use actix_web::{get, App, Error, HttpResponse, HttpServer, Responder};
 ///
 /// use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 /// use actix_web_grants::{proc_macro::has_authorities, GrantsMiddleware};
+/// use std::sync::Arc;
 ///
-/// #[actix_web::main]
-/// async fn main() -> std::io::Result<()> {
+/// fn main() {
 ///     HttpServer::new(|| {
 ///         let auth = GrantsMiddleware::fn_extractor(extract);
 ///         App::new()
 ///             .wrap(auth)
 ///             .service(you_service)
-///     })
-///     .bind("127.0.0.1:8080")?
-///     .workers(1)
-///     .run()
-///     .await
+///     });
 /// }
 ///
 /// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
