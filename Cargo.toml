@@ -21,7 +21,7 @@ macro-check = ["actix-grants-proc-macro"]
 [dependencies]
 actix-web = { version = "3.0.0", default-features = false}
 actix-service = "1.0.6"
-actix-grants-proc-macro = { path = "proc-macro", optional = true }
+actix-grants-proc-macro = { version = "0.1", optional = true }
 futures-util = { version = "0.3", default-features = false }
 
 [dev-dependencies]
