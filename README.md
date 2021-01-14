@@ -15,5 +15,5 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 [`actix-web`]: https://docs.rs/actix-web/
 [`actix-web-httpauth`]: https://github.com/DDtKey/actix-web-grants/blob/main/examples/integration-httpauth.rs
 [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
-[`documentation`]:
+[`documentation`]: https://docs.rs/actix-web-grants
 
