@@ -2,21 +2,26 @@
 //!
 //! For built-in configure see: [`GrantsMiddleware`].
 //!
+//! To check user access to specific services, you can use: [`proc-macro`] and [`AuthorityGuard`] or manual.
+//!
 //! The library can also be integrated with third-party solutions (like [`httpauth`]), see [`authorities`] module.
 //!
-//! You can find more examples in the git repository, `examples` folder.
+//! You can find more [`examples`] in the git repository.
 //!
 //! [`actix-web`]: actix_web
 //! [`GrantsMiddleware`]: GrantsMiddleware
 //! [`httpauth`]: https://docs.rs/actix-web-httpauth
+//! [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
 //! [`authorities`]: authorities
-
+//! [`proc-macro`]: proc_macro
+//! [`AuthorityGuard`]: AuthorityGuard
 
 pub mod authorities;
+mod guards;
 mod middleware;
 
+pub use guards::AuthorityGuard;
 pub use middleware::GrantsMiddleware;
-
 
 /// Procedural macros for checking user authorities or roles.
 ///

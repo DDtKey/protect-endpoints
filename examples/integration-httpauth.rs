@@ -1,17 +1,14 @@
 use actix_web::dev::ServiceRequest;
-use actix_web::{get,  App, Error, HttpServer, HttpResponse};
+use actix_web::{get, App, Error, HttpResponse, HttpServer};
 
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use actix_web_httpauth::middleware::HttpAuthentication;
 
-use actix_web_grants::proc_macro::{has_authorities, has_any_role};
+use actix_web_grants::proc_macro::{has_any_role, has_authorities};
 // All you need is just to `use` this trait
 use actix_web_grants::authorities::AttachAuthorities;
 
-async fn validator(
-    req: ServiceRequest,
-    _credentials: BearerAuth,
-) -> Result<ServiceRequest, Error> {
+async fn validator(req: ServiceRequest, _credentials: BearerAuth) -> Result<ServiceRequest, Error> {
     // Pass your `authorities`/`grants`/`permissions` here and you can use the `actix-web-grants`!
     req.attach(vec![_credentials.token().to_string()]);
     Ok(req)
@@ -26,10 +23,10 @@ async fn main() -> std::io::Result<()> {
             .service(admin_secured)
             .service(manager_secured)
     })
-        .bind("127.0.0.1:8080")?
-        .workers(1)
-        .run()
-        .await
+    .bind("127.0.0.1:8080")?
+    .workers(1)
+    .run()
+    .await
 }
 
 #[get("/admin")]
@@ -55,6 +52,3 @@ async fn admin_secured() -> HttpResponse {
 async fn manager_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
-
-
-
