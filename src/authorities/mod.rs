@@ -1,6 +1,6 @@
 //! A set of traits and structures for custom integration.
 //!
-//! Via [`AuthoritiesExtractor`] implementations, the library gets a user authoritites from you.
+//! Via [`AuthoritiesExtractor`] implementations, the library gets a user authorities from you.
 //! The default implementation of the [`AuthoritiesExtractor`] is provided via a function.
 //!
 //! See [`GrantsMiddleware`] for more details.

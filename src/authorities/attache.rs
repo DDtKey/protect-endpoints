@@ -12,8 +12,8 @@ use actix_web::HttpMessage;
 /// use actix_web_grants::authorities::AttachAuthorities;
 /// use actix_web::dev::ServiceRequest;
 ///
-/// fn attach(req: ServiceRequest, authoritites: Vec<String>) {
-///     req.attach(authoritites);
+/// fn attach(req: ServiceRequest, authorities: Vec<String>) {
+///     req.attach(authorities);
 /// }
 ///
 /// ```

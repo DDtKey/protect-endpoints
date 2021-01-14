@@ -2,7 +2,7 @@ use crate::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web::dev::RequestHead;
 use actix_web::guard::Guard;
 
-/// Implementation of Guard trait for validate authoritites
+/// Implementation of Guard trait for validate authorities
 /// ```
 /// use actix_web::dev::ServiceRequest;
 /// use actix_web::{web, App, Error, HttpResponse, HttpServer};
@@ -21,7 +21,7 @@ use actix_web::guard::Guard;
 /// }
 ///
 /// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
-///    // Here is a place for your code to get user authoritites/grants/permissions from a request
+///    // Here is a place for your code to get user authorities/grants/permissions from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
@@ -33,9 +33,9 @@ pub struct AuthorityGuard {
 }
 
 impl AuthorityGuard {
-    pub fn new(allow_authoritites: String) -> AuthorityGuard {
+    pub fn new(allow_authority: String) -> AuthorityGuard {
         AuthorityGuard {
-            allow_authority: allow_authoritites,
+            allow_authority,
         }
     }
 }

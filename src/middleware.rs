@@ -33,14 +33,14 @@ use std::task::{Context, Poll};
 /// }
 ///
 /// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
-///    // Here is a place for your code to get user authoritites/grants/permissions from a request
+///    // Here is a place for your code to get user authorities/grants/permissions from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 ///
-/// // `has_authoritites` is one of options to validate authoritites.
+/// // `has_authorities` is one of options to validate authorities.
 /// #[get("/admin")]
 /// #[has_authorities("ROLE_ADMIN")]
 /// async fn you_service() -> impl Responder {

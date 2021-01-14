@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
-    // Here is a place for your code to get user authoritites/grants/permissions from a request
+    // Here is a place for your code to get user authorities/grants/permissions from a request
     // For example from a token or database
 
     // Stub example

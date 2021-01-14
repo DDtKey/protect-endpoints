@@ -1,4 +1,4 @@
-//! A crate for validate user authoritites in [`actix-web`].
+//! A crate for validate user authorities in `actix-web`.
 //!
 //! For built-in configure see: [`GrantsMiddleware`].
 //!
@@ -8,7 +8,6 @@
 //!
 //! You can find more [`examples`] in the git repository.
 //!
-//! [`actix-web`]: actix_web
 //! [`GrantsMiddleware`]: GrantsMiddleware
 //! [`httpauth`]: https://docs.rs/actix-web-httpauth
 //! [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples

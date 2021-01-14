@@ -28,7 +28,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// ```
 #[proc_macro_attribute]
 pub fn has_authorities(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_authoritites(HAS_AUTHORITIES, args, input)
+    check_authorities(HAS_AUTHORITIES, args, input)
 }
 
 
@@ -47,7 +47,7 @@ pub fn has_authorities(args: TokenStream, input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn has_any_authority(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_authoritites(HAS_ANY_AUTHORITY, args, input)
+    check_authorities(HAS_ANY_AUTHORITY, args, input)
 }
 
 /// Macro to сheck that the user has all the specified roles.
@@ -66,7 +66,7 @@ pub fn has_any_authority(args: TokenStream, input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn has_roles(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_authoritites(HAS_ROLES, args, input)
+    check_authorities(HAS_ROLES, args, input)
 }
 
 /// Macro to сheck that the user has any the specified roles.
@@ -85,11 +85,11 @@ pub fn has_roles(args: TokenStream, input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn has_any_role(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_authoritites(HAS_ANY_ROLE, args, input)
+    check_authorities(HAS_ANY_ROLE, args, input)
 }
 
 
-fn check_authoritites(check_fn_name: &str, args: TokenStream, input: TokenStream) -> TokenStream {
+fn check_authorities(check_fn_name: &str, args: TokenStream, input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as AttributeArgs);
     let func = parse_macro_input!(input as ItemFn);
 
