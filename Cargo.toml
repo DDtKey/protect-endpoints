@@ -3,6 +3,7 @@ name = "actix-web-grants"
 version = "0.1.0"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "Authorization and user grants for Actix web"
+repository = "https://github.com/DDtKey/actix-web-grants"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
 categories = ["web-programming::http-server"]

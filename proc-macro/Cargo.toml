@@ -3,6 +3,7 @@ name = "actix-grants-proc-macro"
 version = "0.1.0"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "Proc macro to check user grants"
+repository = "https://github.com/DDtKey/actix-web-grants"
 keywords = ["actix", "security", "grants", "codegen", "proc_macro"]
 categories = ["web-programming::http-server"]
 license = "MIT OR Apache-2.0"
