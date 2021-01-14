@@ -11,6 +11,46 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::task::{Context, Poll};
 
+/// Built-in middleware for extracting user authority.
+///
+///
+/// # Examples
+/// ```
+/// use actix_web::dev::ServiceRequest;
+/// use actix_web::{get, App, Error, HttpResponse, HttpServer};
+///
+/// use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
+/// use actix_web_grants::{proc_macro::has_authorities, GrantsMiddleware};
+///
+/// #[actix_web::main]
+/// async fn main() -> std::io::Result<()> {
+///     HttpServer::new(|| {
+///         let auth = GrantsMiddleware::fn_extractor(extract);
+///         App::new()
+///             .wrap(auth)
+///             .service(you_service)
+///     })
+///     .bind("127.0.0.1:8080")?
+///     .workers(1)
+///     .run()
+///     .await
+/// }
+///
+/// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
+///    // Here is a place for your code to get user authoritites/grants/permissions from a request
+///    // For example from a token or database
+///
+///    // Stub example
+///    Ok(vec!["ROLE_ADMIN".to_string()])
+/// }
+///
+/// // `has_authoritites` is one of options to validate authoritites.
+/// #[get("/admin")]
+/// #[has_authorities("ROLE_ADMIN")]
+/// async fn you_service() -> impl Responder {
+///     HttpResponse::Ok().finish()
+/// }
+/// ```
 pub struct GrantsMiddleware<T>
 where
     T: AuthoritiesExtractor,

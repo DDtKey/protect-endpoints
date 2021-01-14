@@ -1,3 +1,18 @@
+//! A set of traits and structures for custom integration.
+//!
+//! Via [`AuthoritiesExtractor`] implementations, the library gets a user authoritites from you.
+//! The default implementation of the [`AuthoritiesExtractor`] is provided via a function.
+//!
+//! See [`GrantsMiddleware`] for more details.
+//!
+//! ## If you already have middleware authorization
+//! You can integrate it with this library using [`AttachAuthorities`]
+//!
+//!
+//! [`AuthoritiesExtractor`]: AuthoritiesExtractor
+//! [`AttachAuthorities`]: AttachAuthorities
+//! [`GrantsMiddleware`]: actix_web_grants::GrantsMiddleware;
+
 use actix_web::dev::{Payload, PayloadStream};
 use actix_web::error::ErrorUnauthorized;
 use actix_web::{Error, FromRequest, HttpRequest};
@@ -43,7 +58,7 @@ impl AuthoritiesCheck for AuthDetails {
     }
 }
 
-pub const ROLE_PREFIX: &str = "ROLE_";
+pub(crate) const ROLE_PREFIX: &str = "ROLE_";
 
 pub trait RolesCheck {
     fn has_role(&self, authority: &str) -> bool;
