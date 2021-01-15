@@ -1,5 +1,5 @@
 # actix-web-grants
-> A crate for validate user authorities in `actix-web`.
+> Extension for `actix-web` to validate user authorities.
 
 
 [![crates.io](https://img.shields.io/crates/v/actix-web-grants)](https://crates.io/crates/actix-web-grants)

@@ -2,7 +2,7 @@
 name = "actix-web-grants"
 version = "0.1.5"
 authors = ["DDtKey <ddttkey@gmail.com>"]
-description = "A crate for validate user authorities in `actix-web`"
+description = "Extension for `actix-web` to validate user authorities"
 repository = "https://github.com/DDtKey/actix-web-grants"
 homepage = "https://github.com/DDtKey/actix-web-grants"
 readme = "README.md"
