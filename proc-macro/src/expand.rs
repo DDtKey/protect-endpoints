@@ -1,5 +1,5 @@
 use proc_macro2::{Span, TokenStream as TokenStream2, Ident};
-use syn::{AttributeArgs, ItemFn, NestedMeta};
+use syn::{AttributeArgs, ItemFn, NestedMeta, ReturnType};
 use quote::{quote, ToTokens};
 
 pub(crate) struct HasAuthorities {
@@ -42,8 +42,13 @@ impl ToTokens for HasAuthorities {
         let fn_name = &fn_sig.ident;
         let fn_generics = &fn_sig.generics;
         let fn_args = &fn_sig.inputs;
-        let fn_output = &fn_sig.output;
         let fn_async = &fn_sig.asyncness.unwrap();
+        let fn_output = match &fn_sig.output {
+            ReturnType::Type(ref _arrow, ref ty) => {
+                ty.to_token_stream()
+            }
+            ReturnType::Default => { quote! {()}}
+        };
 
         let check_fn = &self.check_fn;
 
@@ -60,12 +65,12 @@ impl ToTokens for HasAuthorities {
             #func_vis #fn_async fn #fn_name #fn_generics(
                 _auth_details_: actix_web_grants::authorities::AuthDetails,
                 #fn_args
-            ) #fn_output {
+            ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::authorities::{AuthoritiesCheck, RolesCheck};
                 if _auth_details_.#check_fn(vec![#args]) {
-                    #func_block
+                    actix_web::Either::A(#func_block)
                 } else {
-                    actix_web::HttpResponse::Forbidden().finish()
+                    actix_web::Either::B(actix_web::HttpResponse::Forbidden().finish())
                 }
             }
         };

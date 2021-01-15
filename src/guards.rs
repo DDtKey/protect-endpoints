@@ -34,9 +34,7 @@ pub struct AuthorityGuard {
 
 impl AuthorityGuard {
     pub fn new(allow_authority: String) -> AuthorityGuard {
-        AuthorityGuard {
-            allow_authority,
-        }
+        AuthorityGuard { allow_authority }
     }
 }
 

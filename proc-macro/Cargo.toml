@@ -1,6 +1,6 @@
 [package]
 name = "actix-grants-proc-macro"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "Proc macro to check user grants"
 repository = "https://github.com/DDtKey/actix-web-grants"

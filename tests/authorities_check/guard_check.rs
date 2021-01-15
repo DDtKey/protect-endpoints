@@ -7,17 +7,14 @@ use actix_web_grants::{AuthorityGuard, GrantsMiddleware};
 
 #[actix_rt::test]
 async fn test_guard() {
-    let admin_role = ROLE_ADMIN.to_string();
-    let manager_role = ROLE_MANAGER.to_string();
-
-    let test_admin = get_user_response("/admin", admin_role).await;
-    let test_manager = get_user_response("/admin", manager_role).await;
+    let test_admin = get_user_response("/admin", ROLE_ADMIN).await;
+    let test_manager = get_user_response("/admin", ROLE_MANAGER).await;
 
     assert_eq!(StatusCode::OK, test_admin.status());
     assert_eq!(StatusCode::NOT_FOUND, test_manager.status());
 }
 
-async fn get_user_response(uri: &str, role: String) -> ServiceResponse {
+async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::fn_extractor(common::extract))
@@ -29,12 +26,7 @@ async fn get_user_response(uri: &str, role: String) -> ServiceResponse {
     )
     .await;
 
-    let user = common::User {
-        authorities: vec![role],
-    };
-    let json_user = serde_json::to_string(&user).unwrap();
-
-    let req = test::TestRequest::with_header(AUTHORIZATION, json_user)
+    let req = test::TestRequest::with_header(AUTHORIZATION, role)
         .uri(uri)
         .to_request();
     test::call_service(&mut app, req).await
