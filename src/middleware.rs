@@ -1,12 +1,11 @@
 use crate::authorities::AttachAuthorities;
 use crate::authorities::{AuthoritiesExtractor, FnAuthoritiesExtractor};
-use actix_service::{Service, Transform};
-use actix_web::dev::{ServiceRequest, ServiceResponse};
+use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::ErrorInternalServerError;
 use actix_web::Error;
-use futures_util::future::{self, FutureExt, LocalBoxFuture};
 use std::cell::RefCell;
-use std::future::Future;
+use std::future::{self, Future, Ready};
+use std::pin::Pin;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::task::{Context, Poll};
@@ -86,12 +85,12 @@ where
     type Error = Error;
     type Transform = GrantsService<S, T>;
     type InitError = ();
-    type Future = future::Ready<Result<Self::Transform, Self::InitError>>;
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
         let extractor: Arc<T> = self.extractor.clone();
         let service = Rc::new(RefCell::new(service));
-        future::ok(GrantsService { service, extractor })
+        future::ready(Ok(GrantsService { service, extractor }))
     }
 }
 
@@ -111,7 +110,7 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = LocalBoxFuture<'static, Result<Self::Response, Error>>;
+    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Error>>>>;
 
     fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
@@ -122,14 +121,13 @@ where
         let req = Arc::new(req);
         let authorities_fut = Arc::clone(&self.extractor).extract(req.clone());
 
-        async move {
+        Box::pin(async move {
             let authorities: Vec<String> = authorities_fut.await?;
             req.attach(authorities);
             let req = Arc::try_unwrap(req)
                 .map_err(|_| ErrorInternalServerError("Request processing error"))?;
             let fut = service.borrow_mut().call(req);
             fut.await
-        }
-        .boxed_local()
+        })
     }
 }
