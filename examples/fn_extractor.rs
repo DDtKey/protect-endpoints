@@ -1,8 +1,8 @@
 use actix_web::dev::ServiceRequest;
-use actix_web::{get, middleware, App, Error, HttpResponse, HttpServer};
+use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 
 use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
-use actix_web_grants::{proc_macro::has_authorities, GrantsMiddleware};
+use actix_web_grants::{proc_macro::has_authorities, AuthorityGuard, GrantsMiddleware};
 use std::sync::Arc;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
@@ -35,6 +35,12 @@ async fn main() -> std::io::Result<()> {
             .wrap(auth)
             .service(manual_secure)
             .service(macro_secured)
+            // An example of `Guard` protection
+            .service(
+                web::resource("/guard_admin")
+                    .to(|| async { HttpResponse::Ok().finish() })
+                    .guard(AuthorityGuard::new(ROLE_ADMIN.to_string())),
+            )
     })
     .bind("localhost:8081")?
     .workers(1)
