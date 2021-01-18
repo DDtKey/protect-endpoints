@@ -59,13 +59,28 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Cache cargo dirs and target
+        uses: actions/cache@v2
+        with:
+          path:
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ matrix.os.version }}-${{ matrix.toolchain }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Build
         uses: actions-rs/cargo@v1
         with:
           command: build
 
-      - name: tests
+      - name: Tests
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --all-features --no-fail-fast
+
+      - name: Clear the cargo caches
+        run: |
+          cargo install cargo-cache --no-default-features --features ci-autoclean
+          cargo-cache
