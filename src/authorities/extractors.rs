@@ -1,40 +1,21 @@
 use actix_web::dev::ServiceRequest;
 use actix_web::Error;
 use std::future::Future;
-use std::sync::Arc;
 
-pub trait AuthoritiesExtractor {
+pub trait AuthoritiesExtractor<'a> {
     type Future: Future<Output = Result<Vec<String>, Error>>;
 
-    fn extract(&self, request: Arc<ServiceRequest>) -> Self::Future;
+    fn extract(&self, request: &'a ServiceRequest) -> Self::Future;
 }
 
-pub struct FnAuthoritiesExtractor<F, O>
+impl<'a, F, O> AuthoritiesExtractor<'a> for F
 where
-    F: Fn(Arc<ServiceRequest>) -> O,
-    O: Future<Output = Result<Vec<String>, Error>>,
-{
-    extract_fn: F,
-}
-
-impl<F, O> FnAuthoritiesExtractor<F, O>
-where
-    F: Fn(Arc<ServiceRequest>) -> O,
-    O: Future<Output = Result<Vec<String>, Error>>,
-{
-    pub fn new(extract_fn: F) -> FnAuthoritiesExtractor<F, O> {
-        FnAuthoritiesExtractor { extract_fn }
-    }
-}
-
-impl<F, O> AuthoritiesExtractor for FnAuthoritiesExtractor<F, O>
-where
-    F: Fn(Arc<ServiceRequest>) -> O,
+    F: Fn(&'a ServiceRequest) -> O,
     O: Future<Output = Result<Vec<String>, Error>>,
 {
     type Future = O;
 
-    fn extract(&self, request: Arc<ServiceRequest>) -> Self::Future {
-        (self.extract_fn)(request)
+    fn extract(&self, req: &'a ServiceRequest) -> Self::Future {
+        (self)(req)
     }
 }

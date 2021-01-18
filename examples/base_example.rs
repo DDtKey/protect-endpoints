@@ -3,7 +3,6 @@ use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 
 use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web_grants::{proc_macro::has_authorities, AuthorityGuard, GrantsMiddleware};
-use std::sync::Arc;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
 const ADMIN_RESPONSE: &str = "Hello Admin!";
@@ -29,7 +28,7 @@ async fn manual_secure(details: AuthDetails) -> HttpResponse {
 /// Sample application with grant protection based on extracting by your custom function
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
-        let auth = GrantsMiddleware::fn_extractor(extract);
+        let auth = GrantsMiddleware::with_extractor(extract);
         App::new()
             .wrap(middleware::Logger::default())
             .wrap(auth)
@@ -48,7 +47,7 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
+async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
     // Here is a place for your code to get user authorities/grants/permissions from a request
     // For example from a token or database
 
