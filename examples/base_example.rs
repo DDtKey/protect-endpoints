@@ -10,13 +10,13 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 #[get("/admin")]
 #[has_authorities("ROLE_ADMIN")]
-/// An example of protection via `proc-macro`
+// An example of protection via `proc-macro`
 async fn macro_secured() -> HttpResponse {
     HttpResponse::Ok().body(ADMIN_RESPONSE)
 }
 
 #[get("/")]
-/// An example of programmable protection
+// An example of programmable protection
 async fn manual_secure(details: AuthDetails) -> HttpResponse {
     if details.has_authority(ROLE_ADMIN) {
         return HttpResponse::Ok().body(ADMIN_RESPONSE);
@@ -25,7 +25,7 @@ async fn manual_secure(details: AuthDetails) -> HttpResponse {
 }
 
 #[actix_web::main]
-/// Sample application with grant protection based on extracting by your custom function
+// Sample application with grant protection based on extracting by your custom function
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let auth = GrantsMiddleware::with_extractor(extract);
