@@ -72,7 +72,7 @@ where
     /// }
     /// ```
     ///
-    ///[`AuthoritiesExtractor`]: actix_web_grants::authoritites::AuthoritiesExtractor
+    ///[`AuthoritiesExtractor`]: actix_web_grants::authorities::AuthoritiesExtractor
     pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
         GrantsMiddleware {
             extractor: Arc::new(extractor),
