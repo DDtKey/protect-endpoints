@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+
+jobs:
+  build_and_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - stable
+          - nightly
+        os:
+          - name: Ubuntu
+            version: ubuntu-latest
+          - name: Windows
+            version: windows-latest
+          - name: MacOS
+            version: macos-latest
+
+    name: Build & Test - ${{ matrix.os.name }} (${{ matrix.toolchain }})
+    runs-on: ${{ matrix.os.version }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.toolchain }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.version }}
+          profile: minimal
+          override: true
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+
+      - name: tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features --no-fail-fast
