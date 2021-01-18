@@ -27,7 +27,7 @@ async fn macro_secured() -> HttpResponse {
 use actix_web_grants::{AuthorityGuard, GrantsMiddleware};
 
 App::new()
-    .wrap(GrantsMiddleware::fn_extractor(extract))
+    .wrap(GrantsMiddleware::with_extractor(extract))
     .service(web::resource("/admin")
             .to(|| async { HttpResponse::Ok().finish() })
             .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))

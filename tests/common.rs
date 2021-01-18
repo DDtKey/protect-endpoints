@@ -2,12 +2,11 @@ use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::error::ErrorUnauthorized;
 use actix_web::http::{header::AUTHORIZATION, HeaderValue};
 use actix_web::{test, Error};
-use std::sync::Arc;
 
 pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
-pub async fn extract(req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
+pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)

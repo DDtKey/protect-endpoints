@@ -41,7 +41,7 @@ async fn test_str() {
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
-            .wrap(GrantsMiddleware::fn_extractor(common::extract))
+            .wrap(GrantsMiddleware::with_extractor(common::extract))
             .service(str_response)
             .service(http_response),
     )

@@ -13,14 +13,14 @@ use actix_web::guard::Guard;
 /// fn main() {
 ///     HttpServer::new(|| {
 ///         App::new()
-///             .wrap(GrantsMiddleware::fn_extractor(extract))
+///             .wrap(GrantsMiddleware::with_extractor(extract))
 ///             .service(web::resource("/admin")
 ///                     .to(|| async { HttpResponse::Ok().finish() })
 ///                     .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))
 ///     });
 /// }
 ///
-/// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
+/// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
 ///    // Here is a place for your code to get user authorities/grants/permissions from a request
 ///    // For example from a token or database
 ///

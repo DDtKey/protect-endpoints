@@ -31,12 +31,12 @@ async fn main() -> std::io::Result<()> {
 
 #[get("/admin")]
 #[has_authorities("ROLE_ADMIN")]
-/// For the `ADMIN` - endpoint will give the HTTP status 200, otherwise - 403
-/// You can check via cURL:
-/// ```sh
-/// curl --location --request GET 'http://localhost:8080/admin' \
+// For the `ADMIN` - endpoint will give the HTTP status 200, otherwise - 403
+// You can check via cURL:
+// ```sh
+// curl --location --request GET 'http://localhost:8080/admin' \
 // --header 'Authorization: Bearer ROLE_ADMIN'
-/// ```
+// ```
 async fn admin_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
@@ -44,11 +44,11 @@ async fn admin_secured() -> HttpResponse {
 #[get("/manager")]
 #[has_any_role("ADMIN", "MANAGER")]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
-/// You can check via cURL:
-/// ```sh
-/// curl --location --request GET 'http://localhost:8080/manager' \
+// You can check via cURL:
+// ```sh
+// curl --location --request GET 'http://localhost:8080/manager' \
 // --header 'Authorization: Bearer ROLE_MANAGER'
-/// ```
+// ```
 async fn manager_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
 }

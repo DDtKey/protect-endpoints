@@ -1,7 +1,6 @@
 use crate::authorities::AttachAuthorities;
-use crate::authorities::{AuthoritiesExtractor, FnAuthoritiesExtractor};
+use crate::authorities::AuthoritiesExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
-use actix_web::error::ErrorInternalServerError;
 use actix_web::Error;
 use std::cell::RefCell;
 use std::future::{self, Future, Ready};
@@ -20,18 +19,17 @@ use std::task::{Context, Poll};
 ///
 /// use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 /// use actix_web_grants::{proc_macro::has_authorities, GrantsMiddleware};
-/// use std::sync::Arc;
 ///
 /// fn main() {
 ///     HttpServer::new(|| {
-///         let auth = GrantsMiddleware::fn_extractor(extract);
+///         let auth = GrantsMiddleware::with_extractor(extract);
 ///         App::new()
 ///             .wrap(auth)
 ///             .service(you_service)
 ///     });
 /// }
 ///
-/// async fn extract(_req: Arc<ServiceRequest>) -> Result<Vec<String>, Error> {
+/// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
 ///    // Here is a place for your code to get user authorities/grants/permissions from a request
 ///    // For example from a token or database
 ///
@@ -48,15 +46,33 @@ use std::task::{Context, Poll};
 /// ```
 pub struct GrantsMiddleware<T>
 where
-    T: AuthoritiesExtractor,
+    for<'a> T: AuthoritiesExtractor<'a>,
 {
     extractor: Arc<T>,
 }
 
 impl<T> GrantsMiddleware<T>
 where
-    T: AuthoritiesExtractor,
+    for<'a> T: AuthoritiesExtractor<'a>,
 {
+    /// Create middleware by [`AuthoritiesExtractor`].
+    ///
+    /// You can use a built-in implementation for `async fn` with a suitable signature (see example below).
+    /// Or you can define your own implementation of trait.
+    ///
+    /// # Example of function with implementation of [`AuthoritiesExtractor`]
+    /// ```
+    /// use actix_web::dev::ServiceRequest;
+    /// use actix_web::Error;
+    ///
+    /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
+    ///     // Here is a place for your code to get user authorities/grants/permissions from a request
+    ///      // For example from a token or database
+    ///     Ok(vec!["WRITE_ACCESS".to_string()])
+    /// }
+    /// ```
+    ///
+    ///[`AuthoritiesExtractor`]: crate::authorities::AuthoritiesExtractor
     pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
         GrantsMiddleware {
             extractor: Arc::new(extractor),
@@ -64,21 +80,10 @@ where
     }
 }
 
-impl<F, O> GrantsMiddleware<FnAuthoritiesExtractor<F, O>>
-where
-    F: Fn(Arc<ServiceRequest>) -> O,
-    O: Future<Output = Result<Vec<String>, Error>>,
-{
-    pub fn fn_extractor(extract_fn: F) -> GrantsMiddleware<FnAuthoritiesExtractor<F, O>> {
-        let extractor = FnAuthoritiesExtractor::new(extract_fn);
-        Self::with_extractor(extractor)
-    }
-}
-
 impl<S, B, T> Transform<S> for GrantsMiddleware<T>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    T: AuthoritiesExtractor + 'static,
+    for<'a> T: AuthoritiesExtractor<'a> + 'static,
 {
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
@@ -96,7 +101,7 @@ where
 
 pub struct GrantsService<S, T>
 where
-    T: AuthoritiesExtractor + 'static,
+    for<'a> T: AuthoritiesExtractor<'a> + 'static,
 {
     service: Rc<RefCell<S>>,
     extractor: Arc<T>,
@@ -105,7 +110,7 @@ where
 impl<S, B, T> Service for GrantsService<S, T>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    T: AuthoritiesExtractor,
+    for<'a> T: AuthoritiesExtractor<'a>,
 {
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
@@ -118,14 +123,12 @@ where
 
     fn call(&mut self, req: Self::Request) -> Self::Future {
         let service = Rc::clone(&self.service);
-        let req = Arc::new(req);
-        let authorities_fut = Arc::clone(&self.extractor).extract(req.clone());
+        let extractor = Arc::clone(&self.extractor);
 
         Box::pin(async move {
-            let authorities: Vec<String> = authorities_fut.await?;
+            let authorities: Vec<String> = extractor.extract(&req).await?;
             req.attach(authorities);
-            let req = Arc::try_unwrap(req)
-                .map_err(|_| ErrorInternalServerError("Request processing error"))?;
+
             let fut = service.borrow_mut().call(req);
             fut.await
         })
