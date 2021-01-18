@@ -59,6 +59,10 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Generate Cargo.lock for cache
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
       - name: Cache cargo dirs and target
         uses: actions/cache@v2
         with:
