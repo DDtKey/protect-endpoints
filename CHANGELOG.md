@@ -31,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [v0.1.6]: https://crates.io/crates/actix-web-grants/0.1.6
 [v1.0.0]: https://crates.io/crates/actix-web-grants/1.0.0
+[v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
