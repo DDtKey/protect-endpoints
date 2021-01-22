@@ -6,7 +6,7 @@ description = "A proc-macro way to validate user authorities for `actix-web-gran
 repository = "https://github.com/DDtKey/actix-web-grants"
 homepage = "https://github.com/DDtKey/actix-web-grants"
 keywords = ["actix", "security", "grants", "codegen", "proc_macro"]
-categories = ["web-programming::http-server"]
+categories = ["authentication"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 

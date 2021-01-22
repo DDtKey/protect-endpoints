@@ -7,7 +7,7 @@ repository = "https://github.com/DDtKey/actix-web-grants"
 homepage = "https://github.com/DDtKey/actix-web-grants"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
-categories = ["web-programming::http-server"]
+categories = ["authentication"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 
