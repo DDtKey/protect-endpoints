@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+## [v2.0.0] - 2021-01-22
+### Added
+- Add example using `actix-web-httpauth` and `jsonwebtoken`
+
+### Changed
 - Change crate category to authentication
 - Breaking change(!): change `authoritites` to `permissions` everywhere for more clarity
 

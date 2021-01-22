@@ -47,7 +47,7 @@ async fn manual_secure(details: AuthDetails) -> HttpResponse {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
-[`actix-web-httpauth`]: https://github.com/DDtKey/actix-web-grants/blob/main/examples/integration-httpauth.rs
+[`actix-web-httpauth`]: https://github.com/DDtKey/actix-web-grants/blob/main/examples/jwt-httpauth
 [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
 [`documentation`]: https://docs.rs/actix-web-grants
 

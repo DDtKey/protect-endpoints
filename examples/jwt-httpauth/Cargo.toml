@@ -1,0 +1,16 @@
+[package]
+name = "jwt-httpauth"
+version = "0.1.0"
+description = "Example using actix-web-grants with actix-web-httpauth via JWT authorization"
+authors = ["DDtKey <ddttkey@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { version = "3"}
+actix-web-grants = { path = "../../" }
+actix-web-httpauth = "0.5.0"
+jsonwebtoken = "7"
+serde = {version = "1.0", features = ["derive"] }
+chrono = "0.4.19"
