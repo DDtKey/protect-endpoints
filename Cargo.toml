@@ -1,8 +1,8 @@
 [package]
 name = "actix-web-grants"
-version = "1.0.0"
+version = "2.0.0"
 authors = ["DDtKey <ddttkey@gmail.com>"]
-description = "Extension for `actix-web` to validate user authorities"
+description = "Extension for `actix-web` to validate user permissions"
 repository = "https://github.com/DDtKey/actix-web-grants"
 homepage = "https://github.com/DDtKey/actix-web-grants"
 readme = "README.md"
@@ -21,7 +21,7 @@ macro-check = ["actix-grants-proc-macro"]
 
 [dependencies]
 actix-web = { version = "3.0.0", default-features = false}
-actix-grants-proc-macro = { version = "0.1", optional = true }
+actix-grants-proc-macro = { version = "1", optional = true }
 
 [dev-dependencies]
 actix-rt = "1.1.1"

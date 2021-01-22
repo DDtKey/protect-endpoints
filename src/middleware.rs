@@ -1,5 +1,5 @@
-use crate::authorities::AttachAuthorities;
-use crate::authorities::AuthoritiesExtractor;
+use crate::permissions::AttachPermissions;
+use crate::permissions::PermissionsExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
 use std::cell::RefCell;
@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::task::{Context, Poll};
 
-/// Built-in middleware for extracting user authority.
+/// Built-in middleware for extracting user permission.
 ///
 ///
 /// # Examples
@@ -17,8 +17,8 @@ use std::task::{Context, Poll};
 /// use actix_web::dev::ServiceRequest;
 /// use actix_web::{get, App, Error, HttpResponse, HttpServer, Responder};
 ///
-/// use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
-/// use actix_web_grants::{proc_macro::has_authorities, GrantsMiddleware};
+/// use actix_web_grants::permissions::{AuthDetails, PermissionsCheck};
+/// use actix_web_grants::{proc_macro::has_permissions, GrantsMiddleware};
 ///
 /// fn main() {
 ///     HttpServer::new(|| {
@@ -30,49 +30,49 @@ use std::task::{Context, Poll};
 /// }
 ///
 /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
-///    // Here is a place for your code to get user authorities/grants/permissions from a request
+///    // Here is a place for your code to get user permissions/grants/permissions from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 ///
-/// // `has_authorities` is one of options to validate authorities.
+/// // `has_permissions` is one of options to validate permissions.
 /// #[get("/admin")]
-/// #[has_authorities("ROLE_ADMIN")]
+/// #[has_permissions("ROLE_ADMIN")]
 /// async fn you_service() -> impl Responder {
 ///     HttpResponse::Ok().finish()
 /// }
 /// ```
 pub struct GrantsMiddleware<T>
 where
-    for<'a> T: AuthoritiesExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a>,
 {
     extractor: Arc<T>,
 }
 
 impl<T> GrantsMiddleware<T>
 where
-    for<'a> T: AuthoritiesExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a>,
 {
-    /// Create middleware by [`AuthoritiesExtractor`].
+    /// Create middleware by [`PermissionsExtractor`].
     ///
     /// You can use a built-in implementation for `async fn` with a suitable signature (see example below).
     /// Or you can define your own implementation of trait.
     ///
-    /// # Example of function with implementation of [`AuthoritiesExtractor`]
+    /// # Example of function with implementation of [`PermissionsExtractor`]
     /// ```
     /// use actix_web::dev::ServiceRequest;
     /// use actix_web::Error;
     ///
     /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
-    ///     // Here is a place for your code to get user authorities/grants/permissions from a request
+    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
     ///      // For example from a token or database
     ///     Ok(vec!["WRITE_ACCESS".to_string()])
     /// }
     /// ```
     ///
-    ///[`AuthoritiesExtractor`]: crate::authorities::AuthoritiesExtractor
+    ///[`PermissionsExtractor`]: crate::permissions::PermissionsExtractor
     pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
         GrantsMiddleware {
             extractor: Arc::new(extractor),
@@ -83,7 +83,7 @@ where
 impl<S, B, T> Transform<S> for GrantsMiddleware<T>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    for<'a> T: AuthoritiesExtractor<'a> + 'static,
+    for<'a> T: PermissionsExtractor<'a> + 'static,
 {
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
@@ -101,7 +101,7 @@ where
 
 pub struct GrantsService<S, T>
 where
-    for<'a> T: AuthoritiesExtractor<'a> + 'static,
+    for<'a> T: PermissionsExtractor<'a> + 'static,
 {
     service: Rc<RefCell<S>>,
     extractor: Arc<T>,
@@ -110,7 +110,7 @@ where
 impl<S, B, T> Service for GrantsService<S, T>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    for<'a> T: AuthoritiesExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a>,
 {
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
@@ -126,8 +126,8 @@ where
         let extractor = Arc::clone(&self.extractor);
 
         Box::pin(async move {
-            let authorities: Vec<String> = extractor.extract(&req).await?;
-            req.attach(authorities);
+            let permissions: Vec<String> = extractor.extract(&req).await?;
+            req.attach(permissions);
 
             let fut = service.borrow_mut().call(req);
             fut.await

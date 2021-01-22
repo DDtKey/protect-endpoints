@@ -2,13 +2,13 @@ use proc_macro2::{Span, TokenStream as TokenStream2, Ident};
 use syn::{AttributeArgs, ItemFn, NestedMeta, ReturnType};
 use quote::{quote, ToTokens};
 
-pub(crate) struct HasAuthorities {
+pub(crate) struct HasPermissions {
     check_fn: Ident,
     func: ItemFn,
     args: Args
 }
 
-impl HasAuthorities {
+impl HasPermissions {
     pub fn new(
         check_fn: &str,
         args: AttributeArgs,
@@ -17,10 +17,10 @@ impl HasAuthorities {
         let check_fn: Ident = syn::parse_str(check_fn)?;
 
         let args = Args::new(args)?;
-        if args.authorities.is_empty() {
+        if args.permissions.is_empty() {
             return Err(syn::Error::new(
                 Span::call_site(),
-                "The #[has_authorities(..)] macro requires at least one `authority` argument",
+                "The #[has_permissions(..)] macro requires at least one `permission` argument",
             ));
         }
 
@@ -32,7 +32,7 @@ impl HasAuthorities {
     }
 }
 
-impl ToTokens for HasAuthorities {
+impl ToTokens for HasPermissions {
     fn to_tokens(&self, output: &mut TokenStream2) {
         let func_vis = &self.func.vis;
         let func_block = &self.func.block;
@@ -53,20 +53,20 @@ impl ToTokens for HasAuthorities {
         let check_fn = &self.check_fn;
 
         let args = {
-            let authorities = &self.args.authorities;
+            let permissions = &self.args.permissions;
 
             quote! {
-                #(#authorities,)*
+                #(#permissions,)*
             }
         };
 
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                _auth_details_: actix_web_grants::authorities::AuthDetails,
+                _auth_details_: actix_web_grants::permissions::AuthDetails,
                 #fn_args
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
-                use actix_web_grants::authorities::{AuthoritiesCheck, RolesCheck};
+                use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
                 if _auth_details_.#check_fn(vec![#args]) {
                     actix_web::Either::A(#func_block)
                 } else {
@@ -80,17 +80,17 @@ impl ToTokens for HasAuthorities {
 }
 
 struct Args {
-    authorities: Vec<syn::LitStr>,
+    permissions: Vec<syn::LitStr>,
 }
 
 impl Args {
     fn new(args: AttributeArgs) -> syn::Result<Self> {
-        let mut authorities = Vec::new();
+        let mut permissions = Vec::new();
 
         for arg in args {
             match arg {
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
-                   authorities.push(lit);
+                   permissions.push(lit);
                 },
                 _ => {
                     return Err(syn::Error::new_spanned(arg, "Unknown attribute."));
@@ -99,7 +99,7 @@ impl Args {
         }
 
         Ok(Args {
-            authorities
+            permissions
         })
     }
 }

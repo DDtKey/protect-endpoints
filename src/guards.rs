@@ -1,13 +1,13 @@
-use crate::authorities::{AuthDetails, AuthoritiesCheck};
+use crate::permissions::{AuthDetails, PermissionsCheck};
 use actix_web::dev::RequestHead;
 use actix_web::guard::Guard;
 
-/// Implementation of Guard trait for validate authorities
+/// Implementation of Guard trait for validate permissions
 /// ```
 /// use actix_web::dev::ServiceRequest;
 /// use actix_web::{web, App, Error, HttpResponse, HttpServer};
 ///
-/// use actix_web_grants::{GrantsMiddleware, AuthorityGuard};
+/// use actix_web_grants::{GrantsMiddleware, PermissionGuard};
 /// use std::sync::Arc;
 ///
 /// fn main() {
@@ -16,34 +16,34 @@ use actix_web::guard::Guard;
 ///             .wrap(GrantsMiddleware::with_extractor(extract))
 ///             .service(web::resource("/admin")
 ///                     .to(|| async { HttpResponse::Ok().finish() })
-///                     .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))
+///                     .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
 ///     });
 /// }
 ///
 /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
-///    // Here is a place for your code to get user authorities/grants/permissions from a request
+///    // Here is a place for your code to get user permissions/grants/permissions from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 /// ```
-pub struct AuthorityGuard {
-    allow_authority: String,
+pub struct PermissionGuard {
+    allow_permission: String,
 }
 
-impl AuthorityGuard {
-    pub fn new(allow_authority: String) -> AuthorityGuard {
-        AuthorityGuard { allow_authority }
+impl PermissionGuard {
+    pub fn new(allow_permission: String) -> PermissionGuard {
+        PermissionGuard { allow_permission }
     }
 }
 
-impl Guard for AuthorityGuard {
+impl Guard for PermissionGuard {
     fn check(&self, request: &RequestHead) -> bool {
         request
             .extensions()
             .get::<AuthDetails>()
-            .filter(|details| details.has_authority(self.allow_authority.as_str()))
+            .filter(|details| details.has_permission(self.allow_permission.as_str()))
             .is_some()
     }
 }

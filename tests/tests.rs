@@ -1,3 +1,3 @@
-mod authorities_check;
 mod common;
+mod permissions_check;
 mod proc_macro;

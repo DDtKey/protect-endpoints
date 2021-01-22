@@ -1,5 +1,5 @@
 # actix-web-grants
-> Extension for `actix-web` to validate user authorities.
+> Extension for `actix-web` to validate user permissions.
 
 [![CI](https://github.com/DDtKey/actix-web-grants/workflows/CI/badge.svg)](https://github.com/DDtKey/actix-web-grants/actions)
 [![crates.io](https://img.shields.io/crates/v/actix-web-grants)](https://crates.io/crates/actix-web-grants)
@@ -7,16 +7,16 @@
 [![dependency status](https://deps.rs/repo/github/DDtKey/actix-web-grants/status.svg)](https://deps.rs/repo/github/DDtKey/actix-web-grants)
 ![Apache 2.0 or MIT licensed](https://img.shields.io/crates/l/actix-web-grants)
 
-To check user access to specific services, you can use built-in `proc-macro`, `AuthorityGuard` or manual.
+To check user access to specific services, you can use built-in `proc-macro`, `PermissionGuard` or manual.
 
 The library can also be integrated with third-party solutions (like [`actix-web-httpauth`]).
 
 ### Example of `proc-macro` way protection
 ```rust
-use actix_web_grants::proc_macro::{has_authorities};
+use actix_web_grants::proc_macro::{has_permissions};
 
-#[get("/admin")]
-#[has_authorities("ROLE_ADMIN")]
+#[get("/secure")]
+#[has_permissions("OP_READ_SECURED_INFO")]
 async fn macro_secured() -> HttpResponse {
     HttpResponse::Ok().body("ADMIN_RESPONSE")
 }
@@ -24,21 +24,21 @@ async fn macro_secured() -> HttpResponse {
 
 ### Example of `Guard` way protection 
 ```rust
-use actix_web_grants::{AuthorityGuard, GrantsMiddleware};
+use actix_web_grants::{PermissionGuard, GrantsMiddleware};
 
 App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
     .service(web::resource("/admin")
             .to(|| async { HttpResponse::Ok().finish() })
-            .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))
+            .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
 ```
 
 ### Example of manual way protection
 ```rust
-use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
+use actix_web_grants::permissions::{AuthDetails, PermissionsCheck};
 
 async fn manual_secure(details: AuthDetails) -> HttpResponse {
-    if details.has_authority(ROLE_ADMIN) {
+    if details.has_permission(ROLE_ADMIN) {
         return HttpResponse::Ok().body("ADMIN_RESPONSE");
     }
     HttpResponse::Ok().body("OTHER_RESPONSE")

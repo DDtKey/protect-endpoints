@@ -3,7 +3,7 @@ use actix_web::{test, web, App, HttpResponse};
 
 use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
-use actix_web_grants::{AuthorityGuard, GrantsMiddleware};
+use actix_web_grants::{GrantsMiddleware, PermissionGuard};
 
 #[actix_rt::test]
 async fn test_guard() {
@@ -21,7 +21,7 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
             .service(
                 web::resource("/admin")
                     .to(|| async { HttpResponse::Ok().finish() })
-                    .guard(AuthorityGuard::new(ROLE_ADMIN.to_string())),
+                    .guard(PermissionGuard::new(ROLE_ADMIN.to_string())),
             ),
     )
     .await;

@@ -4,12 +4,12 @@ use actix_web::{get, App, Error, HttpResponse, HttpServer};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use actix_web_httpauth::middleware::HttpAuthentication;
 
-use actix_web_grants::proc_macro::{has_any_role, has_authorities};
+use actix_web_grants::proc_macro::{has_any_role, has_permissions};
 // All you need is just to `use` this trait
-use actix_web_grants::authorities::AttachAuthorities;
+use actix_web_grants::permissions::AttachPermissions;
 
 async fn validator(req: ServiceRequest, _credentials: BearerAuth) -> Result<ServiceRequest, Error> {
-    // Pass your `authorities`/`grants`/`permissions` here and you can use the `actix-web-grants`!
+    // Pass your `permissions`/`grants`/`permissions` here and you can use the `actix-web-grants`!
     req.attach(vec![_credentials.token().to_string()]);
     Ok(req)
 }
@@ -30,12 +30,12 @@ async fn main() -> std::io::Result<()> {
 }
 
 #[get("/admin")]
-#[has_authorities("ROLE_ADMIN")]
+#[has_permissions("OP_GET_SECURED_INFO")]
 // For the `ADMIN` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL:
 // ```sh
 // curl --location --request GET 'http://localhost:8080/admin' \
-// --header 'Authorization: Bearer ROLE_ADMIN'
+// --header 'Authorization: Bearer OP_GET_SECURED_INFO'
 // ```
 async fn admin_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
