@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Update `actix-rt` dev-dependency to `2` 
 
 ## [v2.0.0] - 2021-01-22
 ### Added

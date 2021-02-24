@@ -24,4 +24,4 @@ actix-web = { version = "3.0.0", default-features = false}
 actix-grants-proc-macro = { version = "1", optional = true }
 
 [dev-dependencies]
-actix-rt = "1.1.1"
+actix-rt = "2"
