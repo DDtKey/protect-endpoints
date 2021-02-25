@@ -6,9 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2021-xx-xx
 ### Added
-- Update actix-web to 4.0
-
 ### Changed
+- Update `actix-web` to `4.0`
 - Update `actix-rt` dev-dependency to `2` 
 
 ## [v2.0.0] - 2021-01-22
