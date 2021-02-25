@@ -1,19 +1,15 @@
-use proc_macro2::{Span, TokenStream as TokenStream2, Ident};
-use syn::{AttributeArgs, ItemFn, NestedMeta, ReturnType};
+use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
+use syn::{AttributeArgs, ItemFn, NestedMeta, ReturnType};
 
 pub(crate) struct HasPermissions {
     check_fn: Ident,
     func: ItemFn,
-    args: Args
+    args: Args,
 }
 
 impl HasPermissions {
-    pub fn new(
-        check_fn: &str,
-        args: AttributeArgs,
-        func: ItemFn
-    ) -> syn::Result<Self> {
+    pub fn new(check_fn: &str, args: AttributeArgs, func: ItemFn) -> syn::Result<Self> {
         let check_fn: Ident = syn::parse_str(check_fn)?;
 
         let args = Args::new(args)?;
@@ -44,10 +40,10 @@ impl ToTokens for HasPermissions {
         let fn_args = &fn_sig.inputs;
         let fn_async = &fn_sig.asyncness.unwrap();
         let fn_output = match &fn_sig.output {
-            ReturnType::Type(ref _arrow, ref ty) => {
-                ty.to_token_stream()
+            ReturnType::Type(ref _arrow, ref ty) => ty.to_token_stream(),
+            ReturnType::Default => {
+                quote! {()}
             }
-            ReturnType::Default => { quote! {()}}
         };
 
         let check_fn = &self.check_fn;
@@ -68,9 +64,9 @@ impl ToTokens for HasPermissions {
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
                 if _auth_details_.#check_fn(vec![#args]) {
-                    actix_web::Either::A(#func_block)
+                    actix_web::Either::Left(#func_block)
                 } else {
-                    actix_web::Either::B(actix_web::HttpResponse::Forbidden().finish())
+                    actix_web::Either::Right(actix_web::HttpResponse::Forbidden().finish())
                 }
             }
         };
@@ -90,16 +86,14 @@ impl Args {
         for arg in args {
             match arg {
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
-                   permissions.push(lit);
-                },
+                    permissions.push(lit);
+                }
                 _ => {
                     return Err(syn::Error::new_spanned(arg, "Unknown attribute."));
                 }
             }
         }
 
-        Ok(Args {
-            permissions
-        })
+        Ok(Args { permissions })
     }
 }
