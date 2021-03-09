@@ -17,6 +17,20 @@ async fn str_response() -> &'static str {
     "Hi!"
 }
 
+#[get("/return")]
+#[has_roles("ADMIN")]
+async fn return_response() -> &'static str {
+    return "Hi!"
+}
+
+#[get("/result")]
+#[has_roles("ADMIN")]
+async fn result_response() -> Result<&'static str, ()> {
+    Err(())?;
+    
+    panic!()
+}
+
 #[actix_rt::test]
 async fn test_http_response() {
     let test_admin = get_user_response("/http_response", ROLE_ADMIN).await;
@@ -42,6 +56,8 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
+            .service(result_response)
+            .service(return_response)
             .service(str_response)
             .service(http_response),
     )
