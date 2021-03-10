@@ -20,14 +20,14 @@ async fn str_response() -> &'static str {
 #[get("/return")]
 #[has_roles("ADMIN")]
 async fn return_response() -> &'static str {
-    return "Hi!"
+    return "Hi!";
 }
 
 #[get("/result")]
 #[has_roles("ADMIN")]
 async fn result_response() -> Result<&'static str, ()> {
     Err(())?;
-    
+
     panic!()
 }
 
