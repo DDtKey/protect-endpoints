@@ -1,7 +1,8 @@
 use actix_web::dev::ServiceResponse;
-use actix_web::{get, test, App, HttpResponse};
+use actix_web::{get, test, web, App, Error, HttpResponse};
 
 use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
+use actix_web::error::ErrorBadRequest;
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
 use actix_web_grants::{proc_macro::has_roles, GrantsMiddleware};
 
@@ -15,6 +16,20 @@ async fn http_response() -> HttpResponse {
 #[has_roles("ADMIN")]
 async fn str_response() -> &'static str {
     "Hi!"
+}
+
+#[get("/return")]
+#[has_roles("ADMIN")]
+async fn return_response() -> &'static str {
+    return "Hi!";
+}
+
+#[get("/result")]
+#[has_roles("ADMIN")]
+async fn result_response(payload: web::Query<common::NamePayload>) -> Result<String, Error> {
+    let common::NamePayload { name } = payload.0;
+    let name = name.ok_or(ErrorBadRequest("Query param not found!"))?;
+    Ok(format!("Welcome {}!", name))
 }
 
 #[actix_rt::test]
@@ -38,12 +53,34 @@ async fn test_str() {
     common::test_body(test_manager, "").await;
 }
 
+#[actix_rt::test]
+async fn test_return() {
+    let test_ok = get_user_response("/return", ROLE_ADMIN).await;
+    assert_eq!(StatusCode::OK, test_ok.status());
+
+    common::test_body(test_ok, "Hi!").await;
+}
+
+#[actix_rt::test]
+async fn test_result() {
+    let test_ok = get_user_response("/result?name=Test", ROLE_ADMIN).await;
+    let test_err = get_user_response("/result", ROLE_ADMIN).await;
+
+    assert_eq!(StatusCode::OK, test_ok.status());
+    assert_eq!(StatusCode::BAD_REQUEST, test_err.status());
+
+    common::test_body(test_ok, "Welcome Test!").await;
+    common::test_body(test_err, "Query param not found!").await;
+}
+
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
+            .service(http_response)
             .service(str_response)
-            .service(http_response),
+            .service(return_response)
+            .service(result_response),
     )
     .await;
 

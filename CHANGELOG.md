@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+## [v2.0.1] - 2021-03-10
+### Changed
+- Fix bug with `Result` return type combined with` proc-macro` way [#3](https://github.com/DDtKey/actix-web-grants/issues/3)
 - Update `actix-rt` dev-dependency to `2` 
 
 ## [v2.0.0] - 2021-01-22
