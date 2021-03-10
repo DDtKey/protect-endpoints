@@ -31,7 +31,6 @@ pub fn has_permissions(args: TokenStream, input: TokenStream) -> TokenStream {
     check_permissions(HAS_AUTHORITIES, args, input)
 }
 
-
 /// Macro to сheck that the user has any of the specified permissions.
 ///
 /// # Examples
@@ -87,7 +86,6 @@ pub fn has_roles(args: TokenStream, input: TokenStream) -> TokenStream {
 pub fn has_any_role(args: TokenStream, input: TokenStream) -> TokenStream {
     check_permissions(HAS_ANY_ROLE, args, input)
 }
-
 
 fn check_permissions(check_fn_name: &str, args: TokenStream, input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as AttributeArgs);
