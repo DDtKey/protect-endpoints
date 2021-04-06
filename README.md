@@ -1,4 +1,9 @@
 # actix-web-grants
+
+<p align="center">
+    <img alt="actix-web-grants" src="https://github.com/DDtKey/actix-web-grants/raw/main/logo.png">
+</p>
+
 > Extension for `actix-web` to validate user permissions.
 
 [![CI](https://github.com/DDtKey/actix-web-grants/workflows/CI/badge.svg)](https://github.com/DDtKey/actix-web-grants/actions)
