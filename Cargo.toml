@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-grants"
-version = "2.0.1"
+version = "3.0.0-beta.1"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "Extension for `actix-web` to validate user permissions"
 repository = "https://github.com/DDtKey/actix-web-grants"
@@ -21,7 +21,7 @@ macro-check = ["actix-grants-proc-macro"]
 
 [dependencies]
 actix-web = { version = "4.0.0-beta.5", default-features = false }
-actix-grants-proc-macro = { path = "./proc-macro", version = "1", optional = true }
+actix-grants-proc-macro = { path = "./proc-macro", version = "2.0.0-beta.1", optional = true }
 
 [dev-dependencies]
 actix-rt = "2"
