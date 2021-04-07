@@ -2,6 +2,7 @@ use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::error::ErrorUnauthorized;
 use actix_web::http::{header::AUTHORIZATION, HeaderValue};
 use actix_web::{test, Error};
+use serde::Deserialize;
 
 pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
@@ -28,4 +29,9 @@ pub async fn test_body(resp: ServiceResponse, expected_body: &str) {
     let body = test::read_body(resp).await;
 
     assert_eq!(expected_body, String::from_utf8(body.to_vec()).unwrap());
+}
+
+#[derive(Deserialize)]
+pub struct NamePayload {
+    pub name: Option<String>,
 }

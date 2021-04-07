@@ -64,7 +64,8 @@ impl ToTokens for HasPermissions {
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
                 if _auth_details_.#check_fn(vec![#args]) {
-                    actix_web::Either::Left(#func_block)
+                    let f = || async move #func_block;
+                    actix_web::Either::Left(f().await)
                 } else {
                     actix_web::Either::Right(actix_web::HttpResponse::Forbidden().finish())
                 }
