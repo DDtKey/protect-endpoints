@@ -80,12 +80,11 @@ where
     }
 }
 
-impl<S, B, T> Transform<S> for GrantsMiddleware<T>
+impl<S, B, T> Transform<S, ServiceRequest> for GrantsMiddleware<T>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Transform = GrantsService<S, T>;
@@ -107,21 +106,20 @@ where
     extractor: Arc<T>,
 }
 
-impl<S, B, T> Service for GrantsService<S, T>
+impl<S, B, T> Service<ServiceRequest> for GrantsService<S, T>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Error>>>>;
 
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, req: Self::Request) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let extractor = Arc::clone(&self.extractor);
 

@@ -20,7 +20,7 @@ default = ["macro-check"]
 macro-check = ["actix-grants-proc-macro"]
 
 [dependencies]
-actix-web = { version = "3.0.0", default-features = false}
+actix-web = { version = "4.0.0-beta.5", default-features = false }
 actix-grants-proc-macro = { path = "./proc-macro", version = "1", optional = true }
 
 [dev-dependencies]
