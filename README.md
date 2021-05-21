@@ -37,6 +37,8 @@ App::new()
     .service(web::resource("/admin")
             .to(|| async { HttpResponse::Ok().finish() })
             .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
+    .service(web::resource("/admin") // in case you want to return 403
+            .to(|| async { HttpResponse::Forbidden().finish() }))
 ```
 
 ### Example of manual way protection
