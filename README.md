@@ -54,7 +54,7 @@ App::new()
                 .to(|| async { HttpResponse::Ok().finish() })
             ).guard(PermissionGuard::new("ROLE_ADMIN_ACCESS".to_string()))
     ).service(
-        web::resource("/admin{regex:.*?}")
+        web::resource("/admin{regex:$|/.*?}")
         .to(|| async { 
             HttpResponse::TemporaryRedirect().append_header((header::LOCATION, "/login")).finish()
         }))
