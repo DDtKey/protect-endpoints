@@ -41,6 +41,28 @@ App::new()
             .to(|| async { HttpResponse::Forbidden().finish() }))
 ```
 
+### Example of `Guard` way protection for `Scope`
+```rust
+use actix_web_grants::{PermissionGuard, GrantsMiddleware};
+use actix_web::http::header;
+
+App::new()
+    .wrap(GrantsMiddleware::with_extractor(extract))
+    .service(
+        web::scope("/admin")
+            .service(web::resource("/users")
+                .to(|| async { HttpResponse::Ok().finish() })
+            ).guard(PermissionGuard::new("ROLE_ADMIN_ACCESS".to_string()))
+    ).service(
+        web::resource("/admin{regex:.*?}")
+        .to(|| async { 
+            HttpResponse::TemporaryRedirect().append_header((header::LOCATION, "/login")).finish()
+        }))
+```
+When `Guard` lets you in the `Scope` (meaning you have `"ROLE_ADMIN_ACCESS"`), the redirect will be unreachable for you. Even if you will request `/admin/some_undefined_page`.
+
+Note: `regex` is a `Path` variable containing passed link.
+
 ### Example of manual way protection
 ```rust
 use actix_web_grants::permissions::{AuthDetails, PermissionsCheck};
