@@ -37,7 +37,7 @@ App::new()
     .service(web::resource("/admin")
             .to(|| async { HttpResponse::Ok().finish() })
             .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
-    .service(web::resource("/admin") // in case you want to return 403
+    .service(web::resource("/admin") // in cases where you want to return 403 HTTP code
             .to(|| async { HttpResponse::Forbidden().finish() }))
 ```
 
@@ -58,4 +58,3 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 [`actix-web-httpauth`]: https://github.com/DDtKey/actix-web-grants/blob/main/examples/jwt-httpauth
 [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
 [`documentation`]: https://docs.rs/actix-web-grants
-
