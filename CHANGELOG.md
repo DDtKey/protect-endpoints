@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 ### Changed
 
+## [Unreleased] - 2021-08-11
+### Changed
+- Update `actix-web` to `4.0.0-beta.8`
+
 ## [v3.0.0-beta.1] - 2021-04-07
 ### Changed
 - Update `actix-web` to `4.0.0-beta.5`

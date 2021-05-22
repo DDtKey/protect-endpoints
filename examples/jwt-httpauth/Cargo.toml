@@ -8,9 +8,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = { version = "4.0.0-beta.5" }
+actix-web = { version = "4.0.0-beta.8" }
 actix-web-grants = { path = "../../" }
-actix-web-httpauth = "0.5.0"
+actix-web-httpauth = "0.6.0-beta.2"
 jsonwebtoken = "7"
 serde = {version = "1.0", features = ["derive"] }
 chrono = "0.4.19"
