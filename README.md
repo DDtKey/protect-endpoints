@@ -52,9 +52,9 @@ use actix_web::http::header;
 App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
     .service(web::scope("/admin")
+        .guard(PermissionGuard::new("ROLE_ADMIN_ACCESS".to_string()))
         .service(web::resource("/users")
-            .to(|| async { HttpResponse::Ok().finish() })
-        ).guard(PermissionGuard::new("ROLE_ADMIN_ACCESS".to_string()))
+            .to(|| async { HttpResponse::Ok().finish() }))
     ).service(
         web::resource("/admin{regex:$|/.*?}").to(|| async { 
             HttpResponse::TemporaryRedirect().append_header((header::LOCATION, "/login")).finish()
