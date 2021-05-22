@@ -41,7 +41,10 @@ App::new()
             .to(|| async { HttpResponse::Forbidden().finish() }))
 ```
 
-### Example of `Guard` way protection for `Scope`
+#### Example of custom fallback endpoint for `Scope` with `Guard`
+
+Since `Guard` is intended only for routing, if the user doesn't have permissions, it returns a `404` HTTP code. But you can override the behavior like this:
+
 ```rust
 use actix_web_grants::{PermissionGuard, GrantsMiddleware};
 use actix_web::http::header;
