@@ -37,11 +37,15 @@ App::new()
     .service(web::resource("/admin")
             .to(|| async { HttpResponse::Ok().finish() })
             .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
-    .service(web::resource("/admin") // in cases where you want to return 403 HTTP code
+    .service(web::resource("/admin") // fallback endpoint if you want to return a 403 HTTP code 
             .to(|| async { HttpResponse::Forbidden().finish() }))
 ```
 
-#### Example of custom fallback endpoint for `Scope` with `Guard`
+<details>
+
+<summary> <b><i> Example of custom fallback endpoint for `Scope` with `Guard` </i></b></summary>
+<br/>
+
 
 Since `Guard` is intended only for routing, if the user doesn't have permissions, it returns a `404` HTTP code. But you can override the behavior like this:
 
@@ -63,6 +67,8 @@ App::new()
 When `Guard` lets you in the `Scope` (meaning you have `"ROLE_ADMIN_ACCESS"`), the redirect will be unreachable for you. Even if you will request `/admin/some_undefined_page`.
 
 Note: `regex` is a `Path` variable containing passed link.
+
+</details>    
 
 ### Example of manual way protection
 ```rust
