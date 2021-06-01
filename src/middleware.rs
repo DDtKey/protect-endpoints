@@ -92,9 +92,10 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        let extractor: Rc<T> = self.extractor.clone();
-        let service = Rc::new(RefCell::new(service));
-        future::ready(Ok(GrantsService { service, extractor }))
+        future::ready(Ok(GrantsService {
+            service: Rc::new(RefCell::new(service)),
+            extractor: self.extractor.clone(),
+        }))
     }
 }
 
