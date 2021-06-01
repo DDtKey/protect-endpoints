@@ -19,8 +19,10 @@ use actix_web::{Error, FromRequest, HttpRequest};
 use std::future::Future;
 use std::pin::Pin;
 
+mod attache;
 mod extractors;
 
+pub use attache::AttachPermissions;
 pub use extractors::*;
 
 #[derive(Clone)]
