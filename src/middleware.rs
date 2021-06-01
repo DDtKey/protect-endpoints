@@ -1,5 +1,5 @@
-use crate::permissions::PermissionsExtractor;
 use crate::permissions::AuthDetails;
+use crate::permissions::PermissionsExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::{Error, HttpMessage};
 use std::future::{self, Future, Ready};
