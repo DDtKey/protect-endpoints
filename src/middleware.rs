@@ -6,7 +6,6 @@ use std::cell::RefCell;
 use std::future::{self, Future, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
-use std::sync::Arc;
 use std::task::{Context, Poll};
 
 /// Built-in middleware for extracting user permission.
@@ -48,7 +47,7 @@ pub struct GrantsMiddleware<T>
 where
     for<'a> T: PermissionsExtractor<'a>,
 {
-    extractor: Arc<T>,
+    extractor: Rc<T>,
 }
 
 impl<T> GrantsMiddleware<T>
@@ -75,7 +74,7 @@ where
     ///[`PermissionsExtractor`]: crate::permissions::PermissionsExtractor
     pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
         GrantsMiddleware {
-            extractor: Arc::new(extractor),
+            extractor: Rc::new(extractor),
         }
     }
 }
@@ -93,9 +92,10 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        let extractor: Arc<T> = self.extractor.clone();
-        let service = Rc::new(RefCell::new(service));
-        future::ready(Ok(GrantsService { service, extractor }))
+        future::ready(Ok(GrantsService {
+            service: Rc::new(RefCell::new(service)),
+            extractor: self.extractor.clone(),
+        }))
     }
 }
 
@@ -104,7 +104,7 @@ where
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
     service: Rc<RefCell<S>>,
-    extractor: Arc<T>,
+    extractor: Rc<T>,
 }
 
 impl<S, B, T> Service for GrantsService<S, T>
@@ -123,7 +123,7 @@ where
 
     fn call(&mut self, req: Self::Request) -> Self::Future {
         let service = Rc::clone(&self.service);
-        let extractor = Arc::clone(&self.extractor);
+        let extractor = Rc::clone(&self.extractor);
 
         Box::pin(async move {
             let permissions: Vec<String> = extractor.extract(&req).await?;
