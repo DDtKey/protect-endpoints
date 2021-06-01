@@ -1,12 +1,10 @@
-use crate::permissions::AttachPermissions;
 use crate::permissions::PermissionsExtractor;
+use crate::permissions::AuthDetails;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
-use actix_web::Error;
-use std::cell::RefCell;
+use actix_web::{Error, HttpMessage};
 use std::future::{self, Future, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
-use std::sync::Arc;
 use std::task::{Context, Poll};
 
 /// Built-in middleware for extracting user permission.
@@ -48,7 +46,7 @@ pub struct GrantsMiddleware<T>
 where
     for<'a> T: PermissionsExtractor<'a>,
 {
-    extractor: Arc<T>,
+    extractor: Rc<T>,
 }
 
 impl<T> GrantsMiddleware<T>
@@ -75,7 +73,7 @@ where
     ///[`PermissionsExtractor`]: crate::permissions::PermissionsExtractor
     pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
         GrantsMiddleware {
-            extractor: Arc::new(extractor),
+            extractor: Rc::new(extractor),
         }
     }
 }
@@ -92,9 +90,10 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        let extractor: Arc<T> = self.extractor.clone();
-        let service = Rc::new(RefCell::new(service));
-        future::ready(Ok(GrantsService { service, extractor }))
+        future::ready(Ok(GrantsService {
+            service: Rc::new(service),
+            extractor: self.extractor.clone(),
+        }))
     }
 }
 
@@ -102,8 +101,8 @@ pub struct GrantsService<S, T>
 where
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
-    service: Rc<RefCell<S>>,
-    extractor: Arc<T>,
+    service: Rc<S>,
+    extractor: Rc<T>,
 }
 
 impl<S, B, T> Service<ServiceRequest> for GrantsService<S, T>
@@ -121,14 +120,13 @@ where
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
-        let extractor = Arc::clone(&self.extractor);
+        let extractor = Rc::clone(&self.extractor);
 
         Box::pin(async move {
             let permissions: Vec<String> = extractor.extract(&req).await?;
-            req.attach(permissions);
 
-            let fut = service.borrow_mut().call(req);
-            fut.await
+            req.extensions_mut().insert(AuthDetails::new(permissions));
+            service.call(req).await
         })
     }
 }
