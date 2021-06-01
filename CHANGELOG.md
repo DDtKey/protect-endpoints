@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2021-xx-xx
 ### Added
 ### Changed
+- Remove RefCell in middleware [#11](https://github.com/DDtKey/actix-web-grants/pull/11)
 
 ## [v3.0.0-beta.1] - 2021-04-07
 ### Changed
