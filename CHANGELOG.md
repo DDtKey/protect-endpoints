@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Change Arc to Rc in middleware
+- Change Arc to Rc in middleware [#12](https://github.com/DDtKey/actix-web-grants/pull/12)
 
 ## [v2.0.1] - 2021-03-10
 ### Changed
