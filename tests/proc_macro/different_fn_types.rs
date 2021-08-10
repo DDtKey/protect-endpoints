@@ -18,6 +18,16 @@ async fn str_response() -> &'static str {
     "Hi!"
 }
 
+struct User {
+    id: i32,
+}
+
+#[get("/secure/{user_id}")]
+#[has_roles("ADMIN", secure = "user_id==user.id")]
+async fn secure_id(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> &'static str {
+    "Hi!"
+}
+
 #[get("/return")]
 #[has_roles("ADMIN")]
 async fn return_response() -> &'static str {
@@ -62,6 +72,18 @@ async fn test_return() {
 }
 
 #[actix_rt::test]
+async fn test_secure_id() {
+    let test_good_id = get_user_response("/secure/1", ROLE_ADMIN).await;
+    let test_wrong_id = get_user_response("/secure/2", ROLE_ADMIN).await;
+
+    assert_eq!(StatusCode::OK, test_good_id.status());
+    assert_eq!(StatusCode::FORBIDDEN, test_wrong_id.status());
+
+    common::test_body(test_good_id, "Hi!").await;
+    common::test_body(test_wrong_id, "").await;
+}
+
+#[actix_rt::test]
 async fn test_result() {
     let test_ok = get_user_response("/result?name=Test", ROLE_ADMIN).await;
     let test_err = get_user_response("/result", ROLE_ADMIN).await;
@@ -76,11 +98,13 @@ async fn test_result() {
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
+            .app_data(web::Data::new(User { id: 1 }))
             .wrap(GrantsMiddleware::with_extractor(common::extract))
             .service(http_response)
             .service(str_response)
             .service(return_response)
-            .service(result_response),
+            .service(result_response)
+            .service(secure_id),
     )
     .await;
 
