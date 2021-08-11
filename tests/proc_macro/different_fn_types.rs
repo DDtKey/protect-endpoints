@@ -24,8 +24,8 @@ struct User {
 }
 
 #[post("/secure/{user_id}")]
-#[has_roles("ADMIN", secure = "user_id==user.id")]
-async fn secure_user_id(web::Path(user_id): web::Path<i32>, user: web::Json<User>) -> &'static str {
+#[has_roles("ADMIN", secure = "user_id.into_inner() == user.id")]
+async fn secure_user_id(user_id: web::Path<i32>, user: web::Json<User>) -> &'static str {
     "Hi!"
 }
 
@@ -122,7 +122,8 @@ async fn post_user_response<T: Serialize>(uri: &str, role: &str, data: &T) -> Se
             .service(secure_user_id),
     )
     .await;
-    let req = test::TestRequest::with_header(AUTHORIZATION, role)
+    let req = test::TestRequest::default()
+        .insert_header((AUTHORIZATION, role))
         .uri(uri)
         .set_json(data)
         .method(http::Method::POST)

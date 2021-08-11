@@ -30,8 +30,8 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// // User should be ADMIN with OP_GET_SECRET permission and the user.id param should be equal
 /// // to the path parameter {user_id}
 /// struct User {id: i32}
-/// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET", secure="user_id==user.id"]]
-/// async fn macro_secured_params(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> HttpResponse {
+/// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET", secure="user_id.into_inner() == user.id"]]
+/// async fn macro_secured_params(user_id: web::Path<i32>, user: web::Data<User>) -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info with user_id path equal to user.id")
 ///}
 ///```
