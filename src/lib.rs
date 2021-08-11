@@ -41,7 +41,7 @@ pub use middleware::GrantsMiddleware;
 /// async fn role_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
-/// 
+///
 /// // Additional security condition to ensure the protection of the endpoint
 /// #[has_roles("USER", secure = "user_id==user.id")]
 /// #[get("/resource/{user_id}")]
