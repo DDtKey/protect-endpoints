@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 ### Changed
 
-## [Unreleased] - 2021-08-11
+## [v3.0.0-beta.2] - 2021-08-11
 ### Changed
+- Pull incoming changes from [v2.1.0]
 - Update `actix-web` to `4.0.0-beta.8`
 
 ## [v3.0.0-beta.1] - 2021-04-07
@@ -45,3 +46,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v1.0.0]: https://crates.io/crates/actix-web-grants/1.0.0
 [v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
 [v3.0.0-beta.1]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.1
+[v3.0.0-beta.2]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.2
