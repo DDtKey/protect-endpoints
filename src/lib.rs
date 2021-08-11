@@ -26,7 +26,7 @@ pub use middleware::GrantsMiddleware;
 ///
 /// # Examples
 /// ```
-/// use actix_web::{HttpResponse};
+/// use actix_web::{web, get, HttpResponse};
 /// use actix_web_grants::proc_macro::{has_permissions, has_roles};
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
