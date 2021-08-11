@@ -14,7 +14,8 @@ const HAS_ROLES: &str = "has_roles";
 const HAS_ANY_ROLE: &str = "has_any_role";
 
 /// Macro to сheck that the user has all the specified permissions.
-///
+/// Allow to add a conditional restriction based on handlers parameters.
+/// add the secure attribute followed by the the boolean expression to validate based on parameters
 /// # Examples
 /// ```
 /// use actix_web_grants::proc_macro::has_permissions;
@@ -25,7 +26,15 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// async fn macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
-/// ```
+///
+/// // User should be ADMIN with OP_GET_SECRET permission and the user.id param should be equal
+/// // to the path parameter {user_id}
+/// struct User {id: i32}
+/// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET", secure="user_id==user.id"]]
+/// async fn macro_secured_params(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> HttpResponse {
+///     HttpResponse::Ok().body("some secured info with user_id path equal to user.id")
+///}
+///```
 #[proc_macro_attribute]
 pub fn has_permissions(args: TokenStream, input: TokenStream) -> TokenStream {
     check_permissions(HAS_AUTHORITIES, args, input)

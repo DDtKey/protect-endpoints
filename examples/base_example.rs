@@ -24,6 +24,20 @@ async fn manual_secure(details: AuthDetails) -> HttpResponse {
     HttpResponse::Ok().body(OTHER_RESPONSE)
 }
 
+struct User {
+    id: i32,
+}
+
+#[get("/ressource/{user_id}")]
+#[has_permissions("ROLE_ADMIN", secure = "user_id==user.id")]
+// An example of protection via `proc-macro` with secure attribute
+async fn secure_with_params(
+    web::Path(user_id): web::Path<i32>,
+    user: web::Data<User>,
+) -> HttpResponse {
+    HttpResponse::Ok().body(ADMIN_RESPONSE)
+}
+
 #[actix_web::main]
 // Sample application with grant protection based on extracting by your custom function
 async fn main() -> std::io::Result<()> {
@@ -40,6 +54,8 @@ async fn main() -> std::io::Result<()> {
                     .to(|| async { HttpResponse::Ok().finish() })
                     .guard(PermissionGuard::new(ROLE_ADMIN.to_string())),
             )
+            // An example with the secure attribute of macro
+            .service(secure_with_params)
     })
     .bind("localhost:8081")?
     .workers(1)
