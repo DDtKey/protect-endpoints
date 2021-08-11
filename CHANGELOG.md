@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+## [v2.1.0] - 2021-08-11
+### Added
+- Add support for ABAC-like model to procedural macro [#14](https://github.com/DDtKey/actix-web-grants/issues/14)
+
+### Changed
 - Change Arc to Rc in middleware [#12](https://github.com/DDtKey/actix-web-grants/pull/12)
 
 ## [v2.0.1] - 2021-03-10
@@ -38,3 +44,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.1.6]: https://crates.io/crates/actix-web-grants/0.1.6
 [v1.0.0]: https://crates.io/crates/actix-web-grants/1.0.0
 [v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
+[v2.1.0]: https://crates.io/crates/actix-web-grants/2.1.0
