@@ -72,7 +72,7 @@ async fn test_return() {
 }
 
 #[actix_rt::test]
-async fn test_secure_id() {
+async fn test_secure_with_user_id() {
     let test_good_id = get_user_response("/secure/1", ROLE_ADMIN).await;
     let test_wrong_id = get_user_response("/secure/2", ROLE_ADMIN).await;
 
