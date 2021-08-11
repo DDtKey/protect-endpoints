@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Pull incoming changes from [v2.1.0]
 - Update `actix-web` to `4.0.0-beta.8`
+- Remove RefCell in middleware [#11](https://github.com/DDtKey/actix-web-grants/pull/11)
 
 ## [v2.1.0] - 2021-08-11
 ### Added

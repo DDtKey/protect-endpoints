@@ -2,7 +2,6 @@ use crate::permissions::AttachPermissions;
 use crate::permissions::PermissionsExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
-use std::cell::RefCell;
 use std::future::{self, Future, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
@@ -92,7 +91,7 @@ where
 
     fn new_transform(&self, service: S) -> Self::Future {
         future::ready(Ok(GrantsService {
-            service: Rc::new(RefCell::new(service)),
+            service: Rc::new(service),
             extractor: self.extractor.clone(),
         }))
     }
@@ -102,7 +101,7 @@ pub struct GrantsService<S, T>
 where
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
-    service: Rc<RefCell<S>>,
+    service: Rc<S>,
     extractor: Rc<T>,
 }
 
@@ -127,8 +126,7 @@ where
             let permissions: Vec<String> = extractor.extract(&req).await?;
             req.attach(permissions);
 
-            let fut = service.borrow_mut().call(req);
-            fut.await
+            service.call(req).await
         })
     }
 }
