@@ -2,7 +2,6 @@ use crate::permissions::AttachPermissions;
 use crate::permissions::PermissionsExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
-use std::cell::RefCell;
 use std::future::{self, Future, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
@@ -79,12 +78,11 @@ where
     }
 }
 
-impl<S, B, T> Transform<S> for GrantsMiddleware<T>
+impl<S, B, T> Transform<S, ServiceRequest> for GrantsMiddleware<T>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Transform = GrantsService<S, T>;
@@ -93,7 +91,7 @@ where
 
     fn new_transform(&self, service: S) -> Self::Future {
         future::ready(Ok(GrantsService {
-            service: Rc::new(RefCell::new(service)),
+            service: Rc::new(service),
             extractor: self.extractor.clone(),
         }))
     }
@@ -103,25 +101,24 @@ pub struct GrantsService<S, T>
 where
     for<'a> T: PermissionsExtractor<'a> + 'static,
 {
-    service: Rc<RefCell<S>>,
+    service: Rc<S>,
     extractor: Rc<T>,
 }
 
-impl<S, B, T> Service for GrantsService<S, T>
+impl<S, B, T> Service<ServiceRequest> for GrantsService<S, T>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Error>>>>;
 
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, req: Self::Request) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let extractor = Rc::clone(&self.extractor);
 
@@ -129,8 +126,7 @@ where
             let permissions: Vec<String> = extractor.extract(&req).await?;
             req.attach(permissions);
 
-            let fut = service.borrow_mut().call(req);
-            fut.await
+            service.call(req).await
         })
     }
 }

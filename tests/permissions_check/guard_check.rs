@@ -26,7 +26,8 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     )
     .await;
 
-    let req = test::TestRequest::with_header(AUTHORIZATION, role)
+    let req = test::TestRequest::default()
+        .insert_header((AUTHORIZATION, role))
         .uri(uri)
         .to_request();
     test::call_service(&mut app, req).await

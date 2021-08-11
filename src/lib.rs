@@ -43,9 +43,9 @@ pub use middleware::GrantsMiddleware;
 /// }
 ///
 /// // Additional security condition to ensure the protection of the endpoint
-/// #[has_roles("USER", secure = "user_id==user.id")]
+/// #[has_roles("USER", secure = "user_id.into_inner() == user.id")]
 /// #[get("/resource/{user_id}")]
-/// async fn role_macro_secured_with_params(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> HttpResponse {
+/// async fn role_macro_secured_with_params(user_id: web::Path<i32>, user: web::Data<User>) -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info with parameters")   
 /// }
 /// struct User { id: i32 }
