@@ -26,7 +26,7 @@ pub use middleware::GrantsMiddleware;
 ///
 /// # Examples
 /// ```
-/// use actix_web::{HttpResponse};
+/// use actix_web::{web, get, HttpResponse};
 /// use actix_web_grants::proc_macro::{has_permissions, has_roles};
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
@@ -41,6 +41,14 @@ pub use middleware::GrantsMiddleware;
 /// async fn role_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
+///
+/// // Additional security condition to ensure the protection of the endpoint
+/// #[has_roles("USER", secure = "user_id==user.id")]
+/// #[get("/resource/{user_id}")]
+/// async fn role_macro_secured_with_params(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> HttpResponse {
+///     HttpResponse::Ok().body("some secured info with parameters")   
+/// }
+/// struct User { id: i32 }
 /// ```
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {

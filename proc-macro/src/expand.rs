@@ -56,6 +56,12 @@ impl ToTokens for HasPermissions {
             }
         };
 
+        let condition = if let Some(expr) = &self.args.secure {
+            quote!(if _auth_details_.#check_fn(vec![#args]) && #expr)
+        } else {
+            quote!(if _auth_details_.#check_fn(vec![#args]))
+        };
+
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
@@ -63,7 +69,7 @@ impl ToTokens for HasPermissions {
                 #fn_args
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
-                if _auth_details_.#check_fn(vec![#args]) {
+                #condition {
                     let f = || async move #func_block;
                     actix_web::Either::Left(f().await)
                 } else {
@@ -78,16 +84,32 @@ impl ToTokens for HasPermissions {
 
 struct Args {
     permissions: Vec<syn::LitStr>,
+    secure: Option<syn::Expr>,
 }
 
 impl Args {
     fn new(args: AttributeArgs) -> syn::Result<Self> {
-        let mut permissions = Vec::new();
-
+        let mut permissions = Vec::with_capacity(args.len());
+        let mut secure = None;
         for arg in args {
             match arg {
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
                     permissions.push(lit);
+                }
+                NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                    path,
+                    lit: syn::Lit::Str(lit_str),
+                    ..
+                })) => {
+                    if path.is_ident("secure") {
+                        let expr = lit_str.parse().unwrap();
+                        secure = Some(expr);
+                    } else {
+                        return Err(syn::Error::new_spanned(
+                            path,
+                            "Unknown identifier. Available is 'secure'",
+                        ));
+                    }
                 }
                 _ => {
                     return Err(syn::Error::new_spanned(arg, "Unknown attribute."));
@@ -95,6 +117,9 @@ impl Args {
             }
         }
 
-        Ok(Args { permissions })
+        Ok(Args {
+            permissions,
+            secure,
+        })
     }
 }

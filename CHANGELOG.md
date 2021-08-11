@@ -6,12 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2021-xx-xx
 ### Added
+
 ### Changed
 
 ## [v3.0.0-beta.2] - 2021-08-11
 ### Changed
 - Pull incoming changes from [v2.1.0]
 - Update `actix-web` to `4.0.0-beta.8`
+
+## [v2.1.0] - 2021-08-11
+### Added
+- Add support for ABAC-like model to procedural macro [#14](https://github.com/DDtKey/actix-web-grants/issues/14)
+
+### Changed
+- Change Arc to Rc in middleware [#12](https://github.com/DDtKey/actix-web-grants/pull/12)
 
 ## [v3.0.0-beta.1] - 2021-04-07
 ### Changed
@@ -45,5 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.1.6]: https://crates.io/crates/actix-web-grants/0.1.6
 [v1.0.0]: https://crates.io/crates/actix-web-grants/1.0.0
 [v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
+[v2.0.1]: https://crates.io/crates/actix-web-grants/2.0.1
+[v2.1.0]: https://crates.io/crates/actix-web-grants/2.1.0
 [v3.0.0-beta.1]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.1
 [v3.0.0-beta.2]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.2
