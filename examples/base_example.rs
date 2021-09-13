@@ -28,7 +28,7 @@ struct User {
     id: i32,
 }
 
-#[get("/ressource/{user_id}")]
+#[get("/resource/{user_id}")]
 #[has_permissions("ROLE_ADMIN", secure = "user_id.into_inner() == user.id")]
 // An example of protection via `proc-macro` with secure attribute
 async fn secure_with_params(user_id: web::Path<i32>, user: web::Data<User>) -> HttpResponse {
