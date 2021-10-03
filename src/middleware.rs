@@ -3,6 +3,7 @@ use crate::permissions::PermissionsExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
 use std::future::{self, Future, Ready};
+use std::marker::PhantomData;
 use std::pin::Pin;
 use std::rc::Rc;
 use std::task::{Context, Poll};
@@ -42,16 +43,17 @@ use std::task::{Context, Poll};
 ///     HttpResponse::Ok().finish()
 /// }
 /// ```
-pub struct GrantsMiddleware<T>
+pub struct GrantsMiddleware<T, Req>
 where
-    for<'a> T: PermissionsExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a, Req>,
 {
     extractor: Rc<T>,
+    phantom_req: PhantomData<Req>,
 }
 
-impl<T> GrantsMiddleware<T>
+impl<T, Req> GrantsMiddleware<T, Req>
 where
-    for<'a> T: PermissionsExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a, Req>,
 {
     /// Create middleware by [`PermissionsExtractor`].
     ///
@@ -71,21 +73,22 @@ where
     /// ```
     ///
     ///[`PermissionsExtractor`]: crate::permissions::PermissionsExtractor
-    pub fn with_extractor(extractor: T) -> GrantsMiddleware<T> {
+    pub fn with_extractor(extractor: T) -> GrantsMiddleware<T, Req> {
         GrantsMiddleware {
             extractor: Rc::new(extractor),
+            phantom_req: PhantomData,
         }
     }
 }
 
-impl<S, B, T> Transform<S, ServiceRequest> for GrantsMiddleware<T>
+impl<S, B, T, Req> Transform<S, ServiceRequest> for GrantsMiddleware<T, Req>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    for<'a> T: PermissionsExtractor<'a> + 'static,
+    for<'a> T: PermissionsExtractor<'a, Req> + 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Transform = GrantsService<S, T>;
+    type Transform = GrantsService<S, T, Req>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
@@ -93,22 +96,24 @@ where
         future::ready(Ok(GrantsService {
             service: Rc::new(service),
             extractor: self.extractor.clone(),
+            phantom_req: PhantomData,
         }))
     }
 }
 
-pub struct GrantsService<S, T>
+pub struct GrantsService<S, T, Req>
 where
-    for<'a> T: PermissionsExtractor<'a> + 'static,
+    for<'a> T: PermissionsExtractor<'a, Req> + 'static,
 {
     service: Rc<S>,
     extractor: Rc<T>,
+    phantom_req: PhantomData<Req>,
 }
 
-impl<S, B, T> Service<ServiceRequest> for GrantsService<S, T>
+impl<S, B, T, Req> Service<ServiceRequest> for GrantsService<S, T, Req>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    for<'a> T: PermissionsExtractor<'a>,
+    for<'a> T: PermissionsExtractor<'a, Req>,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
@@ -118,12 +123,12 @@ where
         self.service.poll_ready(cx)
     }
 
-    fn call(&self, req: ServiceRequest) -> Self::Future {
+    fn call(&self, mut req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let extractor = Rc::clone(&self.extractor);
 
         Box::pin(async move {
-            let permissions: Vec<String> = extractor.extract(&req).await?;
+            let permissions: Vec<String> = extractor.extract(&mut req).await?;
             req.attach(permissions);
 
             service.call(req).await
