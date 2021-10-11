@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-grants"
-version = "2.1.0"
+version = "2.2.0"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "Extension for `actix-web` to validate user permissions"
 repository = "https://github.com/DDtKey/actix-web-grants"
