@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow extractor to receive mutable requests [#17](https://github.com/DDtKey/actix-web-grants/pull/17)
 - How to use section to readme [#18](https://github.com/DDtKey/actix-web-grants/pull/18)
 
+## [v2.2.0] - 2021-10-11
+### Added
+- Allow extractor to receive mutable requests [#17](https://github.com/DDtKey/actix-web-grants/pull/17)
+- How to use section to readme [#18](https://github.com/DDtKey/actix-web-grants/pull/18)
+
 ## [v3.0.0-beta.2] - 2021-08-11
 ### Changed
 - Pull incoming changes from [v2.1.0]
@@ -62,5 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
 [v2.0.1]: https://crates.io/crates/actix-web-grants/2.0.1
 [v2.1.0]: https://crates.io/crates/actix-web-grants/2.1.0
-[v3.0.0-beta.1]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.1
-[v3.0.0-beta.2]: https://crates.io/crates/actix-web-grants/v3.0.0-beta.2
+[v2.2.0]: https://crates.io/crates/actix-web-grants/2.2.0
+[v3.0.0-beta.1]: https://crates.io/crates/actix-web-grants/3.0.0-beta.1
+[v3.0.0-beta.2]: https://crates.io/crates/actix-web-grants/3.0.0-beta.2
+[v3.0.0-beta.3]: https://crates.io/crates/actix-web-grants/3.0.0-beta.3
