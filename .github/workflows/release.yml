@@ -21,6 +21,10 @@ jobs:
           cd proc-macro
           cargo publish || true
 
+      - name: Wait for the proc-macro to be available in crates.io after publishing
+        run: sleep 20s
+        shell: bash    
+
       - uses: actions/checkout@v1
       - name: Publish actix-web-grants
         run: |
