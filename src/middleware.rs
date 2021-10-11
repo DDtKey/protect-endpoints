@@ -83,9 +83,9 @@ where
     }
 }
 
-impl<S, B, T, Req> Transform<S, ServiceRequest> for GrantsMiddleware<T, Req>
+impl<S, B, T, Req> Transform<S> for GrantsMiddleware<T, Req>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a, Req> + 'static,
 {
     type Request = ServiceRequest;
@@ -113,9 +113,9 @@ where
     phantom_req: PhantomData<Req>,
 }
 
-impl<S, B, T, Req> Service<ServiceRequest> for GrantsService<S, T, Req>
+impl<S, B, T, Req> Service for GrantsService<S, T, Req>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> T: PermissionsExtractor<'a, Req>,
 {
     type Request = ServiceRequest;
@@ -127,7 +127,7 @@ where
         self.service.poll_ready(cx)
     }
 
-    fn call(&self, mut req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let extractor = Rc::clone(&self.extractor);
 
