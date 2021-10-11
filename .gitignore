@@ -11,6 +11,7 @@ Cargo.lock
 
 # IDEs
 /.idea/
+/.history/
 
 
 .DS_Store
