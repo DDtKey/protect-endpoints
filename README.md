@@ -17,6 +17,30 @@ To check user access to specific services, you can use built-in `proc-macro`, `P
 
 The library can also be integrated with third-party solutions (like [`actix-web-httpauth`]).
 
+
+## How to use
+
+
+1. Declare your own [permission extractor](./src/permissions/extractors.rs)
+   
+The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
+```rust
+use actix_web::{dev::ServiceRequest, Error};
+
+async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error>
+```
+
+2. Add middleware to your application using the extractor defined in step 1
+   
+```rust
+App::new()
+    .wrap(GrantsMiddleware::with_extractor(extract))
+```
+
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Look at [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
+
+3. Protect your endpoints in any convenient way from the examples below:
+
 ### Example of `proc-macro` way protection
 ```rust
 use actix_web_grants::proc_macro::{has_permissions};
@@ -84,7 +108,7 @@ async fn manual_secure(details: AuthDetails) -> HttpResponse {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
-### Supported `actix-web` versions
+## Supported `actix-web` versions
 * For `actix-web-grants: 2.*` supported version of `actix-web` is `3.*`
 * For `actix-web-grants: 3.*` supported version of `actix-web` is `4.*`
 
