@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-
+- Remove unused `Config` type [#20](https://github.com/DDtKey/actix-web-grants/pull/20)
 
 ## [v3.0.0-beta.3] - 2021-10-11
 ### Added
