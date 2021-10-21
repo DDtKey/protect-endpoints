@@ -89,7 +89,6 @@ impl RolesCheck for AuthDetails {
 impl FromRequest for AuthDetails {
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Error>>>>;
-    type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload<PayloadStream>) -> Self::Future {
         let req = req.clone();
