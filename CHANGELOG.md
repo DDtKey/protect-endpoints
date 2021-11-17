@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 
-## [Unreleased] - 2021-11-17
+## [v3.0.0-beta.4] - 2021-11-17
 ### Added
 - `actix-web: 4.0.0-beta.11` support [#22](https://github.com/DDtKey/actix-web-grants/pull/22)
 ### Changed
@@ -77,3 +77,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v3.0.0-beta.1]: https://crates.io/crates/actix-web-grants/3.0.0-beta.1
 [v3.0.0-beta.2]: https://crates.io/crates/actix-web-grants/3.0.0-beta.2
 [v3.0.0-beta.3]: https://crates.io/crates/actix-web-grants/3.0.0-beta.3
+[v3.0.0-beta.4]: https://crates.io/crates/actix-web-grants/3.0.0-beta.4
