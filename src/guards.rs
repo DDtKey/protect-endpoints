@@ -1,6 +1,5 @@
 use crate::permissions::{AuthDetails, PermissionsCheck};
-use actix_web::dev::RequestHead;
-use actix_web::guard::Guard;
+use actix_web::guard::{Guard, GuardContext};
 
 /// Implementation of Guard trait for validate permissions
 /// ```
@@ -39,9 +38,9 @@ impl PermissionGuard {
 }
 
 impl Guard for PermissionGuard {
-    fn check(&self, request: &RequestHead) -> bool {
+    fn check(&self, request: &GuardContext) -> bool {
         request
-            .extensions()
+            .req_data()
             .get::<AuthDetails>()
             .filter(|details| details.has_permission(self.allow_permission.as_str()))
             .is_some()
