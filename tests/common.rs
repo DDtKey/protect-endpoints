@@ -1,6 +1,6 @@
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::error::ErrorUnauthorized;
-use actix_web::http::{header::AUTHORIZATION, HeaderValue};
+use actix_web::http::header::{HeaderValue, AUTHORIZATION};
 use actix_web::{test, Error};
 use serde::Deserialize;
 

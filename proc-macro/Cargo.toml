@@ -1,6 +1,6 @@
 [package]
 name = "actix-grants-proc-macro"
-version = "2.0.0-beta.4"
+version = "2.0.0-beta.5"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "A proc-macro way to validate user permissions for `actix-web-grants` crate."
 repository = "https://github.com/DDtKey/actix-web-grants"
@@ -19,5 +19,5 @@ proc-macro2 = "1.0"
 syn = { version = "1.0", features = ["full", "derive", "extra-traits"] }
 
 [dev-dependencies]
-actix-web = { version = "4.0.0-beta.11", default-features = false }
+actix-web = { version = "4.0.0-beta.18", default-features = false }
 actix-web-grants =  { path = "../" }

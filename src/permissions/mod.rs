@@ -13,9 +13,9 @@
 //! [`AttachPermissions`]: AttachPermissions
 //! [`GrantsMiddleware`]: actix_web_grants::GrantsMiddleware;
 
-use actix_web::dev::{Payload, PayloadStream};
+use actix_web::dev::Payload;
 use actix_web::error::ErrorUnauthorized;
-use actix_web::{Error, FromRequest, HttpRequest};
+use actix_web::{Error, FromRequest, HttpMessage, HttpRequest};
 use std::future::Future;
 use std::pin::Pin;
 
@@ -90,7 +90,7 @@ impl FromRequest for AuthDetails {
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Error>>>>;
 
-    fn from_request(req: &HttpRequest, _payload: &mut Payload<PayloadStream>) -> Self::Future {
+    fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
         let req = req.clone();
 
         Box::pin(async move {
