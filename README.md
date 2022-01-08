@@ -52,7 +52,6 @@ async fn macro_secured() -> HttpResponse {
     HttpResponse::Ok().body("ADMIN_RESPONSE")
 }
 ```
-There is also the option to use your own custom type. Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
 
 <details>
 
@@ -64,7 +63,8 @@ Here is an example using the `type` and `secure` attributes. But these are indep
 
 `secure` allows you to include some checks in the macro based on function params.
 
-`type` allows you to use a custom type for the roles and permissions (then the middleware needs to be configured) 
+`type` allows you to use a custom type for the roles and permissions (then the middleware needs to be configured). 
+Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
 
 ```rust,ignore
 use actix_web_grants::proc_macro::{has_role};
