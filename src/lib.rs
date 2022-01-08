@@ -14,6 +14,7 @@
 //! [`permissions`]: permissions
 //! [`proc-macro`]: proc_macro
 //! [`PermissionGuard`]: PermissionGuard
+#![doc = include_str!("../README.md")]
 
 mod guards;
 mod middleware;
