@@ -10,5 +10,3 @@ edition = "2021"
 [dependencies]
 actix-web = { version = "4.0.0-beta.18" }
 actix-web-grants = { path = "../../" }
-serde = {version = "1.0", features = ["derive"] }
-chrono = "0.4.19"
