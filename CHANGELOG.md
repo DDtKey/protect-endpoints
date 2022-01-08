@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2021-xx-xx
+## [Unreleased] - 2022-xx-xx
 ### Added
-- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
-- How to use section to readme [#18](https://github.com/DDtKey/actix-web-grants/pull/18)
-- Allow extractor to receive mutable requests [#17](https://github.com/DDtKey/actix-web-grants/pull/17)
 
 ### Changed
+
+## [v2.3.0] - 2022-01-08
+### Added
+- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
 
 ## [v2.2.0] - 2021-10-11
 ### Added
@@ -54,3 +55,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v2.0.0]: https://crates.io/crates/actix-web-grants/2.0.0
 [v2.1.0]: https://crates.io/crates/actix-web-grants/2.1.0
 [v2.2.0]: https://crates.io/crates/actix-web-grants/2.2.0
+[v2.3.0]: https://crates.io/crates/actix-web-grants/2.3.0
