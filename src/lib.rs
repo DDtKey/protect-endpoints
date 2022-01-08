@@ -49,6 +49,15 @@ pub use middleware::GrantsMiddleware;
 ///     HttpResponse::Ok().body("some secured info with parameters")   
 /// }
 /// struct User { id: i32 }
+///
+/// // You own type is also supported (need to configure middleware for this type as well):
+/// #[has_roles["Role::Admin", "Role::Manager", type = "Role"]]
+/// async fn role_enum_macro_secured() -> HttpResponse {
+///     HttpResponse::Ok().body("some secured info")
+/// }
+/// #[derive(PartialEq, Clone)] // required bounds
+/// enum Role { Admin, Manager }
+///
 /// ```
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {

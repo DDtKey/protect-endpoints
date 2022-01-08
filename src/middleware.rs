@@ -29,6 +29,7 @@ use std::task::{Context, Poll};
 /// }
 ///
 /// // You can use both &ServiceRequest and &mut ServiceRequest
+/// // Futhermore, you can use you own type instead of `String` (e.g. Enum).
 /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
 ///    // Here is a place for your code to get user permissions/grants/permissions from a request
 ///    // For example from a token or database
@@ -38,6 +39,7 @@ use std::task::{Context, Poll};
 /// }
 ///
 /// // `has_permissions` is one of options to validate permissions.
+/// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
 /// #[get("/admin")]
 /// #[has_permissions("ROLE_ADMIN")]
 /// async fn you_service() -> impl Responder {
@@ -73,6 +75,15 @@ where
     ///     // Here is a place for your code to get user permissions/grants/permissions from a request
     ///      // For example from a token or database
     ///     Ok(vec!["WRITE_ACCESS".to_string()])
+    /// }
+    ///
+    /// // Or with you own type:
+    /// #[derive(PartialEq, Clone)] // required bounds
+    /// enum Permission { WRITE, READ }
+    /// async fn extract_enum(_req: &ServiceRequest) -> Result<Vec<Permission>, Error> {
+    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
+    ///      // For example from a token, database or external service
+    ///     Ok(vec![Permission::WRITE])
     /// }
     /// ```
     ///

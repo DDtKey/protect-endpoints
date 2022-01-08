@@ -27,6 +27,7 @@ The easiest way is to declare a function with the following signature (trait is 
 ```rust
 use actix_web::{dev::ServiceRequest, Error};
 
+// You can use custom type instead of String
 async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error>
 ```
 
@@ -37,7 +38,7 @@ App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Look at [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
@@ -51,6 +52,7 @@ async fn macro_secured() -> HttpResponse {
     HttpResponse::Ok().body("ADMIN_RESPONSE")
 }
 ```
+There is also the option to use your own custom type. Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
 
 ### Example of `Guard` way protection 
 ```rust
