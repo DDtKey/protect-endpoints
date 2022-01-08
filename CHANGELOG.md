@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2021-xx-xx
 ### Added
+- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
+- How to use section to readme [#18](https://github.com/DDtKey/actix-web-grants/pull/18)
+- Allow extractor to receive mutable requests [#17](https://github.com/DDtKey/actix-web-grants/pull/17)
 
 ### Changed
 

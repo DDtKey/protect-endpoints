@@ -15,7 +15,9 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 
 /// Macro to сheck that the user has all the specified permissions.
 /// Allow to add a conditional restriction based on handlers parameters.
-/// add the secure attribute followed by the the boolean expression to validate based on parameters
+/// Add the `secure` attribute followed by the the boolean expression to validate based on parameters
+///
+/// Also you can use you own types instead of Strings, just add `type` attribute with path to type
 /// # Examples
 /// ```
 /// use actix_web_grants::proc_macro::has_permissions;
@@ -34,6 +36,13 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// async fn macro_secured_params(web::Path(user_id): web::Path<i32>, user: web::Data<User>) -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info with user_id path equal to user.id")
 ///}
+///
+/// // User must have MyPermissionEnum::OP_GET_SECRET (you own enum example)
+/// #[has_permissions["OP_GET_SECRET", type = "MyPermissionEnum"]]
+/// async fn macro_enum_secured() -> HttpResponse {
+///     HttpResponse::Ok().body("some secured info")
+/// }
+///
 ///```
 #[proc_macro_attribute]
 pub fn has_permissions(args: TokenStream, input: TokenStream) -> TokenStream {

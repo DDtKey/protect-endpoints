@@ -24,25 +24,26 @@ The library can also be integrated with third-party solutions (like [`actix-web-
 1. Declare your own [permission extractor](./src/permissions/extractors.rs)
    
 The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
-```rust
+```rust,ignore
 use actix_web::{dev::ServiceRequest, Error};
 
+// You can use custom type instead of String
 async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error>
 ```
 
 2. Add middleware to your application using the extractor defined in step 1
    
-```rust
+```rust,ignore
 App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Look at [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
 ### Example of `proc-macro` way protection
-```rust
+```rust,ignore
 use actix_web_grants::proc_macro::{has_permissions};
 
 #[get("/secure")]
@@ -52,8 +53,36 @@ async fn macro_secured() -> HttpResponse {
 }
 ```
 
+<details>
+
+<summary> <b><i> Example of ABAC-like protection and custom permission type </i></b></summary>
+<br/>
+
+
+Here is an example using the `type` and `secure` attributes. But these are independent features.
+
+`secure` allows you to include some checks in the macro based on function params.
+
+`type` allows you to use a custom type for the roles and permissions (then the middleware needs to be configured). 
+Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
+
+```rust,ignore
+use actix_web_grants::proc_macro::{has_role};
+use enums::Role::{self, ADMIN};
+use dto::User;
+
+#[get("/info/{user_id}")]
+#[has_role("ADMIN", type = "Role", secure = "user_id.into_inner() == user.id")]
+async fn macro_secured(user_id: web::Path<i32>, user: web::Data<User>) -> HttpResponse {
+    HttpResponse::Ok().body("some secured response")
+}
+```
+
+</details>  
+
+
 ### Example of `Guard` way protection 
-```rust
+```rust,ignore
 use actix_web_grants::{PermissionGuard, GrantsMiddleware};
 
 App::new()
@@ -73,7 +102,7 @@ App::new()
 
 Since `Guard` is intended only for routing, if the user doesn't have permissions, it returns a `404` HTTP code. But you can override the behavior like this:
 
-```rust
+```rust,ignore
 use actix_web_grants::{PermissionGuard, GrantsMiddleware};
 use actix_web::http::header;
 
@@ -95,7 +124,7 @@ Note: `regex` is a `Path` variable containing passed link.
 </details>    
 
 ### Example of manual way protection
-```rust
+```rust,ignore
 use actix_web_grants::permissions::{AuthDetails, PermissionsCheck};
 
 async fn manual_secure(details: AuthDetails) -> HttpResponse {

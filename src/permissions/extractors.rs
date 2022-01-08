@@ -2,16 +2,17 @@ use actix_web::dev::ServiceRequest;
 use actix_web::Error;
 use std::future::Future;
 
-pub trait PermissionsExtractor<'a, Req> {
-    type Future: Future<Output = Result<Vec<String>, Error>>;
+pub trait PermissionsExtractor<'a, Req, Type> {
+    type Future: Future<Output = Result<Vec<Type>, Error>>;
 
     fn extract(&self, request: &'a mut ServiceRequest) -> Self::Future;
 }
 
-impl<'a, F, O> PermissionsExtractor<'a, &ServiceRequest> for F
+impl<'a, F, O, Type> PermissionsExtractor<'a, &ServiceRequest, Type> for F
 where
     F: Fn(&'a ServiceRequest) -> O,
-    O: Future<Output = Result<Vec<String>, Error>>,
+    O: Future<Output = Result<Vec<Type>, Error>>,
+    Type: PartialEq + Clone + 'static,
 {
     type Future = O;
 
@@ -20,10 +21,11 @@ where
     }
 }
 
-impl<'a, F, O> PermissionsExtractor<'a, &mut ServiceRequest> for F
+impl<'a, F, O, Type> PermissionsExtractor<'a, &mut ServiceRequest, Type> for F
 where
     F: Fn(&'a mut ServiceRequest) -> O,
-    O: Future<Output = Result<Vec<String>, Error>>,
+    O: Future<Output = Result<Vec<Type>, Error>>,
+    Type: PartialEq + Clone + 'static,
 {
     type Future = O;
 

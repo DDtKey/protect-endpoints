@@ -12,7 +12,8 @@ use actix_web::HttpMessage;
 /// use actix_web_grants::permissions::AttachPermissions;
 /// use actix_web::dev::ServiceRequest;
 ///
-/// fn attach(req: ServiceRequest, permissions: Vec<String>) {
+/// // You can use you own type/enum instead of `String`
+/// fn attach(req: &ServiceRequest, permissions: Vec<String>) {
 ///     req.attach(permissions);
 /// }
 ///
@@ -20,12 +21,12 @@ use actix_web::HttpMessage;
 ///
 /// [`actix-web-grants`]: crate
 /// [`ServiceRequest`]: actix_web::dev::ServiceRequest
-pub trait AttachPermissions {
-    fn attach(&self, permissions: Vec<String>);
+pub trait AttachPermissions<Type> {
+    fn attach(&self, permissions: Vec<Type>);
 }
 
-impl AttachPermissions for ServiceRequest {
-    fn attach(&self, permissions: Vec<String>) {
+impl<Type: PartialEq + Clone + 'static> AttachPermissions<Type> for ServiceRequest {
+    fn attach(&self, permissions: Vec<Type>) {
         self.extensions_mut().insert(AuthDetails::new(permissions));
     }
 }
