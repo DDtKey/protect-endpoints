@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2022-xx-xx
 ### Added
+- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
 
 ### Changed
 

@@ -27,22 +27,22 @@ use actix_web::guard::{Guard, GuardContext};
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 /// ```
-pub struct PermissionGuard {
-    allow_permission: String,
+pub struct PermissionGuard<Type> {
+    allow_permission: Type,
 }
 
-impl PermissionGuard {
-    pub fn new(allow_permission: String) -> PermissionGuard {
+impl<Type: PartialEq + Clone + 'static> PermissionGuard<Type> {
+    pub fn new(allow_permission: Type) -> PermissionGuard<Type> {
         PermissionGuard { allow_permission }
     }
 }
 
-impl Guard for PermissionGuard {
+impl<Type: PartialEq + Clone + 'static> Guard for PermissionGuard<Type> {
     fn check(&self, request: &GuardContext) -> bool {
         request
             .req_data()
-            .get::<AuthDetails>()
-            .filter(|details| details.has_permission(self.allow_permission.as_str()))
+            .get::<AuthDetails<Type>>()
+            .filter(|details| details.has_permission(&self.allow_permission))
             .is_some()
     }
 }
