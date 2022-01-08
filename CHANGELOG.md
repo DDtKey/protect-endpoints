@@ -6,11 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2022-xx-xx
 ### Added
-- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
-- `actix-web: 4.0.0-beta.19` support [#27](https://github.com/DDtKey/actix-web-grants/pull/27)
 
 ### Changed
 
+
+## [v3.0.0-beta.6] - 2022-01-08
+### Added
+- Support custom types for permissions/roles [#25](https://github.com/DDtKey/actix-web-grants/pull/25)
+- `actix-web: 4.0.0-beta.19` support [#27](https://github.com/DDtKey/actix-web-grants/pull/27)
 
 ## [v3.0.0-beta.5] - 2021-12-30
 ### Added
@@ -85,3 +88,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v3.0.0-beta.3]: https://crates.io/crates/actix-web-grants/3.0.0-beta.3
 [v3.0.0-beta.4]: https://crates.io/crates/actix-web-grants/3.0.0-beta.4
 [v3.0.0-beta.5]: https://crates.io/crates/actix-web-grants/3.0.0-beta.5
+[v3.0.0-beta.6]: https://crates.io/crates/actix-web-grants/3.0.0-beta.6
