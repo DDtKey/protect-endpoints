@@ -48,7 +48,18 @@ impl ToTokens for HasPermissions {
 
         let check_fn = &self.check_fn;
 
-        let args = {
+        let args = if self.args.type_.is_some() {
+            let permissions: Vec<syn::Expr> = self
+                .args
+                .permissions
+                .iter()
+                .map(|perm| perm.parse().unwrap())
+                .collect();
+
+            quote! {
+                #(&#permissions,)*
+            }
+        } else {
             let permissions = &self.args.permissions;
 
             quote! {
@@ -56,16 +67,23 @@ impl ToTokens for HasPermissions {
             }
         };
 
+        let type_ = self
+            .args
+            .type_
+            .as_ref()
+            .map(|t| t.to_token_stream())
+            .unwrap_or(quote! {String});
+
         let condition = if let Some(expr) = &self.args.secure {
-            quote!(if _auth_details_.#check_fn(vec![#args]) && #expr)
+            quote!(if _auth_details_.#check_fn(&[#args]) && #expr)
         } else {
-            quote!(if _auth_details_.#check_fn(vec![#args]))
+            quote!(if _auth_details_.#check_fn(&[#args]))
         };
 
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                _auth_details_: actix_web_grants::permissions::AuthDetails,
+                _auth_details_: actix_web_grants::permissions::AuthDetails<#type_>,
                 #fn_args
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
@@ -85,12 +103,14 @@ impl ToTokens for HasPermissions {
 struct Args {
     permissions: Vec<syn::LitStr>,
     secure: Option<syn::Expr>,
+    type_: Option<syn::Expr>,
 }
 
 impl Args {
     fn new(args: AttributeArgs) -> syn::Result<Self> {
         let mut permissions = Vec::with_capacity(args.len());
         let mut secure = None;
+        let mut type_ = None;
         for arg in args {
             match arg {
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
@@ -104,10 +124,13 @@ impl Args {
                     if path.is_ident("secure") {
                         let expr = lit_str.parse().unwrap();
                         secure = Some(expr);
+                    } else if path.is_ident("type") {
+                        let expr = lit_str.parse().unwrap();
+                        type_ = Some(expr);
                     } else {
                         return Err(syn::Error::new_spanned(
                             path,
-                            "Unknown identifier. Available is 'secure'",
+                            "Unknown identifier. Available: 'secure' and 'type'",
                         ));
                     }
                 }
@@ -120,6 +143,7 @@ impl Args {
         Ok(Args {
             permissions,
             secure,
+            type_,
         })
     }
 }

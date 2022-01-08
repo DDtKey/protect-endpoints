@@ -26,67 +26,97 @@ pub use attache::AttachPermissions;
 pub use extractors::*;
 
 #[derive(Clone)]
-pub struct AuthDetails {
-    pub permissions: Vec<String>,
+pub struct AuthDetails<T = String>
+where
+    T: PartialEq,
+{
+    pub permissions: Vec<T>,
 }
 
-impl AuthDetails {
-    pub fn new(permissions: Vec<String>) -> AuthDetails {
+impl<T> AuthDetails<T>
+where
+    T: PartialEq + Clone,
+{
+    pub fn new(permissions: Vec<T>) -> AuthDetails<T> {
         AuthDetails { permissions }
     }
 }
 
-pub trait PermissionsCheck {
-    fn has_permission(&self, permission: &str) -> bool;
-    fn has_permissions(&self, permissions: Vec<&str>) -> bool;
-    fn has_any_permission(&self, permissions: Vec<&str>) -> bool;
+pub trait PermissionsCheck<T: PartialEq> {
+    fn has_permission(&self, permission: T) -> bool;
+    fn has_permissions(&self, permissions: &[T]) -> bool;
+    fn has_any_permission(&self, permissions: &[T]) -> bool;
 }
 
-impl PermissionsCheck for AuthDetails {
+impl<T: PartialEq + Clone> PermissionsCheck<&T> for AuthDetails<T> {
+    fn has_permission(&self, permission: &T) -> bool {
+        self.permissions.iter().any(|auth| auth == permission)
+    }
+
+    fn has_permissions(&self, permissions: &[&T]) -> bool {
+        permissions.iter().all(|auth| self.has_permission(auth))
+    }
+
+    fn has_any_permission(&self, permissions: &[&T]) -> bool {
+        permissions.iter().any(|auth| self.has_permission(auth))
+    }
+}
+
+impl PermissionsCheck<&str> for AuthDetails {
     fn has_permission(&self, permission: &str) -> bool {
         self.permissions
             .iter()
             .any(|auth| auth.as_str() == permission)
     }
 
-    fn has_permissions(&self, permissions: Vec<&str>) -> bool {
-        permissions
-            .into_iter()
-            .all(|auth| self.has_permission(auth))
+    fn has_permissions(&self, permissions: &[&str]) -> bool {
+        permissions.iter().all(|auth| self.has_permission(*auth))
     }
 
-    fn has_any_permission(&self, permissions: Vec<&str>) -> bool {
-        permissions
-            .into_iter()
-            .any(|auth| self.has_permission(auth))
+    fn has_any_permission(&self, permissions: &[&str]) -> bool {
+        permissions.iter().any(|auth| self.has_permission(*auth))
     }
+}
+
+pub trait RolesCheck<T> {
+    fn has_role(&self, permission: T) -> bool;
+    fn has_roles(&self, permissions: &[T]) -> bool;
+    fn has_any_role(&self, permissions: &[T]) -> bool;
 }
 
 pub(crate) const ROLE_PREFIX: &str = "ROLE_";
 
-pub trait RolesCheck {
-    fn has_role(&self, permission: &str) -> bool;
-    fn has_roles(&self, permissions: Vec<&str>) -> bool;
-    fn has_any_role(&self, permissions: Vec<&str>) -> bool;
-}
-
-impl RolesCheck for AuthDetails {
+impl RolesCheck<&str> for AuthDetails {
     fn has_role(&self, permission: &str) -> bool {
         let permission = format!("{}{}", ROLE_PREFIX, permission);
 
         self.permissions.iter().any(|auth| auth == &permission)
     }
 
-    fn has_roles(&self, permissions: Vec<&str>) -> bool {
-        permissions.into_iter().all(|auth| self.has_role(auth))
+    fn has_roles(&self, permissions: &[&str]) -> bool {
+        permissions.iter().all(|auth| self.has_role(*auth))
     }
 
-    fn has_any_role(&self, permissions: Vec<&str>) -> bool {
-        permissions.into_iter().any(|auth| self.has_role(auth))
+    fn has_any_role(&self, permissions: &[&str]) -> bool {
+        permissions.iter().any(|auth| self.has_role(*auth))
     }
 }
 
-impl FromRequest for AuthDetails {
+impl<T: PartialEq + Clone> RolesCheck<&T> for AuthDetails<T> {
+    fn has_role(&self, permission: &T) -> bool {
+        self.permissions.iter().any(|auth| auth == permission)
+    }
+
+    fn has_roles(&self, permissions: &[&T]) -> bool {
+        permissions.iter().all(|auth| self.has_role(auth))
+    }
+
+    fn has_any_role(&self, permissions: &[&T]) -> bool {
+        permissions.iter().any(|auth| self.has_role(auth))
+    }
+}
+
+impl<T: PartialEq + Clone + 'static> FromRequest for AuthDetails<T> {
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Error>>>>;
 
@@ -95,7 +125,7 @@ impl FromRequest for AuthDetails {
 
         Box::pin(async move {
             req.extensions()
-                .get::<AuthDetails>()
+                .get::<AuthDetails<T>>()
                 .map(AuthDetails::clone)
                 .ok_or_else(|| ErrorUnauthorized("User unauthorized!"))
         })

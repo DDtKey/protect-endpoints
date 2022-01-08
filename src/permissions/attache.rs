@@ -20,12 +20,12 @@ use actix_web::HttpMessage;
 ///
 /// [`actix-web-grants`]: crate
 /// [`ServiceRequest`]: actix_web::dev::ServiceRequest
-pub trait AttachPermissions {
-    fn attach(&self, permissions: Vec<String>);
+pub trait AttachPermissions<Type> {
+    fn attach(&self, permissions: Vec<Type>);
 }
 
-impl AttachPermissions for ServiceRequest {
-    fn attach(&self, permissions: Vec<String>) {
+impl<Type: PartialEq + Clone + 'static> AttachPermissions<Type> for ServiceRequest {
+    fn attach(&self, permissions: Vec<Type>) {
         self.extensions_mut().insert(AuthDetails::new(permissions));
     }
 }
