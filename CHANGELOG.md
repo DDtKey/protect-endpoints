@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [v3.0.0] - 22-04-02
+### Added
+- `actix-web: 4.0.1` support []
+
 
 ## [v3.0.0-beta.6] - 2022-01-08
 ### Added
