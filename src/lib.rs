@@ -1,3 +1,4 @@
+#![doc(html_logo_url = "https://raw.githubusercontent.com/DDtKey/actix-web-grants/main/logo.png")]
 //! A crate for validate user permissions in `actix-web`.
 //!
 //! For built-in configure see: [`GrantsMiddleware`].
