@@ -30,6 +30,8 @@ pub use middleware::GrantsMiddleware;
 /// ```
 /// use actix_web::{web, get, HttpResponse};
 /// use actix_web_grants::proc_macro::{has_permissions, has_roles};
+/// use actix_web::http::StatusCode;
+/// use actix_web::body::BoxBody;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
@@ -42,6 +44,19 @@ pub use middleware::GrantsMiddleware;
 /// #[has_roles["ADMIN", "MANAGER"]]
 /// async fn role_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
+/// }
+///
+/// // Custom access denied message.
+/// #[has_roles("ADMIN", error = "access_denied()")]
+/// async fn role_access() -> HttpResponse {
+///     HttpResponse::Ok().body("some secured info")
+/// }
+/// // Non-admin role accessor will recive this response.
+/// fn access_denied() -> HttpResponse {
+///     HttpResponse::with_body(
+///         StatusCode::FORBIDDEN,
+///         BoxBody::new("This resource allowed only for ADMIN"),
+///     )
 /// }
 ///
 /// // Additional security condition to ensure the protection of the endpoint
