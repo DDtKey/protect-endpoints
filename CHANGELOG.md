@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-## [v3.0.0] - 22-04-03
+## [v3.0.0] - 2022-05-28
+### Added
+- Support for custom access denied response #26
+
+## [v3.0.0] - 2022-04-03
 ### Added
 - `actix-web: 4.0.1` support #30
-
 
 ## [v3.0.0-beta.6] - 2022-01-08
 ### Added
