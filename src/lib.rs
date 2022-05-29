@@ -51,7 +51,8 @@ pub use middleware::GrantsMiddleware;
 /// async fn role_access() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
-/// // Non-admin role accessor will recive this response.
+/// // Non-admin role accessor will receive this response.
+/// // The return type of the custom function must be `actix web::HttpResponse`.
 /// fn access_denied() -> HttpResponse {
 ///     HttpResponse::with_body(
 ///         StatusCode::FORBIDDEN,
