@@ -81,7 +81,7 @@ impl ToTokens for HasPermissions {
         };
 
         let resp = if let Some(expr) = &self.args.error_fn {
-            quote!(#expr)
+            quote!(#expr())
         } else {
             quote!(actix_web::HttpResponse::Forbidden().finish())
         };
@@ -110,7 +110,7 @@ struct Args {
     permissions: Vec<syn::LitStr>,
     secure: Option<syn::Expr>,
     type_: Option<syn::Expr>,
-    error_fn: Option<syn::Expr>,
+    error_fn: Option<syn::Ident>,
 }
 
 impl Args {

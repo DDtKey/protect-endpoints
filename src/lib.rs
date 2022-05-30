@@ -47,7 +47,7 @@ pub use middleware::GrantsMiddleware;
 /// }
 ///
 /// // Custom access denied message.
-/// #[has_roles("ADMIN", error = "access_denied()")]
+/// #[has_roles("ADMIN", error = "access_denied")]
 /// async fn role_access() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }

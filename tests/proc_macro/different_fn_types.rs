@@ -52,7 +52,7 @@ fn access_denied() -> HttpResponse {
 }
 
 #[get("/access")]
-#[has_roles("ADMIN", error = "access_denied()")]
+#[has_roles("ADMIN", error = "access_denied")]
 async fn access_response() -> &'static str {
     "Hi!"
 }
