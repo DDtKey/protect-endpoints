@@ -1,4 +1,5 @@
 use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
+use actix_web::body::BoxBody;
 use actix_web::dev::ServiceResponse;
 use actix_web::error::ErrorBadRequest;
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
@@ -41,6 +42,19 @@ async fn result_response(payload: web::Query<common::NamePayload>) -> Result<Str
     let common::NamePayload { name } = payload.0;
     let name = name.ok_or(ErrorBadRequest("Query param not found!"))?;
     Ok(format!("Welcome {}!", name))
+}
+
+fn access_denied() -> HttpResponse {
+    HttpResponse::with_body(
+        StatusCode::FORBIDDEN,
+        BoxBody::new("This resource allowed only for ADMIN"),
+    )
+}
+
+#[get("/access")]
+#[has_roles("ADMIN", error = "access_denied")]
+async fn access_response() -> &'static str {
+    "Hi!"
 }
 
 #[actix_rt::test]
@@ -97,6 +111,18 @@ async fn test_result() {
     common::test_body(test_err, "Query param not found!").await;
 }
 
+#[actix_rt::test]
+async fn test_access_denied_reason() {
+    let test_admin = get_user_response("/access", ROLE_ADMIN).await;
+    let test_manager = get_user_response("/access", ROLE_MANAGER).await;
+
+    assert_eq!(StatusCode::OK, test_admin.status());
+    assert_eq!(StatusCode::FORBIDDEN, test_manager.status());
+
+    common::test_body(test_admin, "Hi!").await;
+    common::test_body(test_manager, "This resource allowed only for ADMIN").await;
+}
+
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
@@ -104,7 +130,8 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
             .service(http_response)
             .service(str_response)
             .service(return_response)
-            .service(result_response),
+            .service(result_response)
+            .service(access_response),
     )
     .await;
 

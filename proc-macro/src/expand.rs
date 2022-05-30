@@ -80,6 +80,12 @@ impl ToTokens for HasPermissions {
             quote!(if _auth_details_.#check_fn(&[#args]))
         };
 
+        let resp = if let Some(expr) = &self.args.error_fn {
+            quote!(#expr())
+        } else {
+            quote!(actix_web::HttpResponse::Forbidden().finish())
+        };
+
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
@@ -91,7 +97,7 @@ impl ToTokens for HasPermissions {
                     let f = || async move #func_block;
                     actix_web::Either::Left(f().await)
                 } else {
-                    actix_web::Either::Right(actix_web::HttpResponse::Forbidden().finish())
+                    actix_web::Either::Right(#resp)
                 }
             }
         };
@@ -104,12 +110,14 @@ struct Args {
     permissions: Vec<syn::LitStr>,
     secure: Option<syn::Expr>,
     type_: Option<syn::Expr>,
+    error_fn: Option<syn::Ident>,
 }
 
 impl Args {
     fn new(args: AttributeArgs) -> syn::Result<Self> {
         let mut permissions = Vec::with_capacity(args.len());
         let mut secure = None;
+        let mut error_fn = None;
         let mut type_ = None;
         for arg in args {
             match arg {
@@ -127,10 +135,13 @@ impl Args {
                     } else if path.is_ident("type") {
                         let expr = lit_str.parse().unwrap();
                         type_ = Some(expr);
+                    } else if path.is_ident("error") {
+                        let expr = lit_str.parse().unwrap();
+                        error_fn = Some(expr);
                     } else {
                         return Err(syn::Error::new_spanned(
                             path,
-                            "Unknown identifier. Available: 'secure' and 'type'",
+                            "Unknown identifier. Available: 'secure', 'type' and 'error'",
                         ));
                     }
                 }
@@ -144,6 +155,7 @@ impl Args {
             permissions,
             secure,
             type_,
+            error_fn,
         })
     }
 }
