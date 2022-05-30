@@ -53,7 +53,7 @@ pub async fn enum_extract(req: &ServiceRequest) -> Result<Vec<Role>, Error> {
 pub async fn test_body(resp: ServiceResponse, expected_body: &str) {
     let body = test::read_body(resp).await;
 
-    assert_eq!(expected_body, String::from_utf8(body.to_vec()).unwrap());
+    assert_eq!(String::from_utf8(body.to_vec()).unwrap(), expected_body);
 }
 
 #[derive(Deserialize)]
