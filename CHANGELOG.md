@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2022-xx-xx
 ### Added
+
+### Changed
+
+
+## [v3.0.1] - 2022-05-31
+### Added
 - Support for custom access denied response #26
 
 ## [v3.0.0] - 2022-04-03
@@ -93,3 +99,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v3.0.0-beta.5]: https://crates.io/crates/actix-web-grants/3.0.0-beta.5
 [v3.0.0-beta.6]: https://crates.io/crates/actix-web-grants/3.0.0-beta.6
 [v3.0.0]: https://crates.io/crates/actix-web-grants/3.0.0
+[v3.0.1]: https://crates.io/crates/actix-web-grants/3.0.1
