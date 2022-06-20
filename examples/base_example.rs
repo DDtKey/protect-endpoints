@@ -35,6 +35,17 @@ struct User {
     id: i32,
 }
 
+// Custom errors could be specified with Rocket catchers
+#[rocket::catch(403)]
+fn forbidden_catcher(_req: &rocket::Request) -> String {
+    "Custom Forbidden error message".to_string()
+}
+
+#[rocket::catch(401)]
+fn unauthorized_catcher() -> String {
+    "Custom Unauthorized error message".to_string()
+}
+
 #[rocket::launch]
 // Sample application with grant protection based on extracting by your custom function
 async fn rocket() -> _ {
@@ -42,6 +53,10 @@ async fn rocket() -> _ {
         .mount(
             "/api",
             rocket::routes![macro_secured, manual_secure, secure_with_params],
+        )
+        .register(
+            "/",
+            rocket::catchers!(unauthorized_catcher, forbidden_catcher),
         )
         .attach(GrantsFairing::with_extractor_fn(|_req| {
             Box::pin(async move {

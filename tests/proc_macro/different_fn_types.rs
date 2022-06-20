@@ -100,6 +100,41 @@ async fn test_result() {
     common::test_body(test_ok, "Welcome Test!").await;
 }
 
+#[rocket::catch(403)]
+fn forbidden_catcher(_req: &rocket::Request) -> String {
+    "Custom Forbidden error message".to_string()
+}
+
+#[rocket::catch(401)]
+fn unauthorized_catcher() -> String {
+    "Custom Unauthorized error message".to_string()
+}
+
+#[tokio::test]
+async fn test_custom_error() {
+    let app = rocket::build()
+        .mount("/", rocket::routes![str_response])
+        .attach(GrantsFairing::with_extractor_fn(|req| {
+            Box::pin(common::extract(req))
+        }))
+        .register(
+            "/",
+            rocket::catchers!(forbidden_catcher, unauthorized_catcher),
+        );
+    let client = Client::untracked(app).await.unwrap();
+
+    let test_ok = get_user_response(&client, "/str", ROLE_ADMIN).await;
+    let test_forbidden = get_user_response(&client, "/str", ROLE_MANAGER).await;
+    let test_unauthorized = client.get("/str").dispatch().await;
+
+    assert_eq!(Status::Ok, test_ok.status());
+    assert_eq!(Status::Forbidden, test_forbidden.status());
+    assert_eq!(Status::Unauthorized, test_unauthorized.status());
+
+    common::test_body(test_forbidden, "Custom Forbidden error message").await;
+    common::test_body(test_unauthorized, "Custom Unauthorized error message").await;
+}
+
 async fn get_client() -> Client {
     let app = rocket::build()
         .mount(
@@ -117,6 +152,7 @@ async fn get_client() -> Client {
         }));
     Client::untracked(app).await.unwrap()
 }
+
 async fn get_user_response<'a>(
     client: &'a Client,
     uri: &'static str,

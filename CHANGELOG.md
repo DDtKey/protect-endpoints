@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.5.0-rc.2] - 2022-06-20
 ### Added
+- Support for custom error responses #2
 - `rocket: 0.5.0-rc.2` support & 2021 rust edition #1
 
 [v0.5.0-rc.2]: https://crates.io/crates/rocket-grants/0.5.0-rc.2

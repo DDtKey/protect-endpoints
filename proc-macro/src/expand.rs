@@ -85,13 +85,13 @@ impl ToTokens for HasPermissions {
             #func_vis #fn_async fn #fn_name #fn_generics(
                 _auth_details_: rocket_grants::permissions::AuthDetails<#type_>,
                 #fn_args
-            ) -> Result<#fn_output, rocket::response::status::Forbidden<()>> {
+            ) -> Result<#fn_output, rocket::http::Status> {
                 use rocket_grants::permissions::{PermissionsCheck, RolesCheck};
                 #condition {
                     let f = || async move #func_block;
                     Ok(f().await)
                 } else {
-                    Err(rocket::response::status::Forbidden(None))
+                    Err(rocket::http::Status::Forbidden)
                 }
             }
         };

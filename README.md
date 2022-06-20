@@ -91,6 +91,17 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
+# Error customization
+
+Custom error responses can be specified using Rocket catchers. See the Rocket documentation for [catchers](https://doc.rust-lang.org/cargo/commands/cargo-doc.html).
+
+You can set up custom responses for:
+
+`401 Unauthorized` - when it wasn't possible to obtain authorization data from the request in your extractor.
+
+`403 Forbidden` - when the permissions did not match the specified for the endpoint.
+
+
 ## Supported `rocket` versions
 * For `rocket-grants: 0.5.*` supported version of `rocket` is `0.5.*`
 
