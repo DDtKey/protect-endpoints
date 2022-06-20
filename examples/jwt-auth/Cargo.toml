@@ -10,7 +10,7 @@ edition = "2018"
 [dependencies]
 chrono = "0.4.19"
 jsonwebtoken = "7"
-rocket = { version = "0.5.0-rc.1", features = ["json"] }
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
 rocket-grants = { path = "../../" }
 serde = {version = "1.0", features = ["derive"] }
 tokio = "1"

@@ -1,6 +1,6 @@
 [package]
 name = "rocket-grants-proc-macro"
-version = "0.5.0-beta.1"
+version = "0.5.0-rc.2"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "A proc-macro way to validate user permissions for `rocket-grants` crate."
 repository = "https://github.com/DDtKey/rocket-grants"
@@ -8,7 +8,7 @@ homepage = "https://github.com/DDtKey/rocket-grants"
 keywords = ["rocket", "security", "grants", "codegen", "proc_macro"]
 categories = ["authentication"]
 license = "MIT OR Apache-2.0"
-edition = "2018"
+edition = "2021"
 
 [lib]
 proc-macro = true

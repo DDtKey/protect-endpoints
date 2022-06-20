@@ -8,6 +8,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.5.0-rc.1"
+rocket = "0.5.0-rc.2"
 rocket-grants = { path = "../../" }
 tokio = "1"
