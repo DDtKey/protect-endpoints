@@ -37,11 +37,17 @@ async fn manager_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
-async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, Error> {
+async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, (Error, ServiceRequest)> {
     // We just get permissions from JWT
-    let claims = claims::decode_jwt(credentials.token())?;
-    req.attach(claims.permissions);
-    Ok(req)
+    let result = claims::decode_jwt(credentials.token());
+    match result {
+        Ok(claims) => {
+            req.attach(claims.permissions);
+            Ok(req)
+        }
+        // required by `actix-web-httpauth` validator signature
+        Err(e) => Err((e, req))
+    }
 }
 
 #[actix_web::main]
