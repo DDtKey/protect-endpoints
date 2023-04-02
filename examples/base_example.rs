@@ -10,6 +10,7 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 // An example of protection via `proc-macro`
 #[poem_grants::has_permissions("OP_READ_ADMIN_INFO")]
+#[poem::handler]
 async fn macro_secured() -> Response {
     Response::builder()
         .status(StatusCode::OK)
@@ -31,6 +32,7 @@ async fn manual_secure(details: AuthDetails) -> Response {
 
 // An example of protection via `proc-macro` with secure attribute
 #[poem_grants::has_permissions("ROLE_ADMIN", secure = "*user_id == user.id")]
+#[poem::handler]
 async fn secure_with_params(user_id: web::Path<i32>, user: web::Data<&User>) -> Response {
     Response::builder()
         .status(StatusCode::OK)

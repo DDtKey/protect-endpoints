@@ -8,6 +8,7 @@ mod role;
 
 // `proc-macro` way require specify your type. It can be an import or a full path.
 #[poem_grants::has_any_role("ADMIN", "role::Role::MANAGER", type = "Role")]
+#[poem::handler]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
 async fn macro_secured() -> Response {
     Response::builder().status(StatusCode::OK).finish()

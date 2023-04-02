@@ -19,7 +19,7 @@ The library can also be integrated with third-party solutions or your custom mid
 
 Provides a complete analogue of the [`actix-web-grants`].
 
-**NOTE**: [`poem-openapi`] support is still in development.
+**NOTE**: Even under `beta` flag it's ready-to-use library. However, I'm going to prepare large update of whole `*-grants` ecosystem with additional features soon. 
 
 
 ## How to use
@@ -50,8 +50,26 @@ Route::new()
 use poem::{Response, http::StatusCode};
 
 #[poem_grants::has_permissions("OP_READ_SECURED_INFO")]
+#[poem::handler]
 async fn macro_secured() -> Response {
     Response::builder().status(StatusCode::OK).body("ADMIN_RESPONSE")
+}
+```
+
+Or for `poem-openapi`:
+```rust,no_run
+use poem_openapi::{OpenApi, payload::PlainText};
+
+struct Api;
+
+#[poem_grants::open_api] // It's important to keep above of `OpenApi`
+#[OpenApi]
+impl Api {
+    #[has_permissions("OP_READ_ADMIN_INFO")]
+    #[oai(path = "/admin", method = "get")]
+    async fn macro_secured(&self) -> PlainText<String> {
+        PlainText("ADMIN_RESPONSE".to_string())
+    }
 }
 ```
 
@@ -74,6 +92,7 @@ use enums::Role::{self, ADMIN};
 use dto::User;
 
 #[poem_grants::has_role("ADMIN", type = "Role", secure = "*user_id == user.id")]
+#[poem::handler]
 async fn macro_secured(user_id: web::Path<i32>, user: web::Data<User>) -> Response {
     Response::builder().status(StatusCode::OK).body("some secured response")
 }

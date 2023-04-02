@@ -29,6 +29,7 @@ pub use middleware::GrantsMiddleware;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[poem_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
+/// #[poem::handler]
 /// async fn macro_secured() -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info")
 /// }
@@ -36,12 +37,14 @@ pub use middleware::GrantsMiddleware;
 /// // Role - is permission with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
 /// #[poem_grants::has_roles["ADMIN", "MANAGER"]]
+/// #[poem::handler]
 /// async fn role_macro_secured() -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info")
 /// }
 ///
 /// // Additional security condition to ensure the protection of the endpoint
 /// #[poem_grants::has_roles("USER", secure = "*user_id == user.id")]
+/// #[poem::handler]
 /// async fn role_macro_secured_with_params(user_id: web::Path<i32>, user: web::Data<&User>) -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info with parameters")
 /// }
@@ -49,6 +52,7 @@ pub use middleware::GrantsMiddleware;
 ///
 /// // You own type is also supported (need to configure middleware for this type as well):
 /// #[poem_grants::has_roles["Role::Admin", "Role::Manager", type = "Role"]]
+/// #[poem::handler]
 /// async fn role_enum_macro_secured() -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info")
 /// }

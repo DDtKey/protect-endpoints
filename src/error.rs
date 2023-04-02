@@ -1,5 +1,4 @@
-use poem::error::ResponseError;
-use poem::http::StatusCode;
+use poem::error::{Forbidden, Unauthorized};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AccessError {
@@ -9,11 +8,11 @@ pub enum AccessError {
     ForbiddenRequest,
 }
 
-impl ResponseError for AccessError {
-    fn status(&self) -> StatusCode {
-        match self {
-            AccessError::UnauthorizedRequest => StatusCode::UNAUTHORIZED,
-            AccessError::ForbiddenRequest => StatusCode::FORBIDDEN,
+impl From<AccessError> for poem::Error {
+    fn from(value: AccessError) -> Self {
+        match value {
+            e @ AccessError::UnauthorizedRequest => Unauthorized(e),
+            e @ AccessError::ForbiddenRequest => Forbidden(e),
         }
     }
 }

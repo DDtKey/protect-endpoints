@@ -10,6 +10,7 @@ mod claims;
 mod jwt_middleware;
 
 #[poem_grants::has_permissions("OP_GET_SECURED_INFO")]
+#[poem::handler]
 // For the user with permission `OP_GET_SECURED_INFO` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
 // ```sh
@@ -21,6 +22,7 @@ async fn permission_secured() -> Response {
 }
 
 #[poem_grants::has_any_role("ADMIN", "MANAGER")]
+#[poem::handler]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
 // ```sh

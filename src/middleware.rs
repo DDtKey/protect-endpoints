@@ -34,6 +34,7 @@ use std::sync::Arc;
 /// // `has_permissions` is one of options to validate permissions.
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
 /// #[poem_grants::has_permissions("ROLE_ADMIN")]
+/// #[poem::handler]
 /// async fn you_service() -> poem::Response {
 ///     Response::builder().status(StatusCode::OK).finish()
 /// }

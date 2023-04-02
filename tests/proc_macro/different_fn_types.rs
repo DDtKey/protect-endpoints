@@ -9,11 +9,13 @@ use poem_grants::{has_roles, GrantsMiddleware};
 use serde::{Deserialize, Serialize};
 
 #[has_roles("ADMIN")]
+#[poem::handler]
 async fn http_response() -> Response {
     Response::builder().status(StatusCode::OK).finish()
 }
 
 #[has_roles("ADMIN")]
+#[poem::handler]
 async fn str_response() -> &'static str {
     "Hi!"
 }
@@ -24,16 +26,19 @@ struct User {
 }
 
 #[has_roles("ADMIN", secure = "*user_id == user.id")]
+#[poem::handler]
 async fn secure_user_id(user_id: Path<i32>, user: Json<User>) -> &'static str {
     "Hi!"
 }
 
 #[has_roles("ADMIN")]
+#[poem::handler]
 async fn return_response() -> &'static str {
     return "Hi!";
 }
 
 #[has_roles("ADMIN")]
+#[poem::handler]
 async fn result_response(
     payload: Query<common::NamePayload>,
 ) -> poem::Result<String, MethodNotAllowedError> {

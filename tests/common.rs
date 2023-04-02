@@ -50,7 +50,7 @@ pub async fn enum_extract(req: &mut Request) -> poem::Result<Vec<Role>> {
 }
 
 pub async fn test_body(resp: TestResponse, expected_body: &str) {
-    let body = resp.into_body().into_string().await.unwrap();
+    let body = resp.0.into_body().into_string().await.unwrap();
 
     assert_eq!(expected_body, &body);
 }
