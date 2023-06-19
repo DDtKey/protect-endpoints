@@ -1,6 +1,6 @@
 [package]
 name = "poem-grants-proc-macro"
-version = "1.0.0-beta.2"
+version = "1.0.0-beta.3"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "A proc-macro way to validate user permissions for `poem-grants` crate."
 repository = "https://github.com/DDtKey/poem-grants"

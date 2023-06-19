@@ -15,6 +15,7 @@ struct Api;
 #[OpenApi]
 impl Api {
     // An example of protection via `proc-macro`
+    /// Documentation comment for `openapi` description works expected
     #[has_permissions("OP_READ_ADMIN_INFO")]
     #[oai(path = "/admin", method = "get")]
     async fn macro_secured(&self) -> PlainText<String> {

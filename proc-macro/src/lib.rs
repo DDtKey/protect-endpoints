@@ -151,27 +151,20 @@ fn check_permissions(check_fn_name: &str, args: TokenStream, input: TokenStream)
 /// ```
 #[proc_macro_attribute]
 pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
-    // let args = parse_macro_input!(args as AttributeArgs);
     let mut item_impl = parse_macro_input!(input as ItemImpl);
     let mut methods = Vec::new();
     for (idx, item) in item_impl.items.iter().enumerate() {
         if let ImplItem::Method(method) = item {
-            for (attr_idx, attr) in method
+            for grants_attr in method
                 .attrs
                 .iter()
-                .filter(|attr| {
-                    attr.path.is_ident(HAS_ANY_AUTHORITY)
-                        || attr.path.is_ident(HAS_AUTHORITIES)
-                        || attr.path.is_ident(HAS_ANY_ROLE)
-                        || attr.path.is_ident(HAS_ROLES)
-                })
-                .enumerate()
+                .filter(|attr| is_poem_grants_attr(*attr))
             {
-                let args = match unwrap_result!(attr.parse_meta()) {
+                let args = match unwrap_result!(grants_attr.parse_meta()) {
                     Meta::List(list) => list.nested.into_iter().collect::<Vec<syn::NestedMeta>>(),
                     _ => {
                         return syn::Error::new_spanned(
-                            attr,
+                            grants_attr,
                             "Expected endpoint-attribute to be a list",
                         )
                         .to_compile_error()
@@ -180,7 +173,7 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
                 };
 
                 let generated = unwrap_result!(ProtectEndpoint::new(
-                    &attr
+                    &grants_attr
                         .path
                         .get_ident()
                         .expect("validated by condition above")
@@ -192,7 +185,8 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
                 .into();
 
                 let mut gen_method = parse_macro_input!(generated as ImplItemMethod);
-                gen_method.attrs.remove(attr_idx);
+
+                gen_method.attrs.retain(|attr| attr != grants_attr);
 
                 methods.push((idx, gen_method));
             }
@@ -208,4 +202,11 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     res.into()
+}
+
+fn is_poem_grants_attr(attr: &syn::Attribute) -> bool {
+    attr.path.is_ident(HAS_ANY_AUTHORITY)
+        || attr.path.is_ident(HAS_AUTHORITIES)
+        || attr.path.is_ident(HAS_ANY_ROLE)
+        || attr.path.is_ident(HAS_ROLES)
 }

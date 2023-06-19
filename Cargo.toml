@@ -1,6 +1,6 @@
 [package]
 name = "poem-grants"
-version = "1.0.0-beta.2"
+version = "1.0.0-beta.3"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 description = " Authorization extension for `poem` to validate user permissions "
 repository = "https://github.com/DDtKey/poem-grants"
@@ -21,7 +21,7 @@ macro-check = ["poem-grants-proc-macro"]
 
 [dependencies]
 poem = "1"
-poem-grants-proc-macro = { path = "./proc-macro", version = "1.0.0-beta.2", optional = true }
+poem-grants-proc-macro = { path = "./proc-macro", version = "1.0.0-beta.3", optional = true }
 thiserror = "1"
 
 [dev-dependencies]
