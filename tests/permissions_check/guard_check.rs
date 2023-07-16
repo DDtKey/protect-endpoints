@@ -45,7 +45,9 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
 async fn get_user_response_with_enum(uri: &str, role: &str) -> ServiceResponse {
     let mut app = test::init_service(
         App::new()
-            .wrap(GrantsMiddleware::with_extractor(common::enum_extract))
+            .wrap(GrantsMiddleware::with_extractor(
+                common::enum_extract::<Role>,
+            ))
             .service(
                 web::resource("/admin")
                     .to(|| async { HttpResponse::Ok().finish() })

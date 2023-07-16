@@ -3,15 +3,23 @@ use actix_web::error::ErrorUnauthorized;
 use actix_web::http::header::{HeaderValue, AUTHORIZATION};
 use actix_web::{test, Error};
 use serde::Deserialize;
-use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
-#[derive(PartialEq, Clone)]
+#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
+#[display(style = "SNAKE_CASE")]
 pub enum Role {
     ADMIN,
     MANAGER,
+}
+
+#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
+#[display(style = "SNAKE_CASE")]
+pub enum Permission {
+    READ,
+    WRITE,
 }
 
 pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
@@ -32,7 +40,7 @@ pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
         .ok_or_else(|| ErrorUnauthorized("Authorization header incorrect!"))
 }
 
-pub async fn enum_extract(req: &ServiceRequest) -> Result<Vec<Role>, Error> {
+pub async fn enum_extract<T: FromStr>(req: &ServiceRequest) -> Result<Vec<T>, Error> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -44,8 +52,8 @@ pub async fn enum_extract(req: &ServiceRequest) -> Result<Vec<Role>, Error> {
         .map(|header| {
             header
                 .split(",")
-                .map(|name| name.into())
-                .collect::<Vec<Role>>()
+                .filter_map(|name| T::from_str(name).ok())
+                .collect::<Vec<T>>()
         })
         .ok_or_else(|| ErrorUnauthorized("Authorization header incorrect!"))
 }
@@ -59,23 +67,4 @@ pub async fn test_body(resp: ServiceResponse, expected_body: &str) {
 #[derive(Deserialize)]
 pub struct NamePayload {
     pub name: Option<String>,
-}
-
-impl Display for Role {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Role::ADMIN => write!(f, "ADMIN"),
-            Role::MANAGER => write!(f, "MANAGER"),
-        }
-    }
-}
-
-impl From<&str> for Role {
-    fn from(value: &str) -> Self {
-        match value {
-            "ADMIN" => Role::ADMIN,
-            "MANAGER" => Role::MANAGER,
-            _ => panic!("Unexpected enum value"),
-        }
-    }
 }

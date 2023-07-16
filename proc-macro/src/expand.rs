@@ -74,10 +74,13 @@ impl ToTokens for HasPermissions {
             .map(|t| t.to_token_stream())
             .unwrap_or(quote! {String});
 
+        let arg_name = format!("_auth_details_{}", fn_args.len());
+        let arg_name = syn::Ident::new(&arg_name, Span::call_site());
+
         let condition = if let Some(expr) = &self.args.secure {
-            quote!(if _auth_details_.#check_fn(&[#args]) && #expr)
+            quote!(if #arg_name.#check_fn(&[#args]) && #expr)
         } else {
-            quote!(if _auth_details_.#check_fn(&[#args]))
+            quote!(if #arg_name.#check_fn(&[#args]))
         };
 
         let resp = if let Some(expr) = &self.args.error_fn {
@@ -89,7 +92,7 @@ impl ToTokens for HasPermissions {
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                _auth_details_: actix_web_grants::permissions::AuthDetails<#type_>,
+                #arg_name: actix_web_grants::permissions::AuthDetails<#type_>,
                 #fn_args
             ) -> actix_web::Either<#fn_output, actix_web::HttpResponse> {
                 use actix_web_grants::permissions::{PermissionsCheck, RolesCheck};
