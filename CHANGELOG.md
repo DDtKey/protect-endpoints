@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-
+- allow proc-macro to be used multiple times on the same endpoint #41
 
 ## [v3.0.1] - 2022-05-31
 ### Added
