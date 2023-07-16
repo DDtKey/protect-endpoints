@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+## [v3.0.2] - 2023-07-16
+### Changed
 - allow proc-macro to be used multiple times on the same endpoint #41
+- update `actix-web` to `4.3`
 
 ## [v3.0.1] - 2022-05-31
 ### Added
@@ -84,6 +88,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Remove extra and insecure dependencies
 
+## [v3.0.2] - 2023-07-16
+### Changed
+- allow proc-macro to be used multiple times on the same endpoint #41
 
 [v0.1.6]: https://crates.io/crates/actix-web-grants/0.1.6
 [v1.0.0]: https://crates.io/crates/actix-web-grants/1.0.0
