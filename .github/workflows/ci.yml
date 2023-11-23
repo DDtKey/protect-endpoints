@@ -85,7 +85,7 @@ jobs:
     runs-on: ${{ matrix.os.version }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install ${{ matrix.toolchain }}
         uses: actions-rs/toolchain@v1
         with:
