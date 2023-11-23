@@ -17,5 +17,5 @@ repository = "https://github.com/DDtKey/rocket-grants"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-rocket-grants-proc-macro = { path = "proc-macro" }
-rocket-grants = { path = "rocket-grants" }
+rocket-grants-proc-macro = { path = "proc-macro", version = "0.1.0" }
+rocket-grants = { path = "rocket-grants", version = "0.1.0" }
