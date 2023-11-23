@@ -13,7 +13,7 @@
 //! [`examples`]: https://github.com/DDtKey/rocket-grants/tree/main/examples
 //! [`permissions`]: permissions
 //! [`proc-macro`]: proc_macro
-#![doc = include_str!("../../README.md")]
+#![doc = include_str!("../README.md")]
 
 mod fairing;
 pub mod permissions;
