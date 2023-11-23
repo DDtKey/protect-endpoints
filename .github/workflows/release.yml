@@ -1,40 +1,26 @@
 name: Release
 
-on:
-  push:
-    tags:
-      - '*.*.*'
+permissions:
+  pull-requests: write
+  contents: write
 
-env:
-  CARGO_TERM_COLOR: always
+on:
+  # Only manual trigger of releaase
+  workflow_dispatch:
 
 jobs:
-  release:
-    name: Release to crates.io
+  releas:
+    name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Publish rocket-grants-proc-macro crate
-        # It is not always necessary to update the macro, because this step may be unsuccessful
-        run: |
-          cargo login ${{ secrets.CRATES_TOKEN }}
-          cd proc-macro
-          cargo publish || true
-
-      - name: Wait for the proc-macro to be available in crates.io after publishing
-        run: sleep 20s
-        shell: bash    
-
-      - uses: actions/checkout@v1
-      - name: Publish rocket-grants
-        run: |
-          cargo login ${{ secrets.CRATES_TOKEN }}
-          cargo publish
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          draft: true
-          body_path: CHANGELOG.md
+          fetch-depth: 0
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run release-plz
+        uses: MarcoIeni/release-plz-action@v0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
