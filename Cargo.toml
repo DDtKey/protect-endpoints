@@ -1,31 +1,21 @@
-[package]
-name = "rocket-grants"
-version = "0.5.0-rc.2"
-authors = ["DDtKey <ddttkey@gmail.com>"]
-description = " Authorization extension for `rocket` to validate user permissions "
-repository = "https://github.com/DDtKey/rocket-grants"
-homepage = "https://github.com/DDtKey/rocket-grants"
+[workspace]
+resolver = "2"
+members = [
+    "proc-macro",
+    "rocket-grants",
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.56"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
 keywords = ["rocket", "authz", "security", "grants", "permissions"]
 categories = ["authentication"]
-license = "MIT OR Apache-2.0"
-edition = "2021"
+homepage = "https://github.com/DDtKey/rocket-grants"
+repository = "https://github.com/DDtKey/rocket-grants"
+authors = ["DDtKey <ddttkey@gmail.com>"]
 
-[lib]
-name = "rocket_grants"
-path = "src/lib.rs"
-
-[features]
-default = ["macro-check"]
-macro-check = ["rocket-grants-proc-macro"]
-
-[dependencies]
-futures-core = "0.3"
-rocket = "0.5.0-rc.2"
-rocket-grants-proc-macro = { path = "./proc-macro", version = "0.5.0-rc.2", optional = true }
-
-[dev-dependencies]
-rocket = { version = "0.5.0-rc.2", features = ["json"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-tokio = { version = "1", features = ["rt-multi-thread"] }
+[workspace.dependencies]
+rocket-grants-proc-macro = { path = "proc-macro" }
+rocket-grants = { path = "rocket-grants" }

@@ -20,11 +20,10 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// Also you can use you own types instead of Strings, just add `type` attribute with path to type
 /// # Examples
 /// ```
-/// use rocket::{Response, http::StatusCode};
 /// use rocket::serde::json::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
-/// #[rocket_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
+/// #[rocket_grants::has_permissions("ROLE_ADMIN", "OP_GET_SECRET")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -34,13 +33,18 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// #[derive(serde::Deserialize)]
 /// struct User {id: i32}
 ///
-/// #[rocket_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET", secure="user_id == user.id"]]
+/// #[rocket_grants::has_permissions("ROLE_ADMIN", "OP_GET_SECRET", secure="user_id == user.id")]
 /// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
 ///     "some secured info with user_id path equal to user.id"
 ///}
 ///
-/// // User must have MyPermissionEnum::OP_GET_SECRET (you own enum example)
-/// #[rocket_grants::has_permissions["OP_GET_SECRET", type = "MyPermissionEnum"]]
+/// #[derive(Clone, PartialEq, Eq)]
+/// enum MyPermissionEnum {
+///   OpGetSecret
+/// }
+///
+/// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
+/// #[rocket_grants::has_permissions("MyPermissionEnum::OpGetSecret", type = "MyPermissionEnum")]
 /// async fn macro_enum_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -55,10 +59,8 @@ pub fn has_permissions(args: TokenStream, input: TokenStream) -> TokenStream {
 ///
 /// # Examples
 /// ```
-/// use rocket::{Response, http::StatusCode};
-///
 /// // User should be ADMIN or MANAGER
-/// #[rocket_grants::has_any_permission["ROLE_ADMIN", "ROLE_MANAGER"]]
+/// #[rocket_grants::has_any_permission("ROLE_ADMIN", "ROLE_MANAGER")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -73,10 +75,8 @@ pub fn has_any_permission(args: TokenStream, input: TokenStream) -> TokenStream 
 ///
 /// # Examples
 /// ```
-/// use rocket::{Response, http::StatusCode};
-///
 /// // User should be ADMIN and MANAGER
-/// #[rocket_grants::has_roles["ADMIN", "MANAGER"]]
+/// #[rocket_grants::has_roles("ADMIN", "MANAGER")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -91,10 +91,8 @@ pub fn has_roles(args: TokenStream, input: TokenStream) -> TokenStream {
 ///
 /// # Examples
 /// ```
-/// use rocket::{Response, http::StatusCode};
-///
 /// // User should be ADMIN or MANAGER
-/// #[rocket_grants::has_any_role["ADMIN", "MANAGER"]]
+/// #[rocket_grants::has_any_role("ADMIN", "MANAGER")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }

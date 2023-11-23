@@ -117,7 +117,7 @@ impl<'r, T: PartialEq + Clone + Send + Sync + 'static> FromRequest<'r> for AuthD
     async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         match request.local_cache(|| AuthDetailsWrapper(None)) {
             AuthDetailsWrapper(Some(details)) => Outcome::Success(details.clone()),
-            AuthDetailsWrapper(None) => Outcome::Failure((Status::Unauthorized, ())),
+            AuthDetailsWrapper(None) => Outcome::Error((Status::Unauthorized, ())),
         }
     }
 }
