@@ -1,6 +1,6 @@
 [package]
 name = "rocket-grants-proc-macro"
-version = "0.5.0-rc.2"
+version = "0.1.0"
 description = "A proc-macro way to validate user permissions for `rocket-grants` crate."
 authors.workspace = true
 repository.workspace = true
