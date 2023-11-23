@@ -1,6 +1,6 @@
 [package]
 name = "rocket-grants"
-version = "0.1.0"
+version = "0.1.1"
 description = "Authorization extension for `rocket` to validate user permissions"
 authors.workspace = true
 repository.workspace = true
