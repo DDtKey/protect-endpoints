@@ -22,12 +22,11 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
+      - name: Install nightly rust
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
-          toolchain: stable
+          toolchain: nightly
           components: clippy
-          override: true
       - name: Clippy check
         uses: actions-rs/clippy-check@v1
         with:
@@ -40,17 +39,17 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
+      - name: Install nightly rust
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: nightly
           components: rustfmt
-          override: true
-      - name: Rustfmt check
+      - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
+          toolchain: nightly
           command: fmt
-          args: --all -- --check
+          args: --all --check
 
   prlint:
     name: PR name check
@@ -87,11 +86,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install ${{ matrix.toolchain }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
-          profile: minimal
-          override: true
 
       - name: Generate Cargo.lock for cache
         uses: actions-rs/cargo@v1
