@@ -8,14 +8,14 @@ use rocket::local::asynchronous::{Client, LocalResponse};
 use rocket_grants::{has_roles, GrantsFairing};
 
 // Using imported custom type (in `use` section)
-#[has_roles("ADMIN", type = "Role")]
+#[has_roles("ADMIN", ty = "Role")]
 #[rocket::get("/imported_enum_secure")]
 async fn imported_path_enum_secure() -> Status {
     Status::Ok
 }
 
 // Using a full path to a custom type (enum)
-#[has_roles("crate::common::Role::ADMIN", type = "crate::common::Role")]
+#[has_roles("crate::common::Role::ADMIN", ty = "crate::common::Role")]
 #[rocket::get("/full_path_enum_secure")]
 async fn full_path_enum_secure() -> Status {
     Status::Ok

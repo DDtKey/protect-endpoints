@@ -48,7 +48,7 @@ impl ToTokens for HasPermissions {
 
         let check_fn = &self.check_fn;
 
-        let args = if self.args.type_.is_some() {
+        let args = if self.args.ty.is_some() {
             let permissions: Vec<syn::Expr> = self
                 .args
                 .permissions
@@ -67,9 +67,9 @@ impl ToTokens for HasPermissions {
             }
         };
 
-        let type_ = self
+        let ty = self
             .args
-            .type_
+            .ty
             .as_ref()
             .map(|t| t.to_token_stream())
             .unwrap_or(quote! {String});
@@ -83,7 +83,7 @@ impl ToTokens for HasPermissions {
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                _auth_details_: rocket_grants::permissions::AuthDetails<#type_>,
+                _auth_details_: rocket_grants::permissions::AuthDetails<#ty>,
                 #fn_args
             ) -> Result<#fn_output, rocket::http::Status> {
                 use rocket_grants::permissions::{PermissionsCheck, RolesCheck};
@@ -103,14 +103,14 @@ impl ToTokens for HasPermissions {
 struct Args {
     permissions: Vec<syn::LitStr>,
     secure: Option<syn::Expr>,
-    type_: Option<syn::Expr>,
+    ty: Option<syn::Expr>,
 }
 
 impl Args {
     fn new(args: AttributeArgs) -> syn::Result<Self> {
         let mut permissions = Vec::with_capacity(args.len());
         let mut secure = None;
-        let mut type_ = None;
+        let mut ty = None;
         for arg in args {
             match arg {
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
@@ -124,13 +124,13 @@ impl Args {
                     if path.is_ident("secure") {
                         let expr = lit_str.parse().unwrap();
                         secure = Some(expr);
-                    } else if path.is_ident("type") {
+                    } else if path.is_ident("ty") {
                         let expr = lit_str.parse().unwrap();
-                        type_ = Some(expr);
+                        ty = Some(expr);
                     } else {
                         return Err(syn::Error::new_spanned(
                             path,
-                            "Unknown identifier. Available: 'secure' and 'type'",
+                            "Unknown identifier. Available: 'secure' and 'ty'",
                         ));
                     }
                 }
@@ -143,7 +143,7 @@ impl Args {
         Ok(Args {
             permissions,
             secure,
-            type_,
+            ty,
         })
     }
 }

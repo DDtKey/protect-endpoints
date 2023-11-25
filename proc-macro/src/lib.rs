@@ -17,7 +17,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// Allow to add a conditional restriction based on handlers parameters.
 /// Add the `secure` attribute followed by the the boolean expression to validate based on parameters
 ///
-/// Also you can use you own types instead of Strings, just add `type` attribute with path to type
+/// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```
 /// use rocket::serde::json::Json;
@@ -44,7 +44,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// }
 ///
 /// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
-/// #[rocket_grants::has_permissions("MyPermissionEnum::OpGetSecret", type = "MyPermissionEnum")]
+/// #[rocket_grants::has_permissions("MyPermissionEnum::OpGetSecret", ty = "MyPermissionEnum")]
 /// async fn macro_enum_secured() -> &'static str {
 ///     "some secured info"
 /// }

@@ -56,11 +56,11 @@ async fn macro_secured() -> &'static str {
 <br/>
 
 
-Here is an example using the `type` and `secure` attributes. But these are independent features.
+Here is an example using the `ty` and `secure` attributes. But these are independent features.
 
 `secure` allows you to include some checks in the macro based on function params.
 
-`type` allows you to use a custom type for the roles and permissions (then the fairing needs to be configured). 
+`ty` allows you to use a custom type for the roles and permissions (then the fairing needs to be configured). 
 Take a look at an [enum-role example](../examples/enum-role/src/main.rs)
 
 ```rust,ignore
