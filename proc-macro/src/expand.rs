@@ -1,6 +1,7 @@
+use darling::ast::NestedMeta;
 use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
-use syn::{AttributeArgs, ItemFn, NestedMeta, ReturnType};
+use syn::{ExprLit, ItemFn, ReturnType};
 
 pub(crate) struct HasPermissions {
     check_fn: Ident,
@@ -9,10 +10,9 @@ pub(crate) struct HasPermissions {
 }
 
 impl HasPermissions {
-    pub fn new(check_fn: &str, args: AttributeArgs, func: ItemFn) -> syn::Result<Self> {
+    pub fn new(check_fn: &str, args: Args, func: ItemFn) -> syn::Result<Self> {
         let check_fn: Ident = syn::parse_str(check_fn)?;
 
-        let args = Args::new(args)?;
         if args.permissions.is_empty() {
             return Err(syn::Error::new(
                 Span::call_site(),
@@ -100,25 +100,28 @@ impl ToTokens for HasPermissions {
     }
 }
 
-struct Args {
+#[derive(Default)]
+pub(crate) struct Args {
     permissions: Vec<syn::LitStr>,
     secure: Option<syn::Expr>,
     ty: Option<syn::Expr>,
 }
 
-impl Args {
-    fn new(args: AttributeArgs) -> syn::Result<Self> {
-        let mut permissions = Vec::with_capacity(args.len());
+impl darling::FromMeta for Args {
+    fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
+        let mut permissions = Vec::new();
         let mut secure = None;
         let mut ty = None;
-        for arg in args {
-            match arg {
-                NestedMeta::Lit(syn::Lit::Str(lit)) => {
-                    permissions.push(lit);
-                }
+
+        for item in items {
+            match item {
                 NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
                     path,
-                    lit: syn::Lit::Str(lit_str),
+                    value:
+                        syn::Expr::Lit(ExprLit {
+                            lit: syn::Lit::Str(lit_str),
+                            ..
+                        }),
                     ..
                 })) => {
                     if path.is_ident("secure") {
@@ -128,14 +131,16 @@ impl Args {
                         let expr = lit_str.parse().unwrap();
                         ty = Some(expr);
                     } else {
-                        return Err(syn::Error::new_spanned(
-                            path,
-                            "Unknown identifier. Available: 'secure' and 'ty'",
-                        ));
+                        return Err(darling::Error::unknown_field_path(path));
                     }
                 }
+                NestedMeta::Lit(syn::Lit::Str(lit)) => {
+                    permissions.push(lit.clone());
+                }
                 _ => {
-                    return Err(syn::Error::new_spanned(arg, "Unknown attribute."));
+                    return Err(darling::Error::custom(
+                        "Unknown attribute, available: 'secure', 'ty' & string literal",
+                    ))
                 }
             }
         }

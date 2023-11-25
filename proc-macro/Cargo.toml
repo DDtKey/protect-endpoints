@@ -15,9 +15,10 @@ edition.workspace = true
 proc-macro = true
 
 [dependencies]
+darling = "0.20.3"
 proc-macro2 = "1.0"
 quote = "1"
-syn = { version = "1.0", features = ["full", "derive", "extra-traits"] }
+syn = { version = "2.0", features = ["full", "derive", "extra-traits"] }
 
 [dev-dependencies]
 rocket-grants =  { workspace = true }

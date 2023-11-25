@@ -1,9 +1,11 @@
 extern crate proc_macro;
+use darling::ast::NestedMeta;
+use darling::FromMeta;
 use proc_macro::TokenStream;
 use quote::ToTokens;
-use syn::{parse_macro_input, AttributeArgs, ItemFn};
+use syn::{parse_macro_input, ItemFn};
 
-use crate::expand::HasPermissions;
+use crate::expand::{Args, HasPermissions};
 
 mod expand;
 
@@ -103,7 +105,19 @@ pub fn has_any_role(args: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 fn check_permissions(check_fn_name: &str, args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = parse_macro_input!(args as AttributeArgs);
+    let args = match NestedMeta::parse_meta_list(args.into()) {
+        Ok(v) => v,
+        Err(e) => {
+            return TokenStream::from(darling::Error::from(e).write_errors());
+        }
+    };
+    let args = match Args::from_list(&args) {
+        Ok(v) => v,
+        Err(e) => {
+            return TokenStream::from(e.write_errors());
+        }
+    };
+
     let func = parse_macro_input!(input as ItemFn);
 
     match HasPermissions::new(check_fn_name, args, func) {
