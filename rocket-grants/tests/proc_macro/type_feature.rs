@@ -1,6 +1,6 @@
 use crate::common::{
     self,
-    Role::{self, ADMIN, MANAGER},
+    Role::{self, Admin, Manager},
 };
 use rocket::http::hyper::header::AUTHORIZATION;
 use rocket::http::{Header, Status};
@@ -8,14 +8,14 @@ use rocket::local::asynchronous::{Client, LocalResponse};
 use rocket_grants::{has_roles, GrantsFairing};
 
 // Using imported custom type (in `use` section)
-#[has_roles("ADMIN", ty = "Role")]
+#[has_roles("Admin", ty = "Role")]
 #[rocket::get("/imported_enum_secure")]
 async fn imported_path_enum_secure() -> Status {
     Status::Ok
 }
 
 // Using a full path to a custom type (enum)
-#[has_roles("crate::common::Role::ADMIN", ty = "crate::common::Role")]
+#[has_roles("crate::common::Role::Admin", ty = "crate::common::Role")]
 #[rocket::get("/full_path_enum_secure")]
 async fn full_path_enum_secure() -> Status {
     Status::Ok
@@ -31,9 +31,9 @@ async fn incorrect_enum_secure() -> Status {
 #[tokio::test]
 async fn test_http_response_for_imported_enum() {
     let client = get_client().await;
-    let test_admin = get_user_response(&client, "/imported_enum_secure", ADMIN.to_string()).await;
+    let test_admin = get_user_response(&client, "/imported_enum_secure", Admin.to_string()).await;
     let test_manager =
-        get_user_response(&client, "/imported_enum_secure", MANAGER.to_string()).await;
+        get_user_response(&client, "/imported_enum_secure", Manager.to_string()).await;
 
     assert_eq!(Status::Ok, test_admin.status());
     assert_eq!(Status::Forbidden, test_manager.status());
@@ -42,9 +42,9 @@ async fn test_http_response_for_imported_enum() {
 #[tokio::test]
 async fn test_http_response_for_full_path_enum() {
     let client = get_client().await;
-    let test_admin = get_user_response(&client, "/full_path_enum_secure", ADMIN.to_string()).await;
+    let test_admin = get_user_response(&client, "/full_path_enum_secure", Admin.to_string()).await;
     let test_manager =
-        get_user_response(&client, "/full_path_enum_secure", MANAGER.to_string()).await;
+        get_user_response(&client, "/full_path_enum_secure", Manager.to_string()).await;
 
     assert_eq!(Status::Ok, test_admin.status());
     assert_eq!(Status::Forbidden, test_manager.status());
@@ -53,7 +53,7 @@ async fn test_http_response_for_full_path_enum() {
 #[tokio::test]
 async fn test_incorrect_http_response() {
     let client = get_client().await;
-    let test = get_user_response(&client, "/incorrect_enum_secure", ADMIN.to_string()).await;
+    let test = get_user_response(&client, "/incorrect_enum_secure", Admin.to_string()).await;
     assert_eq!(Status::Unauthorized, test.status());
 }
 

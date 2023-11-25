@@ -7,8 +7,8 @@ use rocket_grants::GrantsFairing;
 mod role;
 
 // `proc-macro` way require specify your type. It can be an import or a full path.
-#[rocket_grants::has_any_role("ADMIN", "role::Role::MANAGER", ty = "Role")]
-// For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
+#[rocket_grants::has_any_role("Admin", "role::Role::Manager", ty = "Role")]
+// For the `Admin` or `Manager` - endpoint will give the HTTP status 200, otherwise - 403
 #[rocket::get("/macro_secured")]
 async fn macro_secured() -> Status {
     Status::Ok

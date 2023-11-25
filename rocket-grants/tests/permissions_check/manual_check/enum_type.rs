@@ -11,7 +11,7 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 #[rocket::get("/")]
 async fn different_body(details: AuthDetails<Role>) -> &'static str {
-    if details.has_permission(&Role::ADMIN) {
+    if details.has_permission(&Role::Admin) {
         return ADMIN_RESPONSE;
     }
     OTHER_RESPONSE
@@ -19,7 +19,7 @@ async fn different_body(details: AuthDetails<Role>) -> &'static str {
 
 #[rocket::get("/admin")]
 async fn only_admin(details: AuthDetails<Role>) -> Result<&'static str, Status> {
-    if details.has_permission(&Role::ADMIN) {
+    if details.has_permission(&Role::Admin) {
         return Ok(ADMIN_RESPONSE);
     }
     Err(Status::Forbidden)
@@ -28,8 +28,8 @@ async fn only_admin(details: AuthDetails<Role>) -> Result<&'static str, Status> 
 #[tokio::test]
 async fn test_different_bodies() {
     let client = get_client().await;
-    let admin_resp = get_user_response(&client, "/", Role::ADMIN.to_string()).await;
-    let manager_resp = get_user_response(&client, "/", Role::MANAGER.to_string()).await;
+    let admin_resp = get_user_response(&client, "/", Role::Admin.to_string()).await;
+    let manager_resp = get_user_response(&client, "/", Role::Manager.to_string()).await;
 
     common::test_body(admin_resp, ADMIN_RESPONSE).await;
     common::test_body(manager_resp, OTHER_RESPONSE).await;
@@ -38,8 +38,8 @@ async fn test_different_bodies() {
 #[tokio::test]
 async fn test_forbidden() {
     let client = get_client().await;
-    let test_admin = get_user_response(&client, "/admin", Role::ADMIN.to_string()).await;
-    let test_manager = get_user_response(&client, "/admin", Role::MANAGER.to_string()).await;
+    let test_admin = get_user_response(&client, "/admin", Role::Admin.to_string()).await;
+    let test_manager = get_user_response(&client, "/admin", Role::Manager.to_string()).await;
 
     assert_eq!(Status::Ok, test_admin.status());
     assert_eq!(Status::Forbidden, test_manager.status());

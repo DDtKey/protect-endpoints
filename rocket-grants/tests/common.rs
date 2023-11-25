@@ -8,24 +8,24 @@ pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
 #[derive(PartialEq, Clone)]
 pub enum Role {
-    ADMIN,
-    MANAGER,
+    Admin,
+    Manager,
 }
 
 pub async fn extract(req: &mut Request<'_>) -> Option<Vec<String>> {
     let auth_headers: Vec<&str> = req.headers().get(AUTHORIZATION.as_str()).collect();
 
     auth_headers
-        .get(0)
-        .map(|h| h.split(",").map(str::to_string).collect::<Vec<String>>())
+        .first()
+        .map(|h| h.split(',').map(str::to_string).collect::<Vec<String>>())
 }
 
 pub async fn enum_extract(req: &mut Request<'_>) -> Option<Vec<Role>> {
     let auth_headers: Vec<&str> = req.headers().get(AUTHORIZATION.as_str()).collect();
 
     auth_headers
-        .get(0)
-        .map(|h| h.split(",").map(|name| name.into()).collect::<Vec<Role>>())
+        .first()
+        .map(|h| h.split(',').map(|name| name.into()).collect::<Vec<Role>>())
 }
 
 pub async fn test_body(resp: LocalResponse<'_>, expected_body: &str) {
@@ -36,8 +36,8 @@ pub async fn test_body(resp: LocalResponse<'_>, expected_body: &str) {
 impl Display for Role {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            Role::ADMIN => write!(f, "ADMIN"),
-            Role::MANAGER => write!(f, "MANAGER"),
+            Role::Admin => write!(f, "ADMIN"),
+            Role::Manager => write!(f, "MANAGER"),
         }
     }
 }
@@ -45,8 +45,8 @@ impl Display for Role {
 impl From<&str> for Role {
     fn from(value: &str) -> Self {
         match value {
-            "ADMIN" => Role::ADMIN,
-            "MANAGER" => Role::MANAGER,
+            "ADMIN" => Role::Admin,
+            "MANAGER" => Role::Manager,
             _ => panic!("Unexpected enum value"),
         }
     }
