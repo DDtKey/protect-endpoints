@@ -1,29 +1,19 @@
-[package]
-name = "actix-web-grants"
-version = "3.0.2"
-authors = ["DDtKey <ddttkey@gmail.com>"]
-description = "Extension for `actix-web` to validate user permissions"
-repository = "https://github.com/DDtKey/actix-web-grants"
-homepage = "https://github.com/DDtKey/actix-web-grants"
-readme = "README.md"
-keywords = ["actix", "auth", "security", "grants", "permissions"]
-categories = ["authentication"]
+[workspace]
+resolver = "2"
+members = [
+    "awg-proc-macro",
+    "actix-web-grants",
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.56"
 license = "MIT OR Apache-2.0"
-edition = "2018"
+categories = ["authentication"]
+homepage = "https://github.com/DDtKey/actix-web-grants"
+repository = "https://github.com/DDtKey/actix-web-grants"
+authors = ["DDtKey <ddttkey@gmail.com>"]
 
-[lib]
-name = "actix_web_grants"
-path = "src/lib.rs"
-
-[features]
-default = ["macro-check"]
-macro-check = ["actix-grants-proc-macro"]
-
-[dependencies]
-actix-web = { version = "4.3", default-features = false, features = ["macros"] }
-actix-grants-proc-macro = { path = "./proc-macro", version = "2.0.2", optional = true }
-
-[dev-dependencies]
-actix-rt = "2"
-serde = { version = "1.0", features = ["derive"] }
-parse-display = "0.8.2"
+[workspace.dependencies]
+actix-grants-proc-macro = { path = "awg-proc-macro", version = "2.0.2" }
+actix-web-grants = { path = "actix-web-grants", version = "3.0.2" }

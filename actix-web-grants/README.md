@@ -21,7 +21,7 @@ The library can also be integrated with third-party solutions (like [`actix-web-
 ## How to use
 
 
-1. Declare your own [permission extractor](./src/permissions/extractors.rs)
+1. Declare your own [permission extractor](src/permissions/extractors.rs)
    
 The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
 ```rust,ignore
@@ -38,7 +38,7 @@ App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](./examples/jwt-httpauth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](../examples/actix-web/jwt-httpauth/src/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
@@ -64,7 +64,7 @@ Here is an example using the `type` and `secure` attributes. But these are indep
 `secure` allows you to include some checks in the macro based on function params.
 
 `type` allows you to use a custom type for the roles and permissions (then the middleware needs to be configured). 
-Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
+Take a look at an [enum-role example](../examples/actix-web/enum-role/src/main.rs)
 
 ```rust,ignore
 use actix_web_grants::proc_macro::{has_role};
