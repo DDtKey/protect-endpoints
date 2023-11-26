@@ -1,14 +1,15 @@
 [package]
 name = "poem-grants-proc-macro"
 version = "1.0.0-beta.3"
-authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "A proc-macro way to validate user permissions for `poem-grants` crate."
-repository = "https://github.com/DDtKey/poem-grants"
-homepage = "https://github.com/DDtKey/poem-grants"
 keywords = ["poem", "security", "grants", "codegen", "proc_macro"]
-categories = ["authentication"]
-license = "MIT OR Apache-2.0"
-edition = "2018"
+readme = "../poem-grants/README.md"
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [lib]
 proc-macro = true
@@ -20,4 +21,5 @@ syn = { version = "1.0", features = ["full", "derive", "extra-traits"] }
 
 [dev-dependencies]
 poem = "1"
-poem-grants =  { path = ".." }
+poem-openapi = "3.0.6"
+poem-grants =  { workspace = true }

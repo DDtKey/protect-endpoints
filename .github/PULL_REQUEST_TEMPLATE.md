@@ -8,7 +8,6 @@ Please provide a description below. -->
 
 - [ ] Tests for the changes have been added (_for bug fixes / features_);
 - [ ] Docs have been added / updated (_for bug fixes / features_).
-- [ ] This PR has been added to [CHANGELOG.md](https://github.com/DDtKey/poem-grants/blob/main/CHANGELOG.md) (to [Unreleased] section);
 
 <!-- NOTE: these things are not required to open a PR and can be done afterwards / while the PR is open. -->
 

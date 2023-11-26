@@ -31,7 +31,7 @@ macro_rules! unwrap_result {
 /// Also you can use you own types instead of Strings, just add `type` attribute with path to type
 /// # Examples
 /// ```
-/// use poem::{Response, http::StatusCode};
+/// use poem::{Response, http::StatusCode, web};
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[poem_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
@@ -45,15 +45,20 @@ macro_rules! unwrap_result {
 /// struct User {id: i32}
 /// #[poem_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET", secure="*user_id == user.id"]]
 /// #[poem::handler]
-/// async fn macro_secured_params(user_id: web::Path<i32>, user: web::Data<User>) -> Response {
+/// async fn macro_secured_params(user_id: web::Path<i32>, user: web::Data<&User>) -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info with user_id path equal to user.id")
 ///}
 ///
 /// // User must have MyPermissionEnum::OP_GET_SECRET (you own enum example)
-/// #[poem_grants::has_permissions["OP_GET_SECRET", type = "MyPermissionEnum"]]
+/// #[poem_grants::has_permissions["MyPermissionEnum::GetSecret", type = "MyPermissionEnum"]]
 /// #[poem::handler]
 /// async fn macro_enum_secured() -> Response {
 ///     Response::builder().status(StatusCode::OK).body("some secured info")
+/// }
+///
+/// #[derive(Clone, PartialEq)]
+/// enum MyPermissionEnum {
+///    GetSecret,
 /// }
 ///
 ///```

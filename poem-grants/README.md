@@ -25,7 +25,7 @@ Provides a complete analogue of the [`actix-web-grants`].
 ## How to use
 
 
-1. Declare your own [permission extractor](./src/permissions/extractors.rs)
+1. Declare your own [permission extractor](srcermissions/extractors.rs)
    
 The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
 ```rust,ignore
@@ -41,7 +41,7 @@ Route::new()
     .with(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-auth example](examples/jwt-auth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-auth example](../examples/poem/jwt-auth/src/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
@@ -84,7 +84,7 @@ Here is an example using the `type` and `secure` attributes. But these are indep
 `secure` allows you to include some checks in the macro based on function params.
 
 `type` allows you to use a custom type for the roles and permissions (then the middleware needs to be configured). 
-Take a look at an [enum-role example](./examples/enum-role/src/main.rs)
+Take a look at an [enum-role example](../examples/poem/enum-role/src/main.rs)
 
 ```rust,ignore
 use poem::{Response, http::StatusCode, web};
