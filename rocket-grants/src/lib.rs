@@ -1,5 +1,5 @@
 #![doc(
-    html_logo_url = "https://raw.githubusercontent.com/DDtKey/rocket-grants/main/rocket-grants/logo.png"
+    html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/rocket-grants/logo.png"
 )]
 //! A crate for authorization in `rocket`.
 //!
@@ -12,7 +12,7 @@
 //! You can find more [`examples`] in the git repository.
 //!
 //! [`GrantsFairing`]: GrantsFairing
-//! [`examples`]: https://github.com/DDtKey/rocket-grants/tree/main/examples
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/rocket
 //! [`permissions`]: authorities
 //! [`proc-macro`]: proc_macro
 #![doc = include_str!("../README.md")]

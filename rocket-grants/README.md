@@ -1,7 +1,7 @@
 # rocket-grants
 
 <p align="center">
-    <img alt="rocket-grants" src="https://github.com/DDtKey/protected-endpoints/raw/main/rocket-grants/logo.png">
+    <img alt="rocket-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/rocket-grants/logo.png">
 </p>
 
 > Extension for [`rocket`] to authorize requests.
@@ -103,8 +103,8 @@ You can set up custom responses for:
 ## Supported `rocket` versions
 * For `rocket-grants: 0.1.*` supported version of `rocket` is `0.5.*`
 
-[`examples`]: https://github.com/DDtKey/rocket-grants/tree/main/examples
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/rocket
 [`documentation`]: https://docs.rs/rocket-grants
 [`rocket`]: https://github.com/SergioBenitez/Rocket
-[`poem-grants`]: https://github.com/DDtKey/poem-grants
-[`actix-web-grants`]: https://github.com/DDtKey/actix-web-grants
+[`poem-grants`]: https://github.com/DDtKey/protect-endpoints/tree/main/poem-grants
+[`actix-web-grants`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-grants
