@@ -21,7 +21,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// # Examples
 /// ```
 /// use actix_web_grants::proc_macro::has_permissions;
-/// use actix_web::HttpResponse;
+/// use actix_web::{HttpResponse, web};
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
@@ -37,11 +37,14 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 ///     HttpResponse::Ok().body("some secured info with user_id path equal to user.id")
 ///}
 ///
-/// // User must have MyPermissionEnum::OP_GET_SECRET (you own enum example)
-/// #[has_permissions["OP_GET_SECRET", type = "MyPermissionEnum"]]
+/// // User must have MyPermissionEnum::GetSecret (you own enum example)
+/// #[has_permissions["MyPermissionEnum::GetSecret", type = "MyPermissionEnum"]]
 /// async fn macro_enum_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
+///
+/// #[derive(Clone, PartialEq, Eq)]
+/// enum MyPermissionEnum { GetSecret };
 ///
 ///```
 #[proc_macro_attribute]

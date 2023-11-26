@@ -1,14 +1,14 @@
 [package]
 name = "actix-grants-proc-macro"
 version = "2.0.2"
-authors = ["DDtKey <ddttkey@gmail.com>"]
 description = "A proc-macro way to validate user permissions for `actix-web-grants` crate."
-repository = "https://github.com/DDtKey/actix-web-grants"
-homepage = "https://github.com/DDtKey/actix-web-grants"
 keywords = ["actix", "security", "grants", "codegen", "proc_macro"]
-categories = ["authentication"]
-license = "MIT OR Apache-2.0"
-edition = "2018"
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [lib]
 proc-macro = true
@@ -20,4 +20,4 @@ syn = { version = "1.0", features = ["full", "derive", "extra-traits"] }
 
 [dev-dependencies]
 actix-web = { version = "4.3", default-features = false }
-actix-web-grants =  { path = "../" }
+actix-web-grants =  { workspace = true }

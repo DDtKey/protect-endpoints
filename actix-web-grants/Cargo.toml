@@ -1,0 +1,29 @@
+[package]
+name = "actix-web-grants"
+version = "3.0.2"
+description = "Extension for `actix-web` to validate user permissions"
+readme = "README.md"
+keywords = ["actix", "auth", "security", "grants", "permissions"]
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[lib]
+name = "actix_web_grants"
+path = "src/lib.rs"
+
+[features]
+default = ["macro-check"]
+macro-check = ["actix-grants-proc-macro"]
+
+[dependencies]
+actix-web = { version = "4.3", default-features = false, features = ["macros"] }
+actix-grants-proc-macro = { workspace = true, optional = true }
+
+[dev-dependencies]
+actix-rt = "2"
+serde = { version = "1.0", features = ["derive"] }
+parse-display = "0.8.2"
