@@ -1,7 +1,7 @@
 use crate::role::Role::{self, ADMIN};
 use rocket::http::Status;
 use rocket::Request;
-use rocket_grants::permissions::{AuthDetails, RolesCheck};
+use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use rocket_grants::GrantsFairing;
 
 mod role;
@@ -17,7 +17,7 @@ async fn macro_secured() -> Status {
 // An example of programmable protection with custom type
 #[rocket::get("/manual")]
 async fn manual_secure(details: AuthDetails<Role>) -> &'static str {
-    if details.has_role(&Role::ADMIN) {
+    if details.has_authority(&Role::ADMIN) {
         return "Hello Admin!";
     }
     "Hello!"

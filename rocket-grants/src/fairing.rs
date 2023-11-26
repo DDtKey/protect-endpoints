@@ -1,4 +1,4 @@
-use crate::permissions::AttachPermissions;
+use crate::authorities::AttachAuthorities;
 use futures_core::future::BoxFuture;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::{Data, Request};
@@ -20,7 +20,7 @@ type Extractor<Type> = Box<
 /// use std::collections::HashSet;
 /// use rocket::{get, Route, Response, http::Status};
 ///
-/// use rocket_grants::permissions::{AuthDetails, PermissionsCheck};
+/// use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 /// use rocket_grants::GrantsFairing;
 ///
 /// #[rocket::launch]
@@ -39,7 +39,6 @@ type Extractor<Type> = Box<
 ///    Some(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 ///
-/// // `has_permissions` is one of options to validate permissions.
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
 /// #[rocket_grants::protect("ROLE_ADMIN")]
 /// #[rocket::get("/")]
@@ -105,7 +104,7 @@ impl<Type: Eq + Hash + Send + Sync + 'static> Fairing for GrantsFairing<Type> {
     }
 
     async fn on_request(&self, mut req: &mut Request<'_>, _data: &mut Data<'_>) {
-        let permissions: Option<HashSet<Type>> = (self.extractor)(req).await;
-        req.attach(permissions);
+        let authorities: Option<HashSet<Type>> = (self.extractor)(req).await;
+        req.attach(authorities);
     }
 }

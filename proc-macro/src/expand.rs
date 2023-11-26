@@ -72,10 +72,10 @@ impl ToTokens for ProtectEndpoint {
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                #auth_details: rocket_grants::permissions::AuthDetails<#ty>,
+                #auth_details: rocket_grants::authorities::AuthDetails<#ty>,
                 #fn_args
             ) -> Result<#fn_output, rocket::http::Status> {
-                use rocket_grants::permissions::{PermissionsCheck, RolesCheck};
+                use rocket_grants::authorities::AuthoritiesCheck;
                 #condition {
                     let f = || async move #func_block;
                     Ok(f().await)
@@ -104,9 +104,9 @@ impl Condition {
                     let vals: Vec<syn::Expr> =
                         vals.map(syn::LitStr::parse).map(Result::unwrap).collect();
 
-                    quote! { #auth_details.has_any_permission(&[#(&#vals,)*]) }
+                    quote! { #auth_details.has_any_authority(&[#(&#vals,)*]) }
                 } else {
-                    quote! { #auth_details.has_any_permission(&[#(#vals,)*]) }
+                    quote! { #auth_details.has_any_authority(&[#(#vals,)*]) }
                 }
             }
             Condition::All(nested) if nested.iter().all(Condition::is_value) => {
@@ -119,9 +119,9 @@ impl Condition {
                     let vals: Vec<syn::Expr> =
                         vals.map(syn::LitStr::parse).map(Result::unwrap).collect();
 
-                    quote! { #auth_details.has_permissions(&[#(&#vals,)*]) }
+                    quote! { #auth_details.has_authorities(&[#(&#vals,)*]) }
                 } else {
-                    quote! { #auth_details.has_permissions(&[#(#vals,)*]) }
+                    quote! { #auth_details.has_authorities(&[#(#vals,)*]) }
                 }
             }
             Condition::Any(nested) => {
@@ -137,9 +137,9 @@ impl Condition {
             Condition::Value(val) => {
                 if is_typed {
                     let val: syn::Expr = val.parse().unwrap();
-                    quote! { #auth_details.has_permission(&#val) }
+                    quote! { #auth_details.has_authority(&#val) }
                 } else {
-                    quote! { #auth_details.has_permission(#val) }
+                    quote! { #auth_details.has_authority(#val) }
                 }
             }
         }

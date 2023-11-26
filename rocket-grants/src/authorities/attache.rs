@@ -1,4 +1,4 @@
-use crate::permissions::{AuthDetails, AuthDetailsWrapper};
+use crate::authorities::{AuthDetails, AuthDetailsWrapper};
 use rocket::Request;
 use std::hash::Hash;
 
@@ -9,25 +9,25 @@ use std::hash::Hash;
 /// # Example
 ///
 /// ```
-/// use rocket_grants::permissions::AttachPermissions;
+/// use rocket_grants::authorities::AttachAuthorities;
 /// use std::collections::HashSet;
 ///
 /// // You can use you own type/enum instead of `String`
-/// fn attach(mut req: &mut rocket::Request, permissions: Option<HashSet<String>>) {
-///     req.attach(permissions);
+/// fn attach(mut req: &mut rocket::Request, authorities: Option<HashSet<String>>) {
+///     req.attach(authorities);
 /// }
 ///
 /// ```
 ///
 /// [`rocket-grants`]: crate
 /// [`&mut Request`]: rocket::Request
-pub trait AttachPermissions<Type> {
-    fn attach(&mut self, permissions: Option<impl IntoIterator<Item = Type>>);
+pub trait AttachAuthorities<Type> {
+    fn attach(&mut self, authorities: Option<impl IntoIterator<Item = Type>>);
 }
 
-impl<'r, Type: Eq + Hash + Send + Sync + 'static> AttachPermissions<Type> for &mut Request<'r> {
-    fn attach(&mut self, permissions: Option<impl IntoIterator<Item = Type>>) {
-        let auth_details = permissions
+impl<'r, Type: Eq + Hash + Send + Sync + 'static> AttachAuthorities<Type> for &mut Request<'r> {
+    fn attach(&mut self, authorities: Option<impl IntoIterator<Item = Type>>) {
+        let auth_details = authorities
             .map(AuthDetails::new)
             .map(|details| AuthDetailsWrapper(Some(details)))
             .unwrap_or(AuthDetailsWrapper(None));

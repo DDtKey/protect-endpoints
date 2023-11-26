@@ -1,6 +1,6 @@
 use rocket::serde::json::Json;
 use rocket::{get, post};
-use rocket_grants::permissions::{AuthDetails, PermissionsCheck};
+use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use rocket_grants::GrantsFairing;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
@@ -17,7 +17,7 @@ async fn macro_secured() -> &'static str {
 // An example of programmable protection
 #[get("/")]
 async fn manual_secure(details: AuthDetails) -> &'static str {
-    if details.has_permission(ROLE_ADMIN) {
+    if details.has_authority(ROLE_ADMIN) {
         return ADMIN_RESPONSE;
     }
     OTHER_RESPONSE

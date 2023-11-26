@@ -3,7 +3,7 @@ use rocket::http::hyper::header::AUTHORIZATION;
 use rocket::http::{Header, Status};
 use rocket::local::asynchronous::Client;
 use rocket::local::asynchronous::LocalResponse;
-use rocket_grants::permissions::{AuthDetails, PermissionsCheck};
+use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use rocket_grants::GrantsFairing;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
@@ -11,7 +11,7 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 #[rocket::get("/")]
 async fn different_body(details: AuthDetails<Role>) -> &'static str {
-    if details.has_permission(&Role::Admin) {
+    if details.has_authority(&Role::Admin) {
         return ADMIN_RESPONSE;
     }
     OTHER_RESPONSE
@@ -19,7 +19,7 @@ async fn different_body(details: AuthDetails<Role>) -> &'static str {
 
 #[rocket::get("/admin")]
 async fn only_admin(details: AuthDetails<Role>) -> Result<&'static str, Status> {
-    if details.has_permission(&Role::Admin) {
+    if details.has_authority(&Role::Admin) {
         return Ok(ADMIN_RESPONSE);
     }
     Err(Status::Forbidden)

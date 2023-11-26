@@ -11,16 +11,16 @@
 //!
 //! [`GrantsFairing`]: GrantsFairing
 //! [`examples`]: https://github.com/DDtKey/rocket-grants/tree/main/examples
-//! [`permissions`]: permissions
+//! [`permissions`]: authorities
 //! [`proc-macro`]: proc_macro
 #![doc = include_str!("../README.md")]
 
+pub mod authorities;
 mod fairing;
-pub mod permissions;
 
 pub use fairing::GrantsFairing;
 
-/// Procedural macros for checking user permissions or roles.
+/// Procedural macros for checking user authorities (permissions or roles).
 ///
 /// # Examples
 /// ```
