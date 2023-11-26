@@ -1,0 +1,31 @@
+[package]
+name = "rocket-grants"
+version = "0.1.1"
+description = "Authorization extension for `rocket`"
+readme = "README.md"
+keywords = ["rocket", "authz", "security", "grants", "permissions"]
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[lib]
+name = "rocket_grants"
+path = "src/lib.rs"
+
+[features]
+default = ["macro-check"]
+macro-check = ["rocket-grants-proc-macro"]
+
+[dependencies]
+futures-core = "0.3"
+rocket = "0.5.0"
+rocket-grants-proc-macro = { workspace = true, optional = true }
+
+[dev-dependencies]
+rocket = { version = "0.5.0", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["rt-multi-thread"] }

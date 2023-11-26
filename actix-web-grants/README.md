@@ -6,11 +6,9 @@
 
 > Extension for `actix-web` to validate user permissions.
 
-[![CI](https://github.com/DDtKey/actix-web-grants/workflows/CI/badge.svg)](https://github.com/DDtKey/actix-web-grants/actions)
 [![Crates.io Downloads Badge](https://img.shields.io/crates/d/actix-web-grants)](https://crates.io/crates/actix-web-grants)
 [![crates.io](https://img.shields.io/crates/v/actix-web-grants)](https://crates.io/crates/actix-web-grants)
 [![Documentation](https://docs.rs/actix-web-grants/badge.svg)](https://docs.rs/actix-web-grants)
-[![dependency status](https://deps.rs/repo/github/DDtKey/actix-web-grants/status.svg)](https://deps.rs/repo/github/DDtKey/actix-web-grants)
 ![Apache 2.0 or MIT licensed](https://img.shields.io/crates/l/actix-web-grants)
 
 To check user access to specific services, you can use built-in `proc-macro`, `PermissionGuard` or manual.

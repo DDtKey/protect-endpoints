@@ -3,6 +3,7 @@ name = "actix-grants-proc-macro"
 version = "2.0.2"
 description = "A proc-macro way to validate user permissions for `actix-web-grants` crate."
 keywords = ["actix", "security", "grants", "codegen", "proc_macro"]
+readme = "../actix-web-grants/README.md"
 authors.workspace = true
 repository.workspace = true
 homepage.workspace = true

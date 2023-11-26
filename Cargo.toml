@@ -3,6 +3,8 @@ resolver = "2"
 members = [
     "awg-proc-macro",
     "actix-web-grants",
+    "rocket-proc-macro",
+    "rocket-grants",
 ]
 
 [workspace.package]
@@ -17,3 +19,5 @@ authors = ["DDtKey <ddttkey@gmail.com>"]
 [workspace.dependencies]
 actix-grants-proc-macro = { path = "awg-proc-macro", version = "2.0.2" }
 actix-web-grants = { path = "actix-web-grants", version = "3.0.2" }
+rocket-grants-proc-macro = { path = "rocket-proc-macro", version = "0.1.1" }
+rocket-grants = { path = "rocket-grants", version = "0.1.1" }
