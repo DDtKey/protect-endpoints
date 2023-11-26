@@ -2,9 +2,14 @@ use crate::permissions::AttachPermissions;
 use futures_core::future::BoxFuture;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::{Data, Request};
+use std::collections::HashSet;
+use std::hash::Hash;
 
 type Extractor<Type> = Box<
-    dyn for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<Vec<Type>>> + Send + Sync + 'static,
+    dyn for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<HashSet<Type>>>
+        + Send
+        + Sync
+        + 'static,
 >;
 
 /// Built-in fairing for extracting user permission.
@@ -12,6 +17,7 @@ type Extractor<Type> = Box<
 ///
 /// # Examples
 /// ```
+/// use std::collections::HashSet;
 /// use rocket::{get, Route, Response, http::Status};
 ///
 /// use rocket_grants::permissions::{AuthDetails, PermissionsCheck};
@@ -26,11 +32,11 @@ type Extractor<Type> = Box<
 /// }
 ///
 /// // Furthermore, you can use you own type instead of `String` (e.g. Enum).
-/// async fn extract(_req: &rocket::Request<'_>) -> Option<Vec<String>> {
+/// async fn extract(_req: &rocket::Request<'_>) -> Option<HashSet<String>> {
 ///    // Here is a place for your code to get user permissions/grants/permissions from a request (e.g. from a token or database).
 ///
 ///    // Stub example
-///    Some(vec!["ROLE_ADMIN".to_string()])
+///    Some(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 ///
 /// // `has_permissions` is one of options to validate permissions.
@@ -45,42 +51,43 @@ pub struct GrantsFairing<Type> {
     extractor: Extractor<Type>,
 }
 
-impl<Type: PartialEq + Clone + Send + Sync + 'static> GrantsFairing<Type> {
+impl<Type: Eq + Hash + Send + Sync + 'static> GrantsFairing<Type> {
     /// Creating fairing using your permission extraction function.
     ///
     /// You can declare `async fn` with a suitable signature or you can write a boxed closure in-place (see examples below).
     ///
     /// # Examples
     /// ```
+    /// use std::collections::HashSet;
     /// use rocket_grants::GrantsFairing;
     ///  async fn example() {
     ///     let string_extractor = GrantsFairing::with_extractor_fn(|req| Box::pin(extract(req)));
     ///     let enum_extractor = GrantsFairing::with_extractor_fn(|req| Box::pin(extract_enum(req)));
     ///
     ///     let closure_extractor = GrantsFairing::with_extractor_fn(|req| Box::pin(async move {
-    ///         Some(vec!["WRITE_ACCESS".to_string()])
+    ///         Some(HashSet::from(["WRITE_ACCESS".to_string()]))
     ///     }));
     /// }
     ///
-    /// async fn extract(_req: &rocket::Request<'_>) -> Option<Vec<String>> {
+    /// async fn extract(_req: &rocket::Request<'_>) -> Option<HashSet<String>> {
     ///     // Here is a place for your code to get user permissions/grants/permissions from a request
     ///      // For example from a token or database
-    ///     Some(vec!["WRITE_ACCESS".to_string()])
+    ///     Some(HashSet::from(["WRITE_ACCESS".to_string()]))
     /// }
     ///
     /// // Or with you own type:
-    /// #[derive(PartialEq, Clone)] // required bounds
+    /// #[derive(Eq, PartialEq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
-    /// async fn extract_enum(_req: &rocket::Request<'_>) -> Option<Vec<Permission>> {
+    /// async fn extract_enum(_req: &rocket::Request<'_>) -> Option<HashSet<Permission>> {
     ///     // Here is a place for your code to get user permissions/grants/permissions from a request
     ///      // For example from a token, database or external service
-    ///     Some(vec![Permission::WRITE])
+    ///     Some(HashSet::from([Permission::WRITE]))
     /// }
     /// ```
     ///
     pub fn with_extractor_fn<F: Send + Sync + 'static>(extractor_fn: F) -> Self
     where
-        F: for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<Vec<Type>>>,
+        F: for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<HashSet<Type>>>,
     {
         Self {
             extractor: Box::new(extractor_fn),
@@ -89,7 +96,7 @@ impl<Type: PartialEq + Clone + Send + Sync + 'static> GrantsFairing<Type> {
 }
 
 #[rocket::async_trait]
-impl<Type: PartialEq + Clone + Send + Sync + 'static> Fairing for GrantsFairing<Type> {
+impl<Type: Eq + Hash + Send + Sync + 'static> Fairing for GrantsFairing<Type> {
     fn info(&self) -> Info {
         Info {
             name: "Rocket-Grants Extractor",
@@ -98,7 +105,7 @@ impl<Type: PartialEq + Clone + Send + Sync + 'static> Fairing for GrantsFairing<
     }
 
     async fn on_request(&self, mut req: &mut Request<'_>, _data: &mut Data<'_>) {
-        let permissions: Option<Vec<Type>> = (self.extractor)(req).await;
+        let permissions: Option<HashSet<Type>> = (self.extractor)(req).await;
         req.attach(permissions);
     }
 }

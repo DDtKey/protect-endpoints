@@ -34,7 +34,7 @@ mod expand;
 ///     "some secured info with user_id path equal to user.id"
 ///}
 ///
-/// #[derive(Clone, PartialEq, Eq)]
+/// #[derive(Hash, PartialEq, Eq)]
 /// enum MyPermissionEnum {
 ///   OpGetSecret
 /// }

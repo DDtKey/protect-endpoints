@@ -58,7 +58,7 @@ pub use fairing::GrantsFairing;
 /// async fn role_enum_macro_secured() -> &'static str {
 ///    "some secured info"
 /// }
-/// #[derive(PartialEq, Clone)] // required bounds
+/// #[derive(Eq, PartialEq, Hash)] // required bounds
 /// enum Role { Admin, Manager }
 ///
 /// ```

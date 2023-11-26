@@ -25,7 +25,7 @@ Provides a complete analogue of the [`actix-web-grants`] and [`poem-grants`].
 The easiest way is to declare a function with the following signature:
 ```rust,ignore
 // You can use custom type instead of String
-async fn extract(req: &rocket::Request<'_>) -> Option<Vec<String>>
+async fn extract(req: &rocket::Request<'_>) -> Option<HashSet<String>>
 ```
 
 2. Add fairing to your application using the extraction function defined in step 1
