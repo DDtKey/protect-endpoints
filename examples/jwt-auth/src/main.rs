@@ -9,7 +9,7 @@ use crate::claims::Claims;
 
 mod claims;
 
-#[rocket_grants::has_permissions("OP_GET_SECURED_INFO")]
+#[rocket_grants::protect("OP_GET_SECURED_INFO")]
 #[rocket::get("/api/admin")]
 // For the user with permission `OP_GET_SECURED_INFO` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
@@ -21,7 +21,7 @@ async fn permission_secured() -> Status {
     Status::Ok
 }
 
-#[rocket_grants::has_any_role("ADMIN", "MANAGER")]
+#[rocket_grants::protect("ADMIN", "MANAGER")]
 #[rocket::get("/api/manager")]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
@@ -41,9 +41,7 @@ async fn rocket() -> _ {
             "/api",
             rocket::routes![permission_secured, manager_secured, create_token],
         )
-        .attach(GrantsFairing::with_extractor_fn(|req| {
-            Box::pin(extract_from_jwt(req))
-        }))
+        .attach(GrantsFairing::with_extractor_fn(|req| Box::pin(extract_from_jwt(req))))
 }
 
 async fn extract_from_jwt(req: &mut Request<'_>) -> Option<Vec<String>> {

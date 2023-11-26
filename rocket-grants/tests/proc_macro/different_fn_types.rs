@@ -3,16 +3,16 @@ use rocket::http::hyper::header::AUTHORIZATION;
 use rocket::http::{Header, Status};
 use rocket::local::asynchronous::{Client, LocalResponse};
 use rocket::serde::json::Json;
-use rocket_grants::{has_roles, GrantsFairing};
+use rocket_grants::{protect, GrantsFairing};
 use serde::{Deserialize, Serialize};
 
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[rocket::get("/http_response")]
 async fn http_response() -> Status {
     Status::Ok
 }
 
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[rocket::get("/str")]
 async fn str_response() -> &'static str {
     "Hi!"
@@ -23,19 +23,19 @@ struct User {
     id: i32,
 }
 
-#[has_roles("ADMIN", secure = "user_id == user.id")]
+#[protect("ROLE_ADMIN", secure = "user_id == user.id")]
 #[rocket::post("/secure/<user_id>", data = "<user>")]
 async fn secure_user_id(user_id: i32, user: Json<User>) -> &'static str {
     "Hi!"
 }
 
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[rocket::get("/return")]
 async fn return_response() -> &'static str {
     return "Hi!";
 }
 
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[rocket::get("/result?<name>")]
 async fn result_response(name: Option<String>) -> Result<String, Status> {
     let name = name.as_ref().ok_or(Status::MethodNotAllowed)?;

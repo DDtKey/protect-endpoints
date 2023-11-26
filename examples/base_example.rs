@@ -8,7 +8,7 @@ const ADMIN_RESPONSE: &str = "Hello Admin!";
 const OTHER_RESPONSE: &str = "Hello!";
 
 // An example of protection via `proc-macro`
-#[rocket_grants::has_permissions("OP_READ_ADMIN_INFO")]
+#[rocket_grants::protect("OP_READ_ADMIN_INFO")]
 #[get("/admin")]
 async fn macro_secured() -> &'static str {
     ADMIN_RESPONSE
@@ -24,7 +24,7 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 }
 
 // An example of protection via `proc-macro` with secure attribute
-#[rocket_grants::has_permissions("ROLE_ADMIN", secure = "user_id == user.id")]
+#[rocket_grants::protect("ROLE_ADMIN", secure = "user_id == user.id")]
 #[post("/resource/<user_id>", data = "<user>")]
 async fn secure_with_params(user_id: i32, user: Json<User>) -> &'static str {
     ADMIN_RESPONSE

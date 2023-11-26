@@ -35,7 +35,7 @@ type Extractor<Type> = Box<
 ///
 /// // `has_permissions` is one of options to validate permissions.
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
-/// #[rocket_grants::has_permissions("ROLE_ADMIN")]
+/// #[rocket_grants::protect("ROLE_ADMIN")]
 /// #[rocket::get("/")]
 /// async fn endpoint() -> Status {
 ///     Status::Ok

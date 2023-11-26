@@ -7,7 +7,7 @@ use rocket_grants::GrantsFairing;
 mod role;
 
 // `proc-macro` way require specify your type. It can be an import or a full path.
-#[rocket_grants::has_any_role("Admin", "role::Role::Manager", ty = "Role")]
+#[rocket_grants::protect("Admin", "role::Role::Manager", ty = Role)]
 // For the `Admin` or `Manager` - endpoint will give the HTTP status 200, otherwise - 403
 #[rocket::get("/macro_secured")]
 async fn macro_secured() -> Status {
@@ -28,9 +28,7 @@ async fn manual_secure(details: AuthDetails<Role>) -> &'static str {
 async fn rocket() -> _ {
     rocket::build()
         .mount("/api", rocket::routes![macro_secured, manual_secure])
-        .attach(GrantsFairing::with_extractor_fn(|req| {
-            Box::pin(extract(req))
-        }))
+        .attach(GrantsFairing::with_extractor_fn(|req| Box::pin(extract(req))))
 }
 
 // You can specify any of your own type (`PartialEq` + `Clone`) for the return type wrapped in a vector: rocket::Result<Vec<YOUR_TYPE_HERE>>

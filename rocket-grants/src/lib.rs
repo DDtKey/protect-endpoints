@@ -28,22 +28,22 @@ pub use fairing::GrantsFairing;
 /// use rocket::serde::json::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
-/// #[rocket_grants::has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
 /// #[rocket::get("/")]
 /// async fn macro_secured() -> &'static str {
 ///    "some secured info"
 /// }
 ///
-/// // Role - is permission with prefix "ROLE_".
+/// // Role - is string with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
-/// #[rocket_grants::has_roles["ADMIN", "MANAGER"]]
+/// #[rocket_grants::protect("ADMIN", "MANAGER")]
 /// #[rocket::get("/role")]
 /// async fn role_macro_secured() -> &'static str {
 ///    "some secured info"
 /// }
 ///
 /// // Additional security condition to ensure the protection of the endpoint
-/// #[rocket_grants::has_roles("USER", secure = "user_id == user.id")]
+/// #[rocket_grants::protect("USER", secure = "user_id == user.id")]
 /// #[rocket::post("/secure/<user_id>", data = "<user>")]
 /// async fn role_macro_secured_with_params(user_id: i32, user: Json<User>) -> &'static str {
 ///    "some secured info with parameters"
@@ -53,7 +53,7 @@ pub use fairing::GrantsFairing;
 /// struct User { id: i32 }
 ///
 /// // You own type is also supported (need to configure fairing for this type as well):
-/// #[rocket_grants::has_roles["Role::Admin", "Role::Manager", ty = "Role"]]
+/// #[rocket_grants::protect(any("Role::Admin", "Role::Manager"), ty = Role)]
 /// #[rocket::get("/enum")]
 /// async fn role_enum_macro_secured() -> &'static str {
 ///    "some secured info"

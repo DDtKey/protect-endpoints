@@ -43,7 +43,7 @@ async fn extract(req: &rocket::Request<'_>) -> Option<Vec<String>>
 
 ### Example of `proc-macro` way protection
 ```rust,no_run
-#[rocket_grants::has_permissions("OP_READ_SECURED_INFO")]
+#[rocket_grants::protect("OP_READ_SECURED_INFO")]
 #[rocket::get("/")]
 async fn macro_secured() -> &'static str {
    "ADMIN_RESPONSE"
@@ -67,7 +67,7 @@ Take a look at an [enum-role example](../examples/enum-role/src/main.rs)
 use enums::Role::{self, ADMIN};
 use dto::User;
 
-#[rocket_grants::has_roles("USER", secure = "user_id == user.id")]
+#[rocket_grants::protect("USER", secure = "user_id == user.id")]
 #[rocket::post("/secure/<user_id>", data = "<user>")]
 async fn role_macro_secured_with_params(user_id: i32, user: Json<User>) -> &'static str {
    "some secured info with parameters"

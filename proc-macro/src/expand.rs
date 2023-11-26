@@ -1,34 +1,41 @@
 use darling::ast::NestedMeta;
 use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
-use syn::{ExprLit, ItemFn, ReturnType};
+use std::ops::Deref;
+use syn::{ItemFn, Meta, ReturnType};
 
-pub(crate) struct HasPermissions {
-    check_fn: Ident,
+const AUTH_DETAILS: &str = "_auth_details_";
+
+#[derive(Debug)]
+enum Condition {
+    Any(Conditions),
+    All(Conditions),
+    Value(syn::LitStr),
+}
+
+#[derive(Debug)]
+struct Conditions(Vec<Condition>);
+
+#[derive(Debug)]
+pub(crate) struct Args {
+    cond: Condition,
+    secure: Option<syn::Expr>,
+    ty: Option<syn::Expr>,
+}
+
+pub(crate) struct ProtectEndpoint {
+    // check_fn: Ident,
     func: ItemFn,
     args: Args,
 }
 
-impl HasPermissions {
-    pub fn new(check_fn: &str, args: Args, func: ItemFn) -> syn::Result<Self> {
-        let check_fn: Ident = syn::parse_str(check_fn)?;
-
-        if args.permissions.is_empty() {
-            return Err(syn::Error::new(
-                Span::call_site(),
-                "The #[has_permissions(..)] macro requires at least one `permission` argument",
-            ));
-        }
-
-        Ok(Self {
-            check_fn,
-            func,
-            args,
-        })
+impl ProtectEndpoint {
+    pub fn new(args: Args, func: ItemFn) -> syn::Result<Self> {
+        Ok(Self { func, args })
     }
 }
 
-impl ToTokens for HasPermissions {
+impl ToTokens for ProtectEndpoint {
     fn to_tokens(&self, output: &mut TokenStream2) {
         let func_vis = &self.func.vis;
         let func_block = &self.func.block;
@@ -46,44 +53,26 @@ impl ToTokens for HasPermissions {
             }
         };
 
-        let check_fn = &self.check_fn;
-
-        let args = if self.args.ty.is_some() {
-            let permissions: Vec<syn::Expr> = self
-                .args
-                .permissions
-                .iter()
-                .map(|perm| perm.parse().unwrap())
-                .collect();
-
-            quote! {
-                #(&#permissions,)*
-            }
-        } else {
-            let permissions = &self.args.permissions;
-
-            quote! {
-                #(#permissions,)*
-            }
-        };
+        let condition = self.args.cond.to_tokens(self.args.ty.is_some());
 
         let ty = self
             .args
             .ty
             .as_ref()
-            .map(|t| t.to_token_stream())
+            .map(syn::Expr::to_token_stream)
             .unwrap_or(quote! {String});
 
         let condition = if let Some(expr) = &self.args.secure {
-            quote!(if _auth_details_.#check_fn(&[#args]) && #expr)
+            quote!(if #condition && #expr)
         } else {
-            quote!(if _auth_details_.#check_fn(&[#args]))
+            quote!(if #condition)
         };
+        let auth_details: Ident = Ident::new(AUTH_DETAILS, Span::call_site());
 
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                _auth_details_: rocket_grants::permissions::AuthDetails<#ty>,
+                #auth_details: rocket_grants::permissions::AuthDetails<#ty>,
                 #fn_args
             ) -> Result<#fn_output, rocket::http::Status> {
                 use rocket_grants::permissions::{PermissionsCheck, RolesCheck};
@@ -100,55 +89,175 @@ impl ToTokens for HasPermissions {
     }
 }
 
-#[derive(Default)]
-pub(crate) struct Args {
-    permissions: Vec<syn::LitStr>,
-    secure: Option<syn::Expr>,
-    ty: Option<syn::Expr>,
+impl Condition {
+    fn to_tokens(&self, is_typed: bool) -> TokenStream2 {
+        let auth_details: Ident = Ident::new(AUTH_DETAILS, Span::call_site());
+
+        match self {
+            Condition::Any(nested) if nested.iter().all(Condition::is_value) => {
+                let vals = nested.iter().map(|c| match c {
+                    Condition::Value(val) => val,
+                    _ => unreachable!(),
+                });
+
+                if is_typed {
+                    let vals: Vec<syn::Expr> =
+                        vals.map(syn::LitStr::parse).map(Result::unwrap).collect();
+
+                    quote! { #auth_details.has_any_permission(&[#(&#vals,)*]) }
+                } else {
+                    quote! { #auth_details.has_any_permission(&[#(#vals,)*]) }
+                }
+            }
+            Condition::All(nested) if nested.iter().all(Condition::is_value) => {
+                let vals = nested.iter().map(|c| match c {
+                    Condition::Value(val) => val,
+                    _ => unreachable!(),
+                });
+
+                if is_typed {
+                    let vals: Vec<syn::Expr> =
+                        vals.map(syn::LitStr::parse).map(Result::unwrap).collect();
+
+                    quote! { #auth_details.has_permissions(&[#(&#vals,)*]) }
+                } else {
+                    quote! { #auth_details.has_permissions(&[#(#vals,)*]) }
+                }
+            }
+            Condition::Any(nested) => {
+                let exprs: Vec<_> = nested.iter().map(|c| c.to_tokens(is_typed)).collect();
+
+                quote! { #(#exprs)||* }
+            }
+            Condition::All(nested) => {
+                let exprs: Vec<_> = nested.iter().map(|c| c.to_tokens(is_typed)).collect();
+
+                quote! { #(#exprs)&&* }
+            }
+            Condition::Value(val) => {
+                if is_typed {
+                    let val: syn::Expr = val.parse().unwrap();
+                    quote! { #auth_details.has_permission(&#val) }
+                } else {
+                    quote! { #auth_details.has_permission(#val) }
+                }
+            }
+        }
+    }
+
+    fn is_value(&self) -> bool {
+        matches!(self, Condition::Value(_))
+    }
+}
+
+impl darling::FromMeta for Condition {
+    fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
+        match *items {
+            [] => Err(darling::Error::too_few_items(1)),
+            [NestedMeta::Meta(ref meta)] => {
+                match darling::util::path_to_string(meta.path()).as_ref() {
+                    "any" => Ok(Condition::Any(
+                        darling::FromMeta::from_meta(meta).map_err(|e| e.at("any"))?,
+                    )),
+                    "all" => Ok(Condition::All(
+                        darling::FromMeta::from_meta(meta).map_err(|e| e.at("all"))?,
+                    )),
+                    other => Err(
+                        darling::Error::unknown_field_with_alts(other, &["any", "all"])
+                            .with_span(meta),
+                    ),
+                }
+            }
+            [NestedMeta::Lit(ref lit)] => Ok(Condition::Value(darling::FromMeta::from_value(lit)?)),
+            _ => Err(darling::Error::too_many_items(1)),
+        }
+    }
+
+    fn from_string(value: &str) -> darling::Result<Self> {
+        Ok(Condition::Value(darling::FromMeta::from_string(value)?))
+    }
+}
+
+impl darling::FromMeta for Conditions {
+    fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
+        let mut expressions = Vec::new();
+        for item in items {
+            let expr = match item {
+                nested @ NestedMeta::Meta(_) => Condition::from_list(&[nested.clone()])?,
+                NestedMeta::Lit(lit) => Condition::Value(darling::FromMeta::from_value(lit)?),
+            };
+            expressions.push(expr);
+        }
+
+        Ok(Conditions(expressions))
+    }
 }
 
 impl darling::FromMeta for Args {
     fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
-        let mut permissions = Vec::new();
+        let mut conditions = Vec::new();
         let mut secure = None;
         let mut ty = None;
 
+        let mut errors = ::darling::Error::accumulator();
+
         for item in items {
             match item {
-                NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
-                    path,
-                    value:
-                        syn::Expr::Lit(ExprLit {
-                            lit: syn::Lit::Str(lit_str),
-                            ..
-                        }),
-                    ..
-                })) => {
+                NestedMeta::Meta(Meta::NameValue(syn::MetaNameValue { path, value, .. })) => {
                     if path.is_ident("secure") {
-                        let expr = lit_str.parse().unwrap();
-                        secure = Some(expr);
+                        if secure.is_some() {
+                            errors.push(darling::Error::duplicate_field("secure"));
+                        } else {
+                            secure = errors.handle(darling::FromMeta::from_expr(value));
+                        }
                     } else if path.is_ident("ty") {
-                        let expr = lit_str.parse().unwrap();
-                        ty = Some(expr);
+                        if ty.is_some() {
+                            errors.push(darling::Error::duplicate_field("ty"));
+                        } else {
+                            ty = errors.handle(darling::FromMeta::from_expr(value));
+                        }
                     } else {
-                        return Err(darling::Error::unknown_field_path(path));
+                        errors.push(darling::Error::unknown_field_path(path));
+                    }
+                }
+                // List may mean either `any` or `all` conditions, so we should try to parse it
+                NestedMeta::Meta(Meta::List(_)) => {
+                    let cond = errors.handle(darling::FromMeta::from_list(&[item.clone()]));
+                    if let Some(cond) = cond {
+                        conditions.push(cond);
                     }
                 }
                 NestedMeta::Lit(syn::Lit::Str(lit)) => {
-                    permissions.push(lit.clone());
+                    conditions.push(Condition::Value(lit.clone()));
                 }
-                _ => {
-                    return Err(darling::Error::custom(
-                        "Unknown attribute, available: 'secure', 'ty' & string literal",
-                    ))
-                }
+                _ => errors.push(darling::Error::custom(
+                    "Unknown attribute, available: 'secure', 'ty', `all`, `any` and string literals",
+                )),
             }
         }
 
-        Ok(Args {
-            permissions,
-            secure,
-            ty,
-        })
+        if conditions.is_empty() {
+            errors.push(darling::Error::custom(
+                "At least one condition must be specified",
+            ));
+        }
+
+        errors.finish()?;
+
+        let cond = if conditions.len() == 1 {
+            conditions.pop().unwrap()
+        } else {
+            Condition::All(Conditions(conditions))
+        };
+
+        Ok(Args { cond, secure, ty })
+    }
+}
+
+impl Deref for Conditions {
+    type Target = Vec<Condition>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

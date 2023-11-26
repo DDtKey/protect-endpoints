@@ -5,15 +5,9 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::{parse_macro_input, ItemFn};
 
-use crate::expand::{Args, HasPermissions};
+use crate::expand::{Args, ProtectEndpoint};
 
 mod expand;
-
-const HAS_AUTHORITIES: &str = "has_permissions";
-const HAS_ANY_AUTHORITY: &str = "has_any_permission";
-
-const HAS_ROLES: &str = "has_roles";
-const HAS_ANY_ROLE: &str = "has_any_role";
 
 /// Macro to сheck that the user has all the specified permissions.
 /// Allow to add a conditional restriction based on handlers parameters.
@@ -25,7 +19,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// use rocket::serde::json::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
-/// #[rocket_grants::has_permissions("ROLE_ADMIN", "OP_GET_SECRET")]
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -35,7 +29,7 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// #[derive(serde::Deserialize)]
 /// struct User {id: i32}
 ///
-/// #[rocket_grants::has_permissions("ROLE_ADMIN", "OP_GET_SECRET", secure="user_id == user.id")]
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", secure="user_id == user.id")]
 /// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
 ///     "some secured info with user_id path equal to user.id"
 ///}
@@ -46,65 +40,18 @@ const HAS_ANY_ROLE: &str = "has_any_role";
 /// }
 ///
 /// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
-/// #[rocket_grants::has_permissions("MyPermissionEnum::OpGetSecret", ty = "MyPermissionEnum")]
+/// #[rocket_grants::protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
 /// async fn macro_enum_secured() -> &'static str {
 ///     "some secured info"
 /// }
 ///
 ///```
 #[proc_macro_attribute]
-pub fn has_permissions(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_permissions(HAS_AUTHORITIES, args, input)
+pub fn protect(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(args, input)
 }
 
-/// Macro to сheck that the user has any of the specified permissions.
-///
-/// # Examples
-/// ```
-/// // User should be ADMIN or MANAGER
-/// #[rocket_grants::has_any_permission("ROLE_ADMIN", "ROLE_MANAGER")]
-/// async fn macro_secured() -> &'static str {
-///     "some secured info"
-/// }
-/// ```
-#[proc_macro_attribute]
-pub fn has_any_permission(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_permissions(HAS_ANY_AUTHORITY, args, input)
-}
-
-/// Macro to сheck that the user has all the specified roles.
-/// Role - is permission with prefix "ROLE_" or your own custom type.
-///
-/// # Examples
-/// ```
-/// // User should be ADMIN and MANAGER
-/// #[rocket_grants::has_roles("ADMIN", "MANAGER")]
-/// async fn macro_secured() -> &'static str {
-///     "some secured info"
-/// }
-/// ```
-#[proc_macro_attribute]
-pub fn has_roles(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_permissions(HAS_ROLES, args, input)
-}
-
-/// Macro to сheck that the user has any the specified roles.
-/// Role - is permission with prefix "ROLE_" or your own custom type.
-///
-/// # Examples
-/// ```
-/// // User should be ADMIN or MANAGER
-/// #[rocket_grants::has_any_role("ADMIN", "MANAGER")]
-/// async fn macro_secured() -> &'static str {
-///     "some secured info"
-/// }
-/// ```
-#[proc_macro_attribute]
-pub fn has_any_role(args: TokenStream, input: TokenStream) -> TokenStream {
-    check_permissions(HAS_ANY_ROLE, args, input)
-}
-
-fn check_permissions(check_fn_name: &str, args: TokenStream, input: TokenStream) -> TokenStream {
+fn protect_endpoint(args: TokenStream, input: TokenStream) -> TokenStream {
     let args = match NestedMeta::parse_meta_list(args.into()) {
         Ok(v) => v,
         Err(e) => {
@@ -120,8 +67,8 @@ fn check_permissions(check_fn_name: &str, args: TokenStream, input: TokenStream)
 
     let func = parse_macro_input!(input as ItemFn);
 
-    match HasPermissions::new(check_fn_name, args, func) {
-        Ok(has_permissions) => has_permissions.into_token_stream().into(),
+    match ProtectEndpoint::new(args, func) {
+        Ok(protected) => protected.into_token_stream().into(),
         Err(err) => err.to_compile_error().into(),
     }
 }
