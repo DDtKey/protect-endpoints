@@ -10,4 +10,4 @@ edition = "2021"
 [dependencies]
 poem = "1"
 poem-grants = { path = "../../" }
-tokio = "1"
+tokio = "1.34.0"
