@@ -1,5 +1,5 @@
 #![doc(
-    html_logo_url = "https://raw.githubusercontent.com/DDtKey/actix-web-grants/actix-web-grants/main/logo.png"
+    html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/actix-web-grants/logo.png"
 )]
 //! A crate for validate user permissions in `actix-web`.
 //!
@@ -13,7 +13,7 @@
 //!
 //! [`GrantsMiddleware`]: GrantsMiddleware
 //! [`httpauth`]: https://docs.rs/actix-web-httpauth
-//! [`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/actix-web
 //! [`permissions`]: permissions
 //! [`proc-macro`]: proc_macro
 //! [`PermissionGuard`]: PermissionGuard

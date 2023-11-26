@@ -1,16 +1,14 @@
 # poem-grants
 
 <p align="center">
-    <img alt="poem-grants" src="https://github.com/DDtKey/poem-grants/raw/main/logo.png">
+    <img alt="poem-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/poem-grants/logo.png">
 </p>
 
 > Extension for [`poem`] to validate user permissions.
 
-[![CI](https://github.com/DDtKey/poem-grants/workflows/CI/badge.svg)](https://github.com/DDtKey/poem-grants/actions)
 [![Crates.io Downloads Badge](https://img.shields.io/crates/d/poem-grants)](https://crates.io/crates/poem-grants)
 [![crates.io](https://img.shields.io/crates/v/poem-grants)](https://crates.io/crates/poem-grants)
 [![Documentation](https://docs.rs/poem-grants/badge.svg)](https://docs.rs/poem-grants)
-[![dependency status](https://deps.rs/repo/github/DDtKey/poem-grants/status.svg)](https://deps.rs/repo/github/DDtKey/poem-grants)
 ![Apache 2.0 or MIT licensed](https://img.shields.io/crates/l/poem-grants)
 
 To check user access to specific services, you can use built-in `proc-macro`, `PermissionGuard` or manual.
@@ -119,9 +117,9 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 ## Supported `poem` versions
 * For `poem-grants: 1.*` supported version of `poem` is `1.*`
 
-[`jwt-auth`]: https://github.com/DDtKey/poem-grants/blob/main/examples/jwt-auth
-[`examples`]: https://github.com/DDtKey/poem-grants/tree/main/examples
+[`jwt-auth`]: https://github.com/DDtKey/protect-endpoints/blob/main/examples/poem/jwt-auth
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/poem
 [`documentation`]: https://docs.rs/poem-grants
 [`poem`]: https://github.com/poem-web/poem
 [`poem-openapi`]: https://github.com/poem-web/poem/tree/master/poem-openapi
-[`actix-web-grants`]: https://github.com/DDtKey/actix-web-grants
+[`actix-web-grants`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-grants

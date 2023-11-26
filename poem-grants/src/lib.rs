@@ -1,4 +1,6 @@
-#![doc(html_logo_url = "https://raw.githubusercontent.com/DDtKey/poem-grants/main/logo.png")]
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/poem-grants/logo.png"
+)]
 //! A crate for authorization in `poem`.
 //!
 //! For built-in configure see: [`GrantsMiddleware`].
@@ -10,7 +12,7 @@
 //! You can find more [`examples`] in the git repository.
 //!
 //! [`GrantsMiddleware`]: GrantsMiddleware
-//! [`examples`]: https://github.com/DDtKey/poem-grants/tree/main/examples
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/poem
 //! [`permissions`]: permissions
 //! [`proc-macro`]: proc_macro
 #![doc = include_str!("../README.md")]

@@ -1,7 +1,7 @@
 # actix-web-grants
 
 <p align="center">
-    <img alt="actix-web-grants" src="https://github.com/DDtKey/actix-web-grants/raw/main/logo.png">
+    <img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/actix-web-grants/logo.png">
 </p>
 
 > Extension for `actix-web` to validate user permissions.
@@ -139,6 +139,6 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 * For `actix-web-grants: 2.*` supported version of `actix-web` is `3.*`
 * For `actix-web-grants: 3.*` supported version of `actix-web` is `4.*`
 
-[`actix-web-httpauth`]: https://github.com/DDtKey/actix-web-grants/blob/main/examples/jwt-httpauth
-[`examples`]: https://github.com/DDtKey/actix-web-grants/tree/main/examples
+[`actix-web-httpauth`]: https://github.com/DDtKey/protect-endpoints/blob/main/examples/actix-web/jwt-httpauth
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/actix-web
 [`documentation`]: https://docs.rs/actix-web-grants
