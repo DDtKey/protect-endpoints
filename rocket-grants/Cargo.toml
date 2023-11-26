@@ -17,12 +17,12 @@ path = "src/lib.rs"
 
 [features]
 default = ["macro-check"]
-macro-check = ["rocket-grants-proc-macro"]
+macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
 futures-core = "0.3"
 rocket = "0.5.0"
-rocket-grants-proc-macro = { workspace = true, optional = true }
+protect-endpoints-proc-macro = { workspace = true, features = ["rocket"], optional = true }
 
 [dev-dependencies]
 rocket = { version = "0.5.0", features = ["json"] }

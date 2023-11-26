@@ -81,5 +81,5 @@ pub use middleware::GrantsMiddleware;
 /// ```
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use actix_grants_proc_macro::*;
+    pub use protect_endpoints_proc_macro::*;
 }

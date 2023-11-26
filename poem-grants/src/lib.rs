@@ -64,7 +64,7 @@ pub use middleware::GrantsMiddleware;
 /// ```
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use poem_grants_proc_macro::*;
+    pub use protect_endpoints_proc_macro::*;
 }
 
 /// Just a shortcut for proc-macros

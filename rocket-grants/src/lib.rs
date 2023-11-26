@@ -67,7 +67,7 @@ pub use fairing::GrantsFairing;
 
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use rocket_grants_proc_macro::*;
+    pub use protect_endpoints_proc_macro::*;
 }
 
 /// Just a shortcut for proc-macros
