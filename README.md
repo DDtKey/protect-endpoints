@@ -6,9 +6,9 @@
 > Extension for [`actix-web`], [`rocket`] and [`poem`] to authorize requests.
 
 <p align="center">
-<img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/actix-web-grants/logo.png">
-<img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/rocket-grants/logo.png">
-<img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/poem-grants/logo.png">
+<a href="https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-grants"><img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/actix-web-grants/logo.png"></a>
+<a href="https://github.com/DDtKey/protect-endpoints/tree/main/rocket-grants"><img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/rocket-grants/logo.png"></a>
+<a href="https://github.com/DDtKey/protect-endpoints/tree/main/poem-grants"><img alt="actix-web-grants" src="https://github.com/DDtKey/protect-endpoints/raw/main/poem-grants/logo.png"></a>
 </p>
 
 [`actix-web`]: https://github.com/actix/actix-web
