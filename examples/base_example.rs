@@ -24,7 +24,7 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 }
 
 // An example of protection via `proc-macro` with secure attribute
-#[rocket_grants::protect("ROLE_ADMIN", secure = "user_id == user.id")]
+#[rocket_grants::protect("ROLE_ADMIN", expr = "user_id == user.id")]
 #[post("/resource/<user_id>", data = "<user>")]
 async fn secure_with_params(user_id: i32, user: Json<User>) -> &'static str {
     ADMIN_RESPONSE

@@ -11,7 +11,7 @@ mod expand;
 
 /// Macro to сheck that the user has all the specified permissions.
 /// Allow to add a conditional restriction based on handlers parameters.
-/// Add the `secure` attribute followed by the the boolean expression to validate based on parameters
+/// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
 ///
 /// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
@@ -29,7 +29,7 @@ mod expand;
 /// #[derive(serde::Deserialize)]
 /// struct User {id: i32}
 ///
-/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", secure="user_id == user.id")]
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", expr="user_id == user.id")]
 /// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
 ///     "some secured info with user_id path equal to user.id"
 ///}

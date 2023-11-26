@@ -56,9 +56,9 @@ async fn macro_secured() -> &'static str {
 <br/>
 
 
-Here is an example using the `ty` and `secure` attributes. But these are independent features.
+Here is an example using the `ty` and `expr` attributes. But these are independent features.
 
-`secure` allows you to include some checks in the macro based on function params.
+`expr` allows you to include some checks in the macro based on function params.
 
 `ty` allows you to use a custom type for the authority (then the fairing needs to be configured). 
 Take a look at an [enum-role example](../examples/enum-role/src/main.rs)
@@ -67,7 +67,7 @@ Take a look at an [enum-role example](../examples/enum-role/src/main.rs)
 use enums::Role::{self, ADMIN};
 use dto::User;
 
-#[rocket_grants::protect("USER", secure = "user_id == user.id")]
+#[rocket_grants::protect("USER", expr = "user_id == user.id")]
 #[rocket::post("/secure/<user_id>", data = "<user>")]
 async fn role_macro_secured_with_params(user_id: i32, user: Json<User>) -> &'static str {
    "some secured info with parameters"

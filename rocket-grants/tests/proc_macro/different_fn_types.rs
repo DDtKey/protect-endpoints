@@ -23,7 +23,7 @@ struct User {
     id: i32,
 }
 
-#[protect("ROLE_ADMIN", secure = "user_id == user.id")]
+#[protect("ROLE_ADMIN", expr = "user_id == user.id")]
 #[rocket::post("/secure/<user_id>", data = "<user>")]
 async fn secure_user_id(user_id: i32, user: Json<User>) -> &'static str {
     "Hi!"
