@@ -106,7 +106,7 @@ You can set up custom responses for:
 
 
 ## Supported `rocket` versions
-* For `rocket-grants: 0.1.*` & `0.2.*` supported version of `rocket` is `0.5.*`
+* For `rocket-grants: 0.1.*` supported version of `rocket` is `0.5.*`
 
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/rocket
 [`documentation`]: https://docs.rs/rocket-grants

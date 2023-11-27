@@ -118,7 +118,7 @@ async fn manual_secure(details: AuthDetails) -> Response {
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
 ## Supported `poem` versions
-* For `poem-grants: 1.*` & `2.*` supported version of `poem` is `1.*`
+* For `poem-grants: 1.*` supported version of `poem` is `1.*`
 
 [`jwt-auth`]: https://github.com/DDtKey/protect-endpoints/blob/main/examples/poem/jwt-auth
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/poem
