@@ -3,12 +3,14 @@ use actix_web::error::ErrorUnauthorized;
 use actix_web::http::header::{HeaderValue, AUTHORIZATION};
 use actix_web::{test, Error};
 use serde::Deserialize;
+use std::collections::HashSet;
+use std::hash::Hash;
 use std::str::FromStr;
 
 pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
-#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
+#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Eq, Hash)]
 #[display(style = "SNAKE_CASE")]
 #[allow(clippy::upper_case_acronyms)]
 pub enum Role {
@@ -16,7 +18,7 @@ pub enum Role {
     MANAGER,
 }
 
-#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
+#[derive(parse_display::Display, parse_display::FromStr, PartialEq, Eq, Hash)]
 #[display(style = "SNAKE_CASE")]
 #[allow(clippy::upper_case_acronyms)]
 pub enum Permission {
@@ -24,7 +26,7 @@ pub enum Permission {
     WRITE,
 }
 
-pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
+pub async fn extract(req: &ServiceRequest) -> Result<HashSet<String>, Error> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -33,16 +35,13 @@ pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
         .map(Result::unwrap);
 
     auth_header
-        .map(|header| {
-            header
-                .split(',')
-                .map(str::to_string)
-                .collect::<Vec<String>>()
-        })
+        .map(|header| header.split(',').map(str::to_string).collect())
         .ok_or_else(|| ErrorUnauthorized("Authorization header incorrect!"))
 }
 
-pub async fn enum_extract<T: FromStr>(req: &ServiceRequest) -> Result<Vec<T>, Error> {
+pub async fn enum_extract<T: FromStr + Eq + Hash>(
+    req: &ServiceRequest,
+) -> Result<HashSet<T>, Error> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -55,7 +54,7 @@ pub async fn enum_extract<T: FromStr>(req: &ServiceRequest) -> Result<Vec<T>, Er
             header
                 .split(',')
                 .filter_map(|name| T::from_str(name).ok())
-                .collect::<Vec<T>>()
+                .collect()
         })
         .ok_or_else(|| ErrorUnauthorized("Authorization header incorrect!"))
 }

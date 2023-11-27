@@ -1,5 +1,6 @@
 use crate::authorities::AuthDetails;
 use poem::Request;
+use std::hash::Hash;
 
 /// Allows you to transfer authorities to [`poem-grants`] from your custom middleware.
 ///
@@ -20,11 +21,11 @@ use poem::Request;
 /// [`poem-grants`]: crate
 /// [`Request`]: poem::Request
 pub trait AttachAuthorities<Type> {
-    fn attach(&mut self, authorities: Vec<Type>);
+    fn attach(&mut self, authorities: impl IntoIterator<Item = Type>);
 }
 
-impl<Type: PartialEq + Clone + Send + Sync + 'static> AttachAuthorities<Type> for Request {
-    fn attach(&mut self, authorities: Vec<Type>) {
+impl<Type: Eq + Hash + Send + Sync + 'static> AttachAuthorities<Type> for Request {
+    fn attach(&mut self, authorities: impl IntoIterator<Item = Type>) {
         self.extensions_mut().insert(AuthDetails::new(authorities));
     }
 }

@@ -1,8 +1,10 @@
 use poem::Request;
+use std::collections::HashSet;
 use std::future::Future;
+use std::hash::Hash;
 
 pub trait AuthoritiesExtractor<'a, Req, Type> {
-    type Future: Future<Output = poem::Result<Vec<Type>>> + Send + Sync;
+    type Future: Future<Output = poem::Result<HashSet<Type>>> + Send + Sync;
 
     fn extract(&self, request: &'a mut Request) -> Self::Future;
 }
@@ -10,8 +12,8 @@ pub trait AuthoritiesExtractor<'a, Req, Type> {
 impl<'a, F, O, Type> AuthoritiesExtractor<'a, &Request, Type> for F
 where
     F: Fn(&'a Request) -> O,
-    O: Future<Output = poem::Result<Vec<Type>>> + Send + Sync,
-    Type: PartialEq + Clone + 'static,
+    O: Future<Output = poem::Result<HashSet<Type>>> + Send + Sync,
+    Type: Eq + Hash + 'static,
 {
     type Future = O;
 
@@ -23,8 +25,8 @@ where
 impl<'a, F, O, Type> AuthoritiesExtractor<'a, &mut Request, Type> for F
 where
     F: Fn(&'a mut Request) -> O,
-    O: Future<Output = poem::Result<Vec<Type>>> + Send + Sync,
-    Type: PartialEq + Clone + 'static,
+    O: Future<Output = poem::Result<HashSet<Type>>> + Send + Sync,
+    Type: Eq + Hash + 'static,
 {
     type Future = O;
 
@@ -37,8 +39,8 @@ where
 mod tests {
     use super::*;
 
-    async fn extract(_req: &Request) -> poem::Result<Vec<String>> {
-        Ok(vec!["TEST_PERMISSION".to_string()])
+    async fn extract(_req: &Request) -> poem::Result<HashSet<String>> {
+        Ok(HashSet::from(["TEST_PERMISSION".to_string()]))
     }
 
     #[tokio::test]
@@ -52,8 +54,8 @@ mod tests {
             .for_each(|perm| assert_eq!("TEST_PERMISSION", perm.as_str()));
     }
 
-    async fn mut_extract(_req: &mut Request) -> poem::Result<Vec<String>> {
-        Ok(vec!["TEST_PERMISSION".to_string()])
+    async fn mut_extract(_req: &mut Request) -> poem::Result<HashSet<String>> {
+        Ok(HashSet::from(["TEST_PERMISSION".to_string()]))
     }
 
     #[tokio::test]

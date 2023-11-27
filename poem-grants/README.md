@@ -25,7 +25,7 @@ The library can also be integrated with third-party solutions or your custom mid
 The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
 ```rust,ignore
 // You can use custom type instead of String
-async fn extract(req: &poem::Request) -> poem::Result<Vec<String>>
+async fn extract(req: &poem::Request) -> poem::Result<HashSet<String>>
 ```
 
 2. Add middleware to your application using the extractor defined in step 1

@@ -14,6 +14,9 @@
 //! [`GrantsMiddleware`]: poem_grants::GrantsMiddleware;
 
 use poem::{FromRequest, Request, RequestBody};
+use std::collections::HashSet;
+use std::hash::Hash;
+use std::sync::Arc;
 
 mod attache;
 mod extractors;
@@ -22,30 +25,28 @@ use crate::error::AccessError;
 pub use attache::AttachAuthorities;
 pub use extractors::*;
 
-#[derive(Clone)]
-pub struct AuthDetails<T = String>
-where
-    T: PartialEq + Send + Sync,
-{
-    pub authorities: Vec<T>,
+pub struct AuthDetails<T = String> {
+    pub authorities: Arc<HashSet<T>>,
 }
 
 impl<T> AuthDetails<T>
 where
-    T: PartialEq + Clone + Send + Sync,
+    T: Eq + Hash + Send + Sync,
 {
-    pub fn new(authorities: Vec<T>) -> AuthDetails<T> {
-        AuthDetails { authorities }
+    pub fn new(authorities: impl IntoIterator<Item = T>) -> AuthDetails<T> {
+        AuthDetails {
+            authorities: Arc::new(authorities.into_iter().collect()),
+        }
     }
 }
 
-pub trait AuthoritiesCheck<T: PartialEq + Send + Sync> {
+pub trait AuthoritiesCheck<T: Eq + Hash + Send + Sync> {
     fn has_authority(&self, authority: T) -> bool;
     fn has_authorities(&self, authorities: &[T]) -> bool;
     fn has_any_authority(&self, authorities: &[T]) -> bool;
 }
 
-impl<T: PartialEq + Clone + Send + Sync> AuthoritiesCheck<&T> for AuthDetails<T> {
+impl<T: Eq + Hash + Send + Sync> AuthoritiesCheck<&T> for AuthDetails<T> {
     fn has_authority(&self, authority: &T) -> bool {
         self.authorities.iter().any(|auth| auth == authority)
     }
@@ -76,12 +77,20 @@ impl AuthoritiesCheck<&str> for AuthDetails {
 }
 
 #[poem::async_trait]
-impl<'a, T: PartialEq + Clone + Send + Sync + 'static> FromRequest<'a> for AuthDetails<T> {
+impl<'a, T: Eq + Hash + Send + Sync + 'static> FromRequest<'a> for AuthDetails<T> {
     async fn from_request(req: &'a Request, _body: &mut RequestBody) -> poem::Result<Self> {
         req.extensions()
             .get::<AuthDetails<T>>()
             .map(AuthDetails::clone)
             .ok_or(AccessError::UnauthorizedRequest)
             .map_err(Into::into)
+    }
+}
+
+impl<T: Eq + Hash> Clone for AuthDetails<T> {
+    fn clone(&self) -> Self {
+        Self {
+            authorities: self.authorities.clone(),
+        }
     }
 }
