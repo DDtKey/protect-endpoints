@@ -17,7 +17,7 @@ repository = "https://github.com/DDtKey/protect-endpoints"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-actix-web-grants = { path = "actix-web-grants", version = "4.0.0" }
-rocket-grants = { path = "rocket-grants", version = "0.1.1" }
-poem-grants = { path = "poem-grants", version = "1.0.0" }
-protect-endpoints-proc-macro = { path = "proc-macro", version = "0.1.0" }
+protect-endpoints-proc-macro = { version = "0.1.0" }
+
+[patch.crates-io]
+protect-endpoints-proc-macro = { path = "proc-macro" }
