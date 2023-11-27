@@ -20,7 +20,4 @@ authors = ["DDtKey <ddttkey@gmail.com>"]
 protect-endpoints-proc-macro = { version = "0.1.0" }
 
 [patch.crates-io]
-actix-web-grants = { path = "actix-web-grants" }
-rocket-grants = { path = "rocket-grants" }
-poem-grants = { path = "poem-grants" }
 protect-endpoints-proc-macro = { path = "proc-macro" }
