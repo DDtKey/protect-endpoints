@@ -5,7 +5,7 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::{parse_macro_input, ItemFn};
 
-use crate::expand::{Args, FnType, ProtectEndpoint};
+use crate::expand::{FnType, Framework, ProtectEndpoint, ProtectionArgs};
 
 mod expand;
 
@@ -18,7 +18,7 @@ mod expand;
 /// ```rust,no_run
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
-/// #[protect("ROLE_ADMIN", "OP_GET_SECRET")]
+/// #[actix_web_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
 /// async fn macro_secured() -> &'static str {
 ///     "some secured info"
 /// }
@@ -28,7 +28,7 @@ mod expand;
 /// #[derive(serde::Deserialize)]
 /// struct User {id: i32}
 ///
-/// #[protect("ROLE_ADMIN", "OP_GET_SECRET", expr="user_id == user.id")]
+/// #[actix_web_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", expr="user_id == user.id")]
 /// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
 ///     "some secured info with user_id path equal to user.id"
 ///}
@@ -39,36 +39,103 @@ mod expand;
 /// }
 ///
 /// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
-/// #[protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
+/// #[actix_web_grants::protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
 /// async fn macro_enum_secured() -> &'static str {
 ///     "some secured info"
 /// }
 ///
 ///```
+#[cfg(feature = "actix-web")]
+#[cfg_attr(docsrs, doc(cfg(feature = "actix-web")))]
 #[proc_macro_attribute]
-pub fn protect(args: TokenStream, input: TokenStream) -> TokenStream {
-    protect_endpoint(args, input)
+pub fn protect_actix_web(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(Framework::ActixWeb, args, input)
 }
 
-fn protect_endpoint(args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = match NestedMeta::parse_meta_list(args.into()) {
-        Ok(v) => v,
-        Err(e) => {
-            return TokenStream::from(darling::Error::from(e).write_errors());
-        }
-    };
-    let args = match Args::from_list(&args) {
-        Ok(v) => v,
-        Err(e) => {
-            return TokenStream::from(e.write_errors());
-        }
-    };
+/// Macro to сheck that the user has all the specified permissions.
+/// Allow to add a conditional restriction based on handlers parameters.
+/// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
+///
+/// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
+/// # Examples
+/// ```rust,no_run
+///
+/// // User should be ADMIN with OP_GET_SECRET permission
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
+/// async fn macro_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+/// // User should be ADMIN with OP_GET_SECRET permission and the user.id param should be equal
+/// // to the path parameter {user_id}
+/// #[derive(serde::Deserialize)]
+/// struct User {id: i32}
+///
+/// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", expr="user_id == user.id")]
+/// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
+///     "some secured info with user_id path equal to user.id"
+///}
+///
+/// #[derive(Hash, PartialEq, Eq)]
+/// enum MyPermissionEnum {
+///   OpGetSecret
+/// }
+///
+/// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
+/// #[rocket_grants::protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
+/// async fn macro_enum_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+///```
+#[cfg(feature = "rocket")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rocket")))]
+#[proc_macro_attribute]
+pub fn protect_rocket(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(Framework::Rocket, args, input)
+}
 
-    let func = parse_macro_input!(input as ItemFn);
-
-    ProtectEndpoint::new(args, FnType::Fn(func))
-        .into_token_stream()
-        .into()
+/// Macro to сheck that the user has all the specified permissions.
+/// Allow to add a conditional restriction based on handlers parameters.
+/// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
+///
+/// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
+/// # Examples
+/// ```rust,no_run
+///
+/// // User should be ADMIN with OP_GET_SECRET permission
+/// #[poem_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
+/// async fn macro_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+/// // User should be ADMIN with OP_GET_SECRET permission and the user.id param should be equal
+/// // to the path parameter {user_id}
+/// #[derive(serde::Deserialize)]
+/// struct User {id: i32}
+///
+/// #[poem_grants::protect("ROLE_ADMIN", "OP_GET_SECRET", expr="user_id == user.id")]
+/// async fn macro_secured_params(user_id: i32, user: Json<User>) -> &'static str {
+///     "some secured info with user_id path equal to user.id"
+///}
+///
+/// #[derive(Hash, PartialEq, Eq)]
+/// enum MyPermissionEnum {
+///   OpGetSecret
+/// }
+///
+/// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
+/// #[poem_grants::protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
+/// async fn macro_enum_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+///```
+#[cfg(feature = "poem")]
+#[cfg_attr(docsrs, doc(cfg(feature = "poem")))]
+#[proc_macro_attribute]
+pub fn protect_poem(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(Framework::Poem, args, input)
 }
 
 /// Macro for `poem-openapi` support
@@ -104,16 +171,17 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
                 .iter()
                 .filter(|attr| attr.path().is_ident("protect"))
             {
-                let args = match Args::from_meta(&grants_attr.meta) {
+                let args = match ProtectionArgs::from_meta(&grants_attr.meta) {
                     Ok(v) => v,
                     Err(e) => {
                         return TokenStream::from(e.write_errors());
                     }
                 };
 
-                let generated = ProtectEndpoint::new(args, FnType::Method(method.clone()))
-                    .into_token_stream()
-                    .into();
+                let generated =
+                    ProtectEndpoint::new(Framework::Poem, args, FnType::Method(method.clone()))
+                        .into_token_stream()
+                        .into();
 
                 let mut gen_method = parse_macro_input!(generated as syn::ImplItemFn);
 
@@ -133,4 +201,25 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     res.into()
+}
+
+fn protect_endpoint(framework: Framework, args: TokenStream, input: TokenStream) -> TokenStream {
+    let args = match NestedMeta::parse_meta_list(args.into()) {
+        Ok(v) => v,
+        Err(e) => {
+            return TokenStream::from(darling::Error::from(e).write_errors());
+        }
+    };
+    let args = match ProtectionArgs::from_list(&args) {
+        Ok(v) => v,
+        Err(e) => {
+            return TokenStream::from(e.write_errors());
+        }
+    };
+
+    let func = parse_macro_input!(input as ItemFn);
+
+    ProtectEndpoint::new(framework, args, FnType::Fn(func))
+        .into_token_stream()
+        .into()
 }

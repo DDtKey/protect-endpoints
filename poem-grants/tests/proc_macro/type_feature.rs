@@ -4,24 +4,24 @@ use poem::http::header::AUTHORIZATION;
 use poem::http::StatusCode;
 use poem::test::{TestClient, TestResponse};
 use poem::{EndpointExt, Response, Route};
-use poem_grants::{has_roles, GrantsMiddleware};
+use poem_grants::{protect, GrantsMiddleware};
 
 // Using imported custom type (in `use` section)
-#[has_roles("ADMIN", type = "Role")]
+#[protect("ADMIN", ty = "Role")]
 #[poem::handler]
 async fn imported_path_enum_secure() -> Response {
     Response::builder().status(StatusCode::OK).finish()
 }
 
 // Using a full path to a custom type (enum)
-#[has_roles("crate::common::Role::ADMIN", type = "crate::common::Role")]
+#[protect("crate::common::Role::ADMIN", ty = "crate::common::Role")]
 #[poem::handler]
 async fn full_path_enum_secure() -> Response {
     Response::builder().status(StatusCode::OK).finish()
 }
 
 // Incorrect endpoint security without Type specification
-#[has_roles("ADMIN")]
+#[protect("ADMIN")]
 #[poem::handler]
 async fn incorrect_enum_secure() -> Response {
     Response::builder().status(StatusCode::OK).finish()

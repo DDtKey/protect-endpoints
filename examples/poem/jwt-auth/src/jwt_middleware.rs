@@ -2,7 +2,7 @@ use poem::http::header::AUTHORIZATION;
 use poem::{Endpoint, Middleware, Request, Result};
 
 // Used for integration with custom middleware
-use poem_grants::permissions::AttachPermissions;
+use poem_grants::authorities::AttachPermissions;
 
 /// A middleware that extract token from HTTP headers. See https://docs.rs/poem/latest/poem/middleware/trait.Middleware.html
 pub struct JwtMiddleware;

@@ -10,6 +10,7 @@ pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
 #[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
 #[display(style = "SNAKE_CASE")]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Role {
     ADMIN,
     MANAGER,
@@ -17,6 +18,7 @@ pub enum Role {
 
 #[derive(parse_display::Display, parse_display::FromStr, PartialEq, Clone)]
 #[display(style = "SNAKE_CASE")]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Permission {
     READ,
     WRITE,
@@ -33,7 +35,7 @@ pub async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error> {
     auth_header
         .map(|header| {
             header
-                .split(",")
+                .split(',')
                 .map(str::to_string)
                 .collect::<Vec<String>>()
         })
@@ -51,7 +53,7 @@ pub async fn enum_extract<T: FromStr>(req: &ServiceRequest) -> Result<Vec<T>, Er
     auth_header
         .map(|header| {
             header
-                .split(",")
+                .split(',')
                 .filter_map(|name| T::from_str(name).ok())
                 .collect::<Vec<T>>()
         })

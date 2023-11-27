@@ -2,13 +2,13 @@ use actix_web::dev::ServiceRequest;
 use actix_web::Error;
 use std::future::Future;
 
-pub trait PermissionsExtractor<'a, Req, Type> {
+pub trait AuthoritiesExtractor<'a, Req, Type> {
     type Future: Future<Output = Result<Vec<Type>, Error>>;
 
     fn extract(&self, request: &'a mut ServiceRequest) -> Self::Future;
 }
 
-impl<'a, F, O, Type> PermissionsExtractor<'a, &ServiceRequest, Type> for F
+impl<'a, F, O, Type> AuthoritiesExtractor<'a, &ServiceRequest, Type> for F
 where
     F: Fn(&'a ServiceRequest) -> O,
     O: Future<Output = Result<Vec<Type>, Error>>,
@@ -21,7 +21,7 @@ where
     }
 }
 
-impl<'a, F, O, Type> PermissionsExtractor<'a, &mut ServiceRequest, Type> for F
+impl<'a, F, O, Type> AuthoritiesExtractor<'a, &mut ServiceRequest, Type> for F
 where
     F: Fn(&'a mut ServiceRequest) -> O,
     O: Future<Output = Result<Vec<Type>, Error>>,
@@ -47,12 +47,12 @@ mod tests {
     #[actix_rt::test]
     async fn test_fn_extractor_impl() {
         let mut req = test::TestRequest::get().to_srv_request();
-        let permissions = extract.extract(&mut req).await;
+        let authorities = extract.extract(&mut req).await;
 
-        permissions
+        authorities
             .unwrap()
             .iter()
-            .for_each(|perm| assert_eq!("TEST_PERMISSION", perm.as_str()));
+            .for_each(|authority| assert_eq!("TEST_PERMISSION", authority.as_str()));
     }
 
     async fn mut_extract(_req: &mut ServiceRequest) -> Result<Vec<String>, Error> {
@@ -62,11 +62,11 @@ mod tests {
     #[actix_rt::test]
     async fn test_fn_mut_extractor_impl() {
         let mut req = test::TestRequest::get().to_srv_request();
-        let permissions = mut_extract.extract(&mut req).await;
+        let authorities = mut_extract.extract(&mut req).await;
 
-        permissions
+        authorities
             .unwrap()
             .iter()
-            .for_each(|perm| assert_eq!("TEST_PERMISSION", perm.as_str()));
+            .for_each(|authority| assert_eq!("TEST_PERMISSION", authority.as_str()));
     }
 }

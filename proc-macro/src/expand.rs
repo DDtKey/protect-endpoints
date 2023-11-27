@@ -1,6 +1,6 @@
 use darling::ast::NestedMeta;
 use proc_macro2::{Ident, TokenStream as TokenStream2};
-use quote::quote;
+use quote::{quote, ToTokens};
 use std::ops::Deref;
 use syn::{Block, ItemFn, Meta};
 
@@ -11,7 +11,17 @@ mod poem;
 #[cfg(feature = "rocket")]
 mod rocket;
 
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone)]
+pub(crate) enum Framework {
+    #[cfg(feature = "actix-web")]
+    ActixWeb,
+    #[cfg(feature = "rocket")]
+    Rocket,
+    #[cfg(feature = "poem")]
+    Poem,
+}
+
+#[derive(Debug, Clone)]
 pub(crate) enum FnType {
     Fn(ItemFn),
     #[cfg(feature = "poem")]
@@ -30,20 +40,38 @@ enum Condition {
 struct Conditions(Vec<Condition>);
 
 #[derive(Debug)]
-pub(crate) struct Args {
+pub(crate) struct ProtectionArgs {
     cond: Condition,
     ty: Option<syn::Expr>,
     error_fn: Option<Ident>,
 }
 
 pub(crate) struct ProtectEndpoint {
+    framework: Framework,
     func: FnType,
-    args: Args,
+    args: ProtectionArgs,
 }
 
 impl ProtectEndpoint {
-    pub fn new(args: Args, func: FnType) -> Self {
-        Self { func, args }
+    pub fn new(framework: Framework, args: ProtectionArgs, func: FnType) -> Self {
+        Self {
+            framework,
+            func,
+            args,
+        }
+    }
+}
+
+impl ToTokens for ProtectEndpoint {
+    fn to_tokens(&self, output: &mut TokenStream2) {
+        match self.framework {
+            #[cfg(feature = "actix-web")]
+            Framework::ActixWeb => self.to_tokens_actix_web(output),
+            #[cfg(feature = "poem")]
+            Framework::Poem => self.to_tokens_poem(output),
+            #[cfg(feature = "rocket")]
+            Framework::Rocket => self.to_tokens_rocket(output),
+        }
     }
 }
 
@@ -162,7 +190,7 @@ impl darling::FromMeta for Conditions {
     }
 }
 
-impl darling::FromMeta for Args {
+impl darling::FromMeta for ProtectionArgs {
     fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
         let mut conditions = Vec::new();
         let mut ty = None;
@@ -229,7 +257,7 @@ impl darling::FromMeta for Args {
             Condition::All(Conditions(conditions))
         };
 
-        Ok(Args { cond, ty, error_fn })
+        Ok(ProtectionArgs { cond, ty, error_fn })
     }
 }
 

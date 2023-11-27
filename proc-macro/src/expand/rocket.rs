@@ -3,8 +3,8 @@ use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
 use syn::ReturnType;
 
-impl ToTokens for ProtectEndpoint {
-    fn to_tokens(&self, output: &mut TokenStream2) {
+impl ProtectEndpoint {
+    pub(super) fn to_tokens_rocket(&self, output: &mut TokenStream2) {
         let func_vis = &self.func.vis();
         let func_block = &self.func.block();
 
@@ -29,7 +29,7 @@ impl ToTokens for ProtectEndpoint {
             .args
             .ty
             .as_ref()
-            .map(syn::Expr::to_token_stream)
+            .map(ToTokens::to_token_stream)
             .unwrap_or(quote! {String});
 
         let condition = self

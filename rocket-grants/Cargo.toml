@@ -1,7 +1,7 @@
 [package]
 name = "rocket-grants"
 version = "0.1.1"
-description = "Authorization extension for `rocket`"
+description = "Authorization extension for `rocket` to protect your endpoints"
 readme = "README.md"
 keywords = ["rocket", "authz", "security", "grants", "permissions"]
 authors.workspace = true

@@ -1,6 +1,6 @@
 use poem::listener::TcpListener;
 use poem::{web, EndpointExt, Request, Route, Server};
-use poem_grants::permissions::{AuthDetails, PermissionsCheck};
+use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 use poem_openapi::payload::PlainText;
 use poem_openapi::{OpenApi, OpenApiService};
@@ -16,7 +16,7 @@ struct Api;
 impl Api {
     // An example of protection via `proc-macro`
     /// Documentation comment for `openapi` description works expected
-    #[has_permissions("OP_READ_ADMIN_INFO")]
+    #[protect("OP_READ_ADMIN_INFO")]
     #[oai(path = "/admin", method = "get")]
     async fn macro_secured(&self) -> PlainText<String> {
         PlainText(ADMIN_RESPONSE.to_string())
@@ -25,14 +25,14 @@ impl Api {
     // An example of programmable protection
     #[oai(path = "/", method = "get")]
     async fn manual_secure(&self, details: AuthDetails) -> PlainText<String> {
-        if details.has_permission(ROLE_ADMIN) {
+        if details.has_authority(ROLE_ADMIN) {
             return PlainText(ADMIN_RESPONSE.to_string());
         }
         PlainText(OTHER_RESPONSE.to_string())
     }
 
     // An example of protection via `proc-macro` with secure attribute
-    #[has_permissions("ROLE_ADMIN", secure = "*user_id == user.id")]
+    #[protect("ROLE_ADMIN", expr = "*user_id == user.id")]
     #[oai(path = "/resource/:user_id", method = "get")]
     async fn secure_with_params(
         &self,
@@ -63,7 +63,7 @@ async fn main() -> Result<(), std::io::Error> {
 
 // You can use both `&Request` and `&mut Request`
 async fn extract(_req: &mut Request) -> poem::Result<Vec<String>> {
-    // Here is a place for your code to get user permissions/grants/permissions from a request
+    // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example

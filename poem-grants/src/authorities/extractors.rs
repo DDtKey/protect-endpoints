@@ -1,13 +1,13 @@
 use poem::Request;
 use std::future::Future;
 
-pub trait PermissionsExtractor<'a, Req, Type> {
+pub trait AuthoritiesExtractor<'a, Req, Type> {
     type Future: Future<Output = poem::Result<Vec<Type>>> + Send + Sync;
 
     fn extract(&self, request: &'a mut Request) -> Self::Future;
 }
 
-impl<'a, F, O, Type> PermissionsExtractor<'a, &Request, Type> for F
+impl<'a, F, O, Type> AuthoritiesExtractor<'a, &Request, Type> for F
 where
     F: Fn(&'a Request) -> O,
     O: Future<Output = poem::Result<Vec<Type>>> + Send + Sync,
@@ -20,7 +20,7 @@ where
     }
 }
 
-impl<'a, F, O, Type> PermissionsExtractor<'a, &mut Request, Type> for F
+impl<'a, F, O, Type> AuthoritiesExtractor<'a, &mut Request, Type> for F
 where
     F: Fn(&'a mut Request) -> O,
     O: Future<Output = poem::Result<Vec<Type>>> + Send + Sync,
@@ -43,10 +43,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_fn_extractor_impl() {
-        let mut req = Request::default();
-        let permissions = extract(&mut req).await;
+        let req = Request::default();
+        let authorities = extract(&req).await;
 
-        permissions
+        authorities
             .unwrap()
             .iter()
             .for_each(|perm| assert_eq!("TEST_PERMISSION", perm.as_str()));
@@ -59,9 +59,9 @@ mod tests {
     #[tokio::test]
     async fn test_fn_mut_extractor_impl() {
         let mut req = Request::default();
-        let permissions = mut_extract(&mut req).await;
+        let authorities = mut_extract(&mut req).await;
 
-        permissions
+        authorities
             .unwrap()
             .iter()
             .for_each(|perm| assert_eq!("TEST_PERMISSION", perm.as_str()));

@@ -1,7 +1,7 @@
 [package]
 name = "poem-grants"
 version = "1.0.0-beta.3"
-description = " Authorization extension for `poem` to validate user permissions "
+description = "Authorization extension for `poem` to protect your endpoints"
 readme = "README.md"
 keywords = ["poem", "authz", "security", "grants", "permissions"]
 authors.workspace = true
@@ -21,7 +21,7 @@ macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
 poem = "1"
-protect-endpoints-proc-macro = { workspace = true, features = ["rocket"], optional = true }
+protect-endpoints-proc-macro = { workspace = true, features = ["poem"], optional = true }
 thiserror = "1"
 
 [dev-dependencies]

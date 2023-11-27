@@ -1,7 +1,7 @@
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/rocket-grants/logo.png"
 )]
-//! A crate for authorization in `rocket`.
+//! A crate to protect your endpoints in `rocket`.
 //!
 //! For built-in configure see: [`GrantsFairing`].
 //!
@@ -67,7 +67,7 @@ pub use fairing::GrantsFairing;
 
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use protect_endpoints_proc_macro::*;
+    pub use protect_endpoints_proc_macro::protect_rocket as protect;
 }
 
 /// Just a shortcut for proc-macros

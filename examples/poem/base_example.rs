@@ -1,7 +1,7 @@
 use poem::http::StatusCode;
 use poem::listener::TcpListener;
 use poem::{get, web, EndpointExt, Request, Response, Route, Server};
-use poem_grants::permissions::{AuthDetails, PermissionsCheck};
+use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
@@ -9,7 +9,7 @@ const ADMIN_RESPONSE: &str = "Hello Admin!";
 const OTHER_RESPONSE: &str = "Hello!";
 
 // An example of protection via `proc-macro`
-#[poem_grants::has_permissions("OP_READ_ADMIN_INFO")]
+#[poem_grants::protect("OP_READ_ADMIN_INFO")]
 #[poem::handler]
 async fn macro_secured() -> Response {
     Response::builder()
@@ -20,7 +20,7 @@ async fn macro_secured() -> Response {
 // An example of programmable protection
 #[poem::handler]
 async fn manual_secure(details: AuthDetails) -> Response {
-    if details.has_permission(ROLE_ADMIN) {
+    if details.has_authority(ROLE_ADMIN) {
         return Response::builder()
             .status(StatusCode::OK)
             .body(ADMIN_RESPONSE);
@@ -31,7 +31,7 @@ async fn manual_secure(details: AuthDetails) -> Response {
 }
 
 // An example of protection via `proc-macro` with secure attribute
-#[poem_grants::has_permissions("ROLE_ADMIN", secure = "*user_id == user.id")]
+#[poem_grants::protect("ROLE_ADMIN", expr = "*user_id == user.id")]
 #[poem::handler]
 async fn secure_with_params(user_id: web::Path<i32>, user: web::Data<&User>) -> Response {
     Response::builder()
@@ -59,7 +59,7 @@ async fn main() -> Result<(), std::io::Error> {
 
 // You can use both `&Request` and `&mut Request`
 async fn extract(_req: &mut Request) -> poem::Result<Vec<String>> {
-    // Here is a place for your code to get user permissions/grants/permissions from a request
+    // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
