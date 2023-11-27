@@ -46,7 +46,9 @@ async fn test_forbidden() {
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     let app = test::init_service(
         App::new()
-            .wrap(GrantsMiddleware::with_extractor(common::enum_extract::<Role>))
+            .wrap(GrantsMiddleware::with_extractor(
+                common::enum_extract::<Role>,
+            ))
             .service(different_body)
             .service(only_admin),
     )

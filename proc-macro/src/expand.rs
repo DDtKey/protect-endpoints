@@ -246,7 +246,9 @@ impl darling::FromMeta for ProtectionArgs {
         }
 
         if conditions.is_empty() {
-            errors.push(darling::Error::custom("At least one condition must be specified"));
+            errors.push(darling::Error::custom(
+                "At least one condition must be specified",
+            ));
         }
 
         errors.finish()?;

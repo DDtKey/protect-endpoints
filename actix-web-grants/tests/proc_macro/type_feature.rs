@@ -47,12 +47,11 @@ async fn test_http_response_for_imported_enum() {
 
 #[actix_rt::test]
 async fn test_http_response_for_role_and_permission_enums() {
-    let test_admin_with_write =
-        get_user_response(
-            "/role_and_permission_enums_secure",
-            &format!("{ADMIN},WRITE"),
-        )
-        .await;
+    let test_admin_with_write = get_user_response(
+        "/role_and_permission_enums_secure",
+        &format!("{ADMIN},WRITE"),
+    )
+    .await;
     // there is no `write` permission
     let test_admin =
         get_user_response("/role_and_permission_enums_secure", &ADMIN.to_string()).await;
@@ -78,17 +77,20 @@ async fn test_incorrect_http_response() {
 }
 
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
-    let app =
-        test::init_service(
-            App::new()
-                .wrap(GrantsMiddleware::with_extractor(common::enum_extract::<Role>))
-                .wrap(GrantsMiddleware::with_extractor(common::enum_extract::<Permission>))
-                .service(imported_path_enum_secure)
-                .service(full_path_enum_secure)
-                .service(incorrect_enum_secure)
-                .service(role_and_permission_enums_secure),
-        )
-        .await;
+    let app = test::init_service(
+        App::new()
+            .wrap(GrantsMiddleware::with_extractor(
+                common::enum_extract::<Role>,
+            ))
+            .wrap(GrantsMiddleware::with_extractor(
+                common::enum_extract::<Permission>,
+            ))
+            .service(imported_path_enum_secure)
+            .service(full_path_enum_secure)
+            .service(incorrect_enum_secure)
+            .service(role_and_permission_enums_secure),
+    )
+    .await;
 
     let req = test::TestRequest::default()
         .insert_header((AUTHORIZATION, role))
