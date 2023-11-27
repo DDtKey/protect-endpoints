@@ -34,7 +34,7 @@ mod expand;
 ///     "some secured info with user_id path equal to user.id"
 ///}
 ///
-/// #[derive(Hash, PartialEq, Eq, Clone)]
+/// #[derive(Hash, PartialEq, Eq)]
 /// enum MyPermissionEnum {
 ///   OpGetSecret
 /// }
@@ -122,7 +122,7 @@ pub fn protect_rocket(args: TokenStream, input: TokenStream) -> TokenStream {
 ///     "some secured info with user_id path equal to user.id"
 ///}
 ///
-/// #[derive(Hash, PartialEq, Eq, Clone)]
+/// #[derive(Hash, PartialEq, Eq)]
 /// enum MyPermissionEnum {
 ///   OpGetSecret
 /// }

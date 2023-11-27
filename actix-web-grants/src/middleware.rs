@@ -77,16 +77,16 @@ where
     /// async fn extract(_req: &ServiceRequest) -> Result<HashSet<String>, Error> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token or database
-    ///     Ok(HashSet::from(!["WRITE_ACCESS".to_string()]))
+    ///     Ok(HashSet::from(["WRITE_ACCESS".to_string()]))
     /// }
     ///
     /// // Or with you own type:
-    /// #[derive(Eq, Hash)] // required bounds
+    /// #[derive(Eq, PartialEq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
     /// async fn extract_enum(_req: &ServiceRequest) -> Result<HashSet<Permission>, Error> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token, database or external service
-    ///     Ok(HashSet::from(![Permission::WRITE]))
+    ///     Ok(HashSet::from([Permission::WRITE]))
     /// }
     /// ```
     ///

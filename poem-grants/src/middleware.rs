@@ -73,7 +73,7 @@ where
     /// }
     ///
     /// // Or with you own type:
-    /// #[derive(Eq, Hash)] // required bounds
+    /// #[derive(Eq, PartialEq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
     /// async fn extract_enum(_req: &poem::Request) -> poem::Result<HashSet<Permission>> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request

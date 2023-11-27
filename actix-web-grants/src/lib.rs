@@ -74,7 +74,7 @@ pub use middleware::GrantsMiddleware;
 /// async fn role_enum_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
-/// #[derive(Eq, Hash)] // required bounds
+/// #[derive(Eq, PartialEq, Hash)] // required bounds
 /// enum Role { Admin, Manager }
 ///
 /// ```
