@@ -1,17 +1,16 @@
-use crate::permissions::AttachPermissions;
-use crate::permissions::PermissionsExtractor;
+use crate::authorities::{AttachAuthorities, AuthoritiesExtractor};
 use poem::{Endpoint, Middleware, Request};
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-/// Built-in middleware for extracting user permission.
+/// Built-in middleware for extracting user authorities.
 ///
 ///
 /// # Examples
 /// ```
 /// use poem::{get, handler, listener::TcpListener, web::Path, Route, Server, http::StatusCode, Response};
 ///
-/// use poem_grants::permissions::{AuthDetails, PermissionsCheck};
+/// use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 /// use poem_grants::GrantsMiddleware;
 ///
 /// #[tokio::main]
@@ -24,16 +23,15 @@ use std::sync::Arc;
 /// // You can use both `&Request` and `&mut Request`
 /// // Futhermore, you can use you own type instead of `String` (e.g. Enum).
 /// async fn extract(_req: &poem::Request) -> poem::Result<Vec<String>> {
-///    // Here is a place for your code to get user permissions/grants/permissions from a request
+///    // Here is a place for your code to get user permissions/roles/authorities from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 ///
-/// // `has_permissions` is one of options to validate permissions.
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
-/// #[poem_grants::has_permissions("ROLE_ADMIN")]
+/// #[poem_grants::protect("ROLE_ADMIN")]
 /// #[poem::handler]
 /// async fn you_service() -> poem::Response {
 ///     Response::builder().status(StatusCode::OK).finish()
@@ -41,7 +39,7 @@ use std::sync::Arc;
 /// ```
 pub struct GrantsMiddleware<Extractor, Req, Type>
 where
-    for<'a> Extractor: PermissionsExtractor<'a, Req, Type> + Send + Sync,
+    for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
     Type: PartialEq + Clone + Send + Sync + 'static,
     Req: Send + Sync,
 {
@@ -52,20 +50,20 @@ where
 
 impl<E, Req, Type> GrantsMiddleware<E, Req, Type>
 where
-    for<'a> E: PermissionsExtractor<'a, Req, Type> + Send + Sync,
+    for<'a> E: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
     Type: PartialEq + Clone + Send + Sync + 'static,
     Req: Send + Sync,
 {
-    /// Create middleware by [`PermissionsExtractor`].
+    /// Create middleware by [`AuthoritiesExtractor`].
     ///
     /// You can use a built-in implementation for `async fn` with a suitable signature (see example below).
     /// Or you can define your own implementation of trait.
     ///
-    /// # Example of function with implementation of [`PermissionsExtractor`]
+    /// # Example of function with implementation of [`AuthoritiesExtractor`]
     /// ```
     ///
     /// async fn extract(_req: &poem::Request) -> poem::Result<Vec<String>> {
-    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
+    ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token or database
     ///     Ok(vec!["WRITE_ACCESS".to_string()])
     /// }
@@ -74,13 +72,13 @@ where
     /// #[derive(PartialEq, Clone)] // required bounds
     /// enum Permission { WRITE, READ }
     /// async fn extract_enum(_req: &poem::Request) -> poem::Result<Vec<Permission>> {
-    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
+    ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token, database or external service
     ///     Ok(vec![Permission::WRITE])
     /// }
     /// ```
     ///
-    ///[`PermissionsExtractor`]: crate::permissions::PermissionsExtractor
+    ///[`AuthoritiesExtractor`]: crate::authorities::AuthoritiesExtractor
     pub fn with_extractor(extractor: E) -> GrantsMiddleware<E, Req, Type> {
         GrantsMiddleware {
             extractor: Arc::new(extractor),
@@ -94,7 +92,7 @@ where
 pub struct GrantsEndpoint<End, Extractor, Req, Type>
 where
     End: Endpoint,
-    for<'a> Extractor: PermissionsExtractor<'a, Req, Type> + Send + Sync,
+    for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
     Type: PartialEq + Clone + Send + Sync + 'static,
     Req: Send + Sync,
 {
@@ -107,7 +105,7 @@ where
 impl<End, Extractor, Req, Type> Middleware<End> for GrantsMiddleware<Extractor, Req, Type>
 where
     End: Endpoint,
-    for<'a> Extractor: PermissionsExtractor<'a, Req, Type> + Send + Sync,
+    for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
     Type: PartialEq + Clone + Send + Sync + 'static,
     Req: Send + Sync,
 {
@@ -127,15 +125,15 @@ where
 impl<End, Extractor, Req, Type> Endpoint for GrantsEndpoint<End, Extractor, Req, Type>
 where
     End: Endpoint,
-    for<'a> Extractor: PermissionsExtractor<'a, Req, Type> + Send + Sync,
+    for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
     Type: PartialEq + Clone + Send + Sync + 'static,
     Req: Send + Sync,
 {
     type Output = End::Output;
 
     async fn call(&self, mut req: Request) -> poem::Result<Self::Output> {
-        let permissions: Vec<Type> = self.extractor.extract(&mut req).await?;
-        req.attach(permissions);
+        let authorities: Vec<Type> = self.extractor.extract(&mut req).await?;
+        req.attach(authorities);
 
         self.inner.call(req).await
     }

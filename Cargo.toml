@@ -1,11 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-    "awg-proc-macro",
     "actix-web-grants",
-    "rocket-proc-macro",
+    "proc-macro",
     "rocket-grants",
-    "poem-proc-macro",
     "poem-grants",
 ]
 
@@ -19,9 +17,7 @@ repository = "https://github.com/DDtKey/protect-endpoints"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-actix-grants-proc-macro = { path = "awg-proc-macro", version = "2.0.2" }
 actix-web-grants = { path = "actix-web-grants", version = "3.0.2" }
-rocket-grants-proc-macro = { path = "rocket-proc-macro", version = "0.1.1" }
 rocket-grants = { path = "rocket-grants", version = "0.1.1" }
 poem-grants = { path = "poem-grants", version = "1.0.0-beta.3" }
-poem-grants-proc-macro = { path = "poem-proc-macro", version = "1.0.0-beta.3" }
+protect-endpoints-proc-macro = { path = "proc-macro", version = "0.1.0" }

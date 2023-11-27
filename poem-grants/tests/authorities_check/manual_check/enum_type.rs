@@ -2,7 +2,7 @@ use crate::common::{self, Role};
 use poem::http::{header::AUTHORIZATION, StatusCode};
 use poem::test::{TestClient, TestResponse};
 use poem::{EndpointExt, Response, Route};
-use poem_grants::permissions::{AuthDetails, PermissionsCheck};
+use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
@@ -10,7 +10,7 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 #[poem::handler]
 async fn different_body(details: AuthDetails<Role>) -> Response {
-    if details.has_permission(&Role::ADMIN) {
+    if details.has_authority(&Role::ADMIN) {
         return Response::builder()
             .status(StatusCode::OK)
             .body(ADMIN_RESPONSE);
@@ -22,7 +22,7 @@ async fn different_body(details: AuthDetails<Role>) -> Response {
 
 #[poem::handler]
 async fn only_admin(details: AuthDetails<Role>) -> Response {
-    if details.has_permission(&Role::ADMIN) {
+    if details.has_authority(&Role::ADMIN) {
         return Response::builder()
             .status(StatusCode::OK)
             .body(ADMIN_RESPONSE);

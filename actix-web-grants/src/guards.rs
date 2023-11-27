@@ -1,12 +1,12 @@
-use crate::permissions::{AuthDetails, PermissionsCheck};
+use crate::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web::guard::{Guard, GuardContext};
 
-/// Implementation of Guard trait for validate permissions
+/// Implementation of Guard trait for validate authorities
 /// ```
 /// use actix_web::dev::ServiceRequest;
 /// use actix_web::{web, App, Error, HttpResponse, HttpServer};
 ///
-/// use actix_web_grants::{GrantsMiddleware, PermissionGuard};
+/// use actix_web_grants::{GrantsMiddleware, AuthorityGuard};
 /// use std::sync::Arc;
 ///
 /// fn main() {
@@ -15,34 +15,34 @@ use actix_web::guard::{Guard, GuardContext};
 ///             .wrap(GrantsMiddleware::with_extractor(extract))
 ///             .service(web::resource("/admin")
 ///                     .to(|| async { HttpResponse::Ok().finish() })
-///                     .guard(PermissionGuard::new("ROLE_ADMIN".to_string())))
+///                     .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))
 ///     });
 /// }
 ///
 /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
-///    // Here is a place for your code to get user permissions/grants/permissions from a request
+///    // Here is a place for your code to get user permissions/roles/authorities from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
 ///    Ok(vec!["ROLE_ADMIN".to_string()])
 /// }
 /// ```
-pub struct PermissionGuard<Type> {
-    allow_permission: Type,
+pub struct AuthorityGuard<Type> {
+    allow_authority: Type,
 }
 
-impl<Type: PartialEq + Clone + 'static> PermissionGuard<Type> {
-    pub fn new(allow_permission: Type) -> PermissionGuard<Type> {
-        PermissionGuard { allow_permission }
+impl<Type: PartialEq + Clone + 'static> AuthorityGuard<Type> {
+    pub fn new(allow_authority: Type) -> AuthorityGuard<Type> {
+        AuthorityGuard { allow_authority }
     }
 }
 
-impl<Type: PartialEq + Clone + 'static> Guard for PermissionGuard<Type> {
+impl<Type: PartialEq + Clone + 'static> Guard for AuthorityGuard<Type> {
     fn check(&self, request: &GuardContext) -> bool {
         request
             .req_data()
             .get::<AuthDetails<Type>>()
-            .filter(|details| details.has_permission(&self.allow_permission))
+            .filter(|details| details.has_authority(&self.allow_authority))
             .is_some()
     }
 }

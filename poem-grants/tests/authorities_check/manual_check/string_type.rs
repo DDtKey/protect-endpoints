@@ -3,7 +3,7 @@ use poem::http::header::AUTHORIZATION;
 use poem::http::StatusCode;
 use poem::test::{TestClient, TestResponse};
 use poem::{EndpointExt, Response, Route};
-use poem_grants::permissions::{AuthDetails, PermissionsCheck};
+use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
@@ -11,7 +11,7 @@ const OTHER_RESPONSE: &str = "Hello!";
 
 #[poem::handler]
 async fn different_body(details: AuthDetails) -> Response {
-    if details.has_permission(ROLE_ADMIN) {
+    if details.has_authority(ROLE_ADMIN) {
         return Response::builder()
             .status(StatusCode::OK)
             .body(ADMIN_RESPONSE);
@@ -23,7 +23,7 @@ async fn different_body(details: AuthDetails) -> Response {
 
 #[poem::handler]
 async fn only_admin(details: AuthDetails) -> Response {
-    if details.has_permission(ROLE_ADMIN) {
+    if details.has_authority(ROLE_ADMIN) {
         return Response::builder()
             .status(StatusCode::OK)
             .body(ADMIN_RESPONSE);

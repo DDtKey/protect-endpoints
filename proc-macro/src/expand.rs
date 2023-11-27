@@ -1,10 +1,32 @@
 use darling::ast::NestedMeta;
-use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
+use proc_macro2::{Ident, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
 use std::ops::Deref;
-use syn::{ItemFn, Meta, ReturnType};
+use syn::{Block, ItemFn, Meta};
 
-const AUTH_DETAILS: &str = "_auth_details_";
+#[cfg(feature = "actix-web")]
+mod actix_web;
+#[cfg(feature = "poem")]
+mod poem;
+#[cfg(feature = "rocket")]
+mod rocket;
+
+#[derive(Debug, Copy, Clone)]
+pub(crate) enum Framework {
+    #[cfg(feature = "actix-web")]
+    ActixWeb,
+    #[cfg(feature = "rocket")]
+    Rocket,
+    #[cfg(feature = "poem")]
+    Poem,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) enum FnType {
+    Fn(ItemFn),
+    #[cfg(feature = "poem")]
+    Method(syn::ImplItemFn),
+}
 
 #[derive(Debug)]
 enum Condition {
@@ -18,76 +40,43 @@ enum Condition {
 struct Conditions(Vec<Condition>);
 
 #[derive(Debug)]
-pub(crate) struct Args {
+pub(crate) struct ProtectionArgs {
     cond: Condition,
     ty: Option<syn::Expr>,
+    error_fn: Option<Ident>,
 }
 
 pub(crate) struct ProtectEndpoint {
-    func: ItemFn,
-    args: Args,
+    framework: Framework,
+    func: FnType,
+    args: ProtectionArgs,
 }
 
 impl ProtectEndpoint {
-    pub fn new(args: Args, func: ItemFn) -> syn::Result<Self> {
-        Ok(Self { func, args })
+    pub fn new(framework: Framework, args: ProtectionArgs, func: FnType) -> Self {
+        Self {
+            framework,
+            func,
+            args,
+        }
     }
 }
 
 impl ToTokens for ProtectEndpoint {
     fn to_tokens(&self, output: &mut TokenStream2) {
-        let func_vis = &self.func.vis;
-        let func_block = &self.func.block;
-
-        let fn_sig = &self.func.sig;
-        let fn_attrs = &self.func.attrs;
-        let fn_name = &fn_sig.ident;
-        let fn_generics = &fn_sig.generics;
-        let fn_args = &fn_sig.inputs;
-        let fn_async = &fn_sig.asyncness.unwrap();
-        let fn_output = match &fn_sig.output {
-            ReturnType::Type(ref _arrow, ref ty) => ty.to_token_stream(),
-            ReturnType::Default => {
-                quote! {()}
-            }
-        };
-
-        let condition = self.args.cond.to_tokens(self.args.ty.is_some());
-
-        let ty = self
-            .args
-            .ty
-            .as_ref()
-            .map(syn::Expr::to_token_stream)
-            .unwrap_or(quote! {String});
-
-        let condition = quote!(if #condition);
-        let auth_details: Ident = Ident::new(AUTH_DETAILS, Span::call_site());
-
-        let stream = quote! {
-            #(#fn_attrs)*
-            #func_vis #fn_async fn #fn_name #fn_generics(
-                #auth_details: rocket_grants::authorities::AuthDetails<#ty>,
-                #fn_args
-            ) -> Result<#fn_output, rocket::http::Status> {
-                use rocket_grants::authorities::AuthoritiesCheck;
-                #condition {
-                    let f = || async move #func_block;
-                    Ok(f().await)
-                } else {
-                    Err(rocket::http::Status::Forbidden)
-                }
-            }
-        };
-
-        output.extend(stream);
+        match self.framework {
+            #[cfg(feature = "actix-web")]
+            Framework::ActixWeb => self.to_tokens_actix_web(output),
+            #[cfg(feature = "poem")]
+            Framework::Poem => self.to_tokens_poem(output),
+            #[cfg(feature = "rocket")]
+            Framework::Rocket => self.to_tokens_rocket(output),
+        }
     }
 }
 
 impl Condition {
-    fn to_tokens(&self, is_typed: bool) -> TokenStream2 {
-        let auth_details: Ident = Ident::new(AUTH_DETAILS, Span::call_site());
-
+    fn to_tokens(&self, auth_details: &Ident, is_typed: bool) -> TokenStream2 {
         match self {
             Condition::Any(nested) if nested.iter().all(Condition::is_value) => {
                 let vals = nested.iter().map(|c| match c {
@@ -120,12 +109,18 @@ impl Condition {
                 }
             }
             Condition::Any(nested) => {
-                let exprs: Vec<_> = nested.iter().map(|c| c.to_tokens(is_typed)).collect();
+                let exprs: Vec<_> = nested
+                    .iter()
+                    .map(|c| c.to_tokens(auth_details, is_typed))
+                    .collect();
 
                 quote! { #(#exprs)||* }
             }
             Condition::All(nested) => {
-                let exprs: Vec<_> = nested.iter().map(|c| c.to_tokens(is_typed)).collect();
+                let exprs: Vec<_> = nested
+                    .iter()
+                    .map(|c| c.to_tokens(auth_details, is_typed))
+                    .collect();
 
                 quote! { #(#exprs)&&* }
             }
@@ -195,10 +190,11 @@ impl darling::FromMeta for Conditions {
     }
 }
 
-impl darling::FromMeta for Args {
+impl darling::FromMeta for ProtectionArgs {
     fn from_list(items: &[NestedMeta]) -> darling::Result<Self> {
         let mut conditions = Vec::new();
         let mut ty = None;
+        let mut error_fn = None;
 
         let mut errors = ::darling::Error::accumulator();
 
@@ -210,6 +206,12 @@ impl darling::FromMeta for Args {
                             errors.push(darling::Error::duplicate_field("ty"));
                         } else {
                             ty = errors.handle(darling::FromMeta::from_expr(value));
+                        }
+                    } else if path.is_ident("error") {
+                        if ty.is_some() {
+                            errors.push(darling::Error::duplicate_field("error"));
+                        } else {
+                            error_fn = errors.handle(darling::FromMeta::from_expr(value));
                         }
                     } else if path.is_ident("expr") {
                         let cond = errors
@@ -257,7 +259,7 @@ impl darling::FromMeta for Args {
             Condition::All(Conditions(conditions))
         };
 
-        Ok(Args { cond, ty })
+        Ok(ProtectionArgs { cond, ty, error_fn })
     }
 }
 
@@ -266,5 +268,39 @@ impl Deref for Conditions {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl FnType {
+    fn sig(&self) -> &syn::Signature {
+        match self {
+            FnType::Fn(fun) => &fun.sig,
+            #[cfg(feature = "poem")]
+            FnType::Method(fun) => &fun.sig,
+        }
+    }
+
+    fn vis(&self) -> &syn::Visibility {
+        match self {
+            FnType::Fn(fun) => &fun.vis,
+            #[cfg(feature = "poem")]
+            FnType::Method(fun) => &fun.vis,
+        }
+    }
+
+    fn block(&self) -> &Block {
+        match self {
+            FnType::Fn(fun) => &fun.block,
+            #[cfg(feature = "poem")]
+            FnType::Method(fun) => &fun.block,
+        }
+    }
+
+    fn attrs(&self) -> &Vec<syn::Attribute> {
+        match self {
+            FnType::Fn(fun) => &fun.attrs,
+            #[cfg(feature = "poem")]
+            FnType::Method(fun) => &fun.attrs,
+        }
     }
 }

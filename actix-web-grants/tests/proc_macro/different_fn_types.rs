@@ -4,17 +4,17 @@ use actix_web::dev::ServiceResponse;
 use actix_web::error::ErrorBadRequest;
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
 use actix_web::{get, http, post, test, web, App, Error, HttpResponse};
-use actix_web_grants::{proc_macro::has_roles, GrantsMiddleware};
+use actix_web_grants::{protect, GrantsMiddleware};
 use serde::{Deserialize, Serialize};
 
 #[get("/http_response")]
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn http_response() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
 #[get("/str")]
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn str_response() -> &'static str {
     "Hi!"
 }
@@ -25,19 +25,19 @@ struct User {
 }
 
 #[post("/secure/{user_id}")]
-#[has_roles("ADMIN", secure = "user_id.into_inner() == user.id")]
+#[protect("ROLE_ADMIN", expr = "user_id.into_inner() == user.id")]
 async fn secure_user_id(user_id: web::Path<i32>, user: web::Json<User>) -> &'static str {
     "Hi!"
 }
 
 #[get("/return")]
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn return_response() -> &'static str {
     return "Hi!";
 }
 
 #[get("/result")]
-#[has_roles("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn result_response(payload: web::Query<common::NamePayload>) -> Result<String, Error> {
     let common::NamePayload { name } = payload.0;
     let name = name.ok_or(ErrorBadRequest("Query param not found!"))?;
@@ -52,7 +52,7 @@ fn access_denied() -> HttpResponse {
 }
 
 #[get("/access")]
-#[has_roles("ADMIN", error = "access_denied")]
+#[protect("ROLE_ADMIN", error = "access_denied")]
 async fn access_response() -> &'static str {
     "Hi!"
 }
@@ -124,7 +124,7 @@ async fn test_access_denied_reason() {
 }
 
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
-    let mut app = test::init_service(
+    let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
             .service(http_response)
@@ -139,11 +139,11 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
         .insert_header((AUTHORIZATION, role))
         .uri(uri)
         .to_request();
-    test::call_service(&mut app, req).await
+    test::call_service(&app, req).await
 }
 
 async fn post_user_response<T: Serialize>(uri: &str, role: &str, data: &T) -> ServiceResponse {
-    let mut app = test::init_service(
+    let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
             .service(secure_user_id),
@@ -155,5 +155,5 @@ async fn post_user_response<T: Serialize>(uri: &str, role: &str, data: &T) -> Se
         .set_json(data)
         .method(http::Method::POST)
         .to_request();
-    test::call_service(&mut app, req).await
+    test::call_service(&app, req).await
 }

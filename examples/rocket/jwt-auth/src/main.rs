@@ -21,7 +21,7 @@ async fn permission_secured() -> Status {
     Status::Ok
 }
 
-#[rocket_grants::protect("ADMIN", "MANAGER")]
+#[rocket_grants::protect(any("ADMIN", "MANAGER"))]
 #[rocket::get("/api/manager")]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):

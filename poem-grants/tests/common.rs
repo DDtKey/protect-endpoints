@@ -8,6 +8,7 @@ pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
 #[derive(PartialEq, Clone)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Role {
     ADMIN,
     MANAGER,
@@ -24,7 +25,7 @@ pub async fn extract(req: &mut Request) -> poem::Result<Vec<String>> {
     Ok(auth_header
         .map(|header| {
             header
-                .split(",")
+                .split(',')
                 .map(str::to_string)
                 .collect::<Vec<String>>()
         })
@@ -42,7 +43,7 @@ pub async fn enum_extract(req: &mut Request) -> poem::Result<Vec<Role>> {
     Ok(auth_header
         .map(|header| {
             header
-                .split(",")
+                .split(',')
                 .map(|name| name.into())
                 .collect::<Vec<Role>>()
         })

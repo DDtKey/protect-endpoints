@@ -1,7 +1,7 @@
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/rocket-grants/logo.png"
 )]
-//! A crate for authorization in `rocket`.
+//! A crate to protect your endpoints in `rocket`.
 //!
 //! For built-in configure see: [`GrantsFairing`].
 //!
@@ -36,9 +36,8 @@ pub use fairing::GrantsFairing;
 ///    "some secured info"
 /// }
 ///
-/// // Role - is string with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
-/// #[rocket_grants::protect("ADMIN", "MANAGER")]
+/// #[rocket_grants::protect("ROLE_ADMIN", "ROLE_MANAGER")]
 /// #[rocket::get("/role")]
 /// async fn role_macro_secured() -> &'static str {
 ///    "some secured info"
@@ -67,7 +66,7 @@ pub use fairing::GrantsFairing;
 
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use rocket_grants_proc_macro::*;
+    pub use protect_endpoints_proc_macro::protect_rocket as protect;
 }
 
 /// Just a shortcut for proc-macros

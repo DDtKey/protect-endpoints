@@ -5,16 +5,16 @@ use actix_web_httpauth::extractors::bearer::BearerAuth;
 use actix_web_httpauth::middleware::HttpAuthentication;
 use serde::Deserialize;
 
-use actix_web_grants::proc_macro::{has_any_role, has_permissions};
+use actix_web_grants::protect;
 // Used for integration with `actix-web-httpauth`
-use actix_web_grants::permissions::AttachPermissions;
+use actix_web_grants::authorities::AttachAuthorities;
 
 use crate::claims::Claims;
 
 mod claims;
 
 #[get("/admin")]
-#[has_permissions("OP_GET_SECURED_INFO")]
+#[protect("OP_GET_SECURED_INFO")]
 // For the user with permission `OP_GET_SECURED_INFO` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
 // ```sh
@@ -26,7 +26,7 @@ async fn permission_secured() -> HttpResponse {
 }
 
 #[get("/manager")]
-#[has_any_role("ADMIN", "MANAGER")]
+#[protect(any("ADMIN", "MANAGER"))]
 // For the `ADMIN` or `MANAGER` - endpoint will give the HTTP status 200, otherwise - 403
 // You can check via cURL (for generate you own token, use `/token` handler):
 // ```sh
@@ -37,7 +37,10 @@ async fn manager_secured() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
-async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, (Error, ServiceRequest)> {
+async fn validator(
+    req: ServiceRequest,
+    credentials: BearerAuth,
+) -> Result<ServiceRequest, (Error, ServiceRequest)> {
     // We just get permissions from JWT
     let result = claims::decode_jwt(credentials.token());
     match result {
@@ -46,7 +49,7 @@ async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<Servi
             Ok(req)
         }
         // required by `actix-web-httpauth` validator signature
-        Err(e) => Err((e, req))
+        Err(e) => Err((e, req)),
     }
 }
 

@@ -1,55 +1,54 @@
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/actix-web-grants/logo.png"
 )]
-//! A crate for validate user permissions in `actix-web`.
+//! A crate to protect your endpoints in `actix-web`.
 //!
 //! For built-in configure see: [`GrantsMiddleware`].
 //!
-//! To check user access to specific services, you can use: [`proc-macro`] and [`PermissionGuard`] or manual.
+//! To check user access to specific services, you can use: [`proc-macro`] and [`AuthorityGuard`] or manual.
 //!
-//! The library can also be integrated with third-party solutions (like [`httpauth`]), see [`permissions`] module.
+//! The library can also be integrated with third-party solutions (like [`httpauth`]), see [`authorities`] module.
 //!
 //! You can find more [`examples`] in the git repository.
 //!
 //! [`GrantsMiddleware`]: GrantsMiddleware
 //! [`httpauth`]: https://docs.rs/actix-web-httpauth
 //! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/actix-web
-//! [`permissions`]: permissions
+//! [`authorities`]: authorities
 //! [`proc-macro`]: proc_macro
-//! [`PermissionGuard`]: PermissionGuard
+//! [`AuthorityGuard`]: AuthorityGuard
 #![doc = include_str!("../README.md")]
 
+pub mod authorities;
 mod guards;
 mod middleware;
-pub mod permissions;
 
-pub use guards::PermissionGuard;
+pub use guards::AuthorityGuard;
 pub use middleware::GrantsMiddleware;
 
-/// Procedural macros for checking user permissions or roles.
+/// Procedural macros for checking user authorities (permissions or roles).
 ///
 /// # Examples
 /// ```
 /// use actix_web::{web, get, HttpResponse};
-/// use actix_web_grants::proc_macro::{has_permissions, has_roles};
+/// use actix_web_grants::protect;
 /// use actix_web::http::StatusCode;
 /// use actix_web::body::BoxBody;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
-/// #[has_permissions["ROLE_ADMIN", "OP_GET_SECRET"]]
+/// #[protect("ROLE_ADMIN", "OP_GET_SECRET")]
 /// async fn macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
 ///
-/// // Role - is permission with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
-/// #[has_roles["ADMIN", "MANAGER"]]
+/// #[protect("ROLE_ADMIN", "ROLE_MANAGER")]
 /// async fn role_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
 ///
 /// // Custom access denied message.
-/// #[has_roles("ADMIN", error = "access_denied")]
+/// #[protect("ADMIN", error = "access_denied")]
 /// async fn role_access() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
@@ -63,7 +62,7 @@ pub use middleware::GrantsMiddleware;
 /// }
 ///
 /// // Additional security condition to ensure the protection of the endpoint
-/// #[has_roles("USER", secure = "user_id.into_inner() == user.id")]
+/// #[protect("USER", expr = "user_id.into_inner() == user.id")]
 /// #[get("/resource/{user_id}")]
 /// async fn role_macro_secured_with_params(user_id: web::Path<i32>, user: web::Data<User>) -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info with parameters")   
@@ -71,7 +70,7 @@ pub use middleware::GrantsMiddleware;
 /// struct User { id: i32 }
 ///
 /// // You own type is also supported (need to configure middleware for this type as well):
-/// #[has_roles["Role::Admin", "Role::Manager", type = "Role"]]
+/// #[protect("Role::Admin", "Role::Manager", ty = "Role")]
 /// async fn role_enum_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }
@@ -81,5 +80,9 @@ pub use middleware::GrantsMiddleware;
 /// ```
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
-    pub use actix_grants_proc_macro::*;
+    pub use protect_endpoints_proc_macro::protect_actix_web as protect;
 }
+
+/// Just a shortcut for proc-macros
+#[cfg(feature = "macro-check")]
+pub use proc_macro::*;

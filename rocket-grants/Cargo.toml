@@ -1,7 +1,7 @@
 [package]
 name = "rocket-grants"
 version = "0.1.1"
-description = "Authorization extension for `rocket`"
+description = "Authorization extension for `rocket` to protect your endpoints"
 readme = "README.md"
 keywords = ["rocket", "authz", "security", "grants", "permissions"]
 authors.workspace = true
@@ -17,12 +17,12 @@ path = "src/lib.rs"
 
 [features]
 default = ["macro-check"]
-macro-check = ["rocket-grants-proc-macro"]
+macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
 futures-core = "0.3"
 rocket = "0.5.0"
-rocket-grants-proc-macro = { workspace = true, optional = true }
+protect-endpoints-proc-macro = { workspace = true, features = ["rocket"], optional = true }
 
 [dev-dependencies]
 rocket = { version = "0.5.0", features = ["json"] }

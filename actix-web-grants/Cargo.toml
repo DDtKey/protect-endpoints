@@ -1,7 +1,7 @@
 [package]
 name = "actix-web-grants"
 version = "3.0.2"
-description = "Extension for `actix-web` to validate user permissions"
+description = "Authorization extension `actix-web` to protect your endpoints"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
 authors.workspace = true
@@ -17,11 +17,11 @@ path = "src/lib.rs"
 
 [features]
 default = ["macro-check"]
-macro-check = ["actix-grants-proc-macro"]
+macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
 actix-web = { version = "4.3", default-features = false, features = ["macros"] }
-actix-grants-proc-macro = { workspace = true, optional = true }
+protect-endpoints-proc-macro = { workspace = true, features = ["actix-web"], optional = true }
 
 [dev-dependencies]
 actix-rt = "2"

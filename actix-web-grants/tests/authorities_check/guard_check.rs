@@ -3,7 +3,7 @@ use actix_web::{test, web, App, HttpResponse};
 
 use crate::common::{self, Role, ROLE_ADMIN, ROLE_MANAGER};
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
-use actix_web_grants::{GrantsMiddleware, PermissionGuard};
+use actix_web_grants::{AuthorityGuard, GrantsMiddleware};
 
 #[actix_rt::test]
 async fn test_guard() {
@@ -24,13 +24,13 @@ async fn test_enum_guard() {
 }
 
 async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
-    let mut app = test::init_service(
+    let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
             .service(
                 web::resource("/admin")
                     .to(|| async { HttpResponse::Ok().finish() })
-                    .guard(PermissionGuard::new(ROLE_ADMIN.to_string())),
+                    .guard(AuthorityGuard::new(ROLE_ADMIN.to_string())),
             ),
     )
     .await;
@@ -39,11 +39,11 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
         .insert_header((AUTHORIZATION, role))
         .uri(uri)
         .to_request();
-    test::call_service(&mut app, req).await
+    test::call_service(&app, req).await
 }
 
 async fn get_user_response_with_enum(uri: &str, role: &str) -> ServiceResponse {
-    let mut app = test::init_service(
+    let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(
                 common::enum_extract::<Role>,
@@ -51,7 +51,7 @@ async fn get_user_response_with_enum(uri: &str, role: &str) -> ServiceResponse {
             .service(
                 web::resource("/admin")
                     .to(|| async { HttpResponse::Ok().finish() })
-                    .guard(PermissionGuard::new(Role::ADMIN)),
+                    .guard(AuthorityGuard::new(Role::ADMIN)),
             ),
     )
     .await;
@@ -60,5 +60,5 @@ async fn get_user_response_with_enum(uri: &str, role: &str) -> ServiceResponse {
         .insert_header((AUTHORIZATION, role))
         .uri(uri)
         .to_request();
-    test::call_service(&mut app, req).await
+    test::call_service(&app, req).await
 }

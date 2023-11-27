@@ -33,7 +33,7 @@ type Extractor<Type> = Box<
 ///
 /// // Furthermore, you can use you own type instead of `String` (e.g. Enum).
 /// async fn extract(_req: &rocket::Request<'_>) -> Option<HashSet<String>> {
-///    // Here is a place for your code to get user permissions/grants/permissions from a request (e.g. from a token or database).
+///    // Here is a place for your code to get user permissions/roles/authorities from a request (e.g. from a token or database).
 ///
 ///    // Stub example
 ///    Some(HashSet::from(["ROLE_ADMIN".to_string()]))
@@ -69,7 +69,7 @@ impl<Type: Eq + Hash + Send + Sync + 'static> GrantsFairing<Type> {
     /// }
     ///
     /// async fn extract(_req: &rocket::Request<'_>) -> Option<HashSet<String>> {
-    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
+    ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token or database
     ///     Some(HashSet::from(["WRITE_ACCESS".to_string()]))
     /// }
@@ -78,7 +78,7 @@ impl<Type: Eq + Hash + Send + Sync + 'static> GrantsFairing<Type> {
     /// #[derive(Eq, PartialEq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
     /// async fn extract_enum(_req: &rocket::Request<'_>) -> Option<HashSet<Permission>> {
-    ///     // Here is a place for your code to get user permissions/grants/permissions from a request
+    ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token, database or external service
     ///     Some(HashSet::from([Permission::WRITE]))
     /// }
