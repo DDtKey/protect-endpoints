@@ -36,7 +36,6 @@ pub use middleware::GrantsMiddleware;
 ///     Response::builder().status(StatusCode::OK).body("some secured info")
 /// }
 ///
-/// // Role - is permission with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
 /// #[poem_grants::protect("ADMIN", "MANAGER")]
 /// #[poem::handler]

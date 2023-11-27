@@ -21,7 +21,7 @@ async fn full_path_enum_secure() -> Response {
 }
 
 // Incorrect endpoint security without Type specification
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[poem::handler]
 async fn incorrect_enum_secure() -> Response {
     Response::builder().status(StatusCode::OK).finish()

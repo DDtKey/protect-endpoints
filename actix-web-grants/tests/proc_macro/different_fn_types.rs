@@ -8,13 +8,13 @@ use actix_web_grants::{protect, GrantsMiddleware};
 use serde::{Deserialize, Serialize};
 
 #[get("/http_response")]
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn http_response() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
 #[get("/str")]
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn str_response() -> &'static str {
     "Hi!"
 }
@@ -25,19 +25,19 @@ struct User {
 }
 
 #[post("/secure/{user_id}")]
-#[protect("ADMIN", expr = "user_id.into_inner() == user.id")]
+#[protect("ROLE_ADMIN", expr = "user_id.into_inner() == user.id")]
 async fn secure_user_id(user_id: web::Path<i32>, user: web::Json<User>) -> &'static str {
     "Hi!"
 }
 
 #[get("/return")]
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn return_response() -> &'static str {
     return "Hi!";
 }
 
 #[get("/result")]
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn result_response(payload: web::Query<common::NamePayload>) -> Result<String, Error> {
     let common::NamePayload { name } = payload.0;
     let name = name.ok_or(ErrorBadRequest("Query param not found!"))?;
@@ -52,7 +52,7 @@ fn access_denied() -> HttpResponse {
 }
 
 #[get("/access")]
-#[protect("ADMIN", error = "access_denied")]
+#[protect("ROLE_ADMIN", error = "access_denied")]
 async fn access_response() -> &'static str {
     "Hi!"
 }
