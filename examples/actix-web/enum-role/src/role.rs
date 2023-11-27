@@ -1,5 +1,5 @@
-// `PartialEq` and `Clone` is required
-#[derive(PartialEq, Clone)]
+// `Eq` and `Hash` is required
+#[derive(Eq, Hash)]
 pub enum Role {
     Admin,
     Manager,

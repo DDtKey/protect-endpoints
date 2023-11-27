@@ -1,5 +1,6 @@
 use crate::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web::guard::{Guard, GuardContext};
+use std::hash::Hash;
 
 /// Implementation of Guard trait for validate authorities
 /// ```
@@ -8,6 +9,7 @@ use actix_web::guard::{Guard, GuardContext};
 ///
 /// use actix_web_grants::{GrantsMiddleware, AuthorityGuard};
 /// use std::sync::Arc;
+/// use std::collections::HashSet;
 ///
 /// fn main() {
 ///     HttpServer::new(|| {
@@ -19,25 +21,25 @@ use actix_web::guard::{Guard, GuardContext};
 ///     });
 /// }
 ///
-/// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
+/// async fn extract(_req: &ServiceRequest) -> Result<HashSet<String>, Error> {
 ///    // Here is a place for your code to get user permissions/roles/authorities from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
-///    Ok(vec!["ROLE_ADMIN".to_string()])
+///    Ok(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 /// ```
 pub struct AuthorityGuard<Type> {
     allow_authority: Type,
 }
 
-impl<Type: PartialEq + Clone + 'static> AuthorityGuard<Type> {
+impl<Type: Eq + Hash + 'static> AuthorityGuard<Type> {
     pub fn new(allow_authority: Type) -> AuthorityGuard<Type> {
         AuthorityGuard { allow_authority }
     }
 }
 
-impl<Type: PartialEq + Clone + 'static> Guard for AuthorityGuard<Type> {
+impl<Type: Eq + Hash + 'static> Guard for AuthorityGuard<Type> {
     fn check(&self, request: &GuardContext) -> bool {
         request
             .req_data()

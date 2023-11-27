@@ -1,5 +1,7 @@
 use crate::authorities::{AttachAuthorities, AuthoritiesExtractor};
 use poem::{Endpoint, Middleware, Request};
+use std::collections::HashSet;
+use std::hash::Hash;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
@@ -8,6 +10,7 @@ use std::sync::Arc;
 ///
 /// # Examples
 /// ```
+/// use std::collections::HashSet;
 /// use poem::{get, handler, listener::TcpListener, web::Path, Route, Server, http::StatusCode, Response};
 ///
 /// use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
@@ -22,12 +25,12 @@ use std::sync::Arc;
 ///
 /// // You can use both `&Request` and `&mut Request`
 /// // Futhermore, you can use you own type instead of `String` (e.g. Enum).
-/// async fn extract(_req: &poem::Request) -> poem::Result<Vec<String>> {
+/// async fn extract(_req: &poem::Request) -> poem::Result<HashSet<String>> {
 ///    // Here is a place for your code to get user permissions/roles/authorities from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
-///    Ok(vec!["ROLE_ADMIN".to_string()])
+///    Ok(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 ///
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
@@ -40,7 +43,7 @@ use std::sync::Arc;
 pub struct GrantsMiddleware<Extractor, Req, Type>
 where
     for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
-    Type: PartialEq + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + Sync + 'static,
     Req: Send + Sync,
 {
     extractor: Arc<Extractor>,
@@ -51,7 +54,7 @@ where
 impl<E, Req, Type> GrantsMiddleware<E, Req, Type>
 where
     for<'a> E: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
-    Type: PartialEq + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + Sync + 'static,
     Req: Send + Sync,
 {
     /// Create middleware by [`AuthoritiesExtractor`].
@@ -61,20 +64,21 @@ where
     ///
     /// # Example of function with implementation of [`AuthoritiesExtractor`]
     /// ```
+    /// use std::collections::HashSet;
     ///
-    /// async fn extract(_req: &poem::Request) -> poem::Result<Vec<String>> {
+    /// async fn extract(_req: &poem::Request) -> poem::Result<HashSet<String>> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token or database
-    ///     Ok(vec!["WRITE_ACCESS".to_string()])
+    ///     Ok(HashSet::from(["WRITE_ACCESS".to_string()]))
     /// }
     ///
     /// // Or with you own type:
-    /// #[derive(PartialEq, Clone)] // required bounds
+    /// #[derive(Eq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
-    /// async fn extract_enum(_req: &poem::Request) -> poem::Result<Vec<Permission>> {
+    /// async fn extract_enum(_req: &poem::Request) -> poem::Result<HashSet<Permission>> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token, database or external service
-    ///     Ok(vec![Permission::WRITE])
+    ///     Ok(HashSet::from([Permission::WRITE]))
     /// }
     /// ```
     ///
@@ -93,7 +97,7 @@ pub struct GrantsEndpoint<End, Extractor, Req, Type>
 where
     End: Endpoint,
     for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
-    Type: PartialEq + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + Sync + 'static,
     Req: Send + Sync,
 {
     inner: End,
@@ -106,7 +110,7 @@ impl<End, Extractor, Req, Type> Middleware<End> for GrantsMiddleware<Extractor, 
 where
     End: Endpoint,
     for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
-    Type: PartialEq + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + Sync + 'static,
     Req: Send + Sync,
 {
     type Output = GrantsEndpoint<End, Extractor, Req, Type>;
@@ -126,13 +130,13 @@ impl<End, Extractor, Req, Type> Endpoint for GrantsEndpoint<End, Extractor, Req,
 where
     End: Endpoint,
     for<'a> Extractor: AuthoritiesExtractor<'a, Req, Type> + Send + Sync,
-    Type: PartialEq + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + Sync + 'static,
     Req: Send + Sync,
 {
     type Output = End::Output;
 
     async fn call(&self, mut req: Request) -> poem::Result<Self::Output> {
-        let authorities: Vec<Type> = self.extractor.extract(&mut req).await?;
+        let authorities: HashSet<Type> = self.extractor.extract(&mut req).await?;
         req.attach(authorities);
 
         self.inner.call(req).await

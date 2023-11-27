@@ -2,7 +2,9 @@ use crate::authorities::AttachAuthorities;
 use crate::authorities::AuthoritiesExtractor;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
+use std::collections::HashSet;
 use std::future::{self, Future, Ready};
+use std::hash::Hash;
 use std::marker::PhantomData;
 use std::pin::Pin;
 use std::rc::Rc;
@@ -15,6 +17,7 @@ use std::task::{Context, Poll};
 /// ```
 /// use actix_web::dev::ServiceRequest;
 /// use actix_web::{get, App, Error, HttpResponse, HttpServer, Responder};
+/// use std::collections::HashSet;
 ///
 /// use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 /// use actix_web_grants::{protect, GrantsMiddleware};
@@ -30,12 +33,12 @@ use std::task::{Context, Poll};
 ///
 /// // You can use both &ServiceRequest and &mut ServiceRequest
 /// // Furthermore, you can use you own type instead of `String` (e.g. Enum).
-/// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
+/// async fn extract(_req: &ServiceRequest) -> Result<HashSet<String>, Error> {
 ///    // Here is a place for your code to get user permissions/roles/authorities from a request
 ///    // For example from a token or database
 ///
 ///    // Stub example
-///    Ok(vec!["ROLE_ADMIN".to_string()])
+///    Ok(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 ///
 /// // `proc-macro` crate has additional features, like ABAC security and custom types. See examples and `proc-macro` crate docs.
@@ -48,7 +51,7 @@ use std::task::{Context, Poll};
 pub struct GrantsMiddleware<E, Req, Type>
 where
     for<'a> E: AuthoritiesExtractor<'a, Req, Type>,
-    Type: PartialEq + Clone + 'static,
+    Type: Eq + Hash + 'static,
 {
     extractor: Rc<E>,
     phantom_req: PhantomData<Req>,
@@ -58,7 +61,7 @@ where
 impl<E, Req, Type> GrantsMiddleware<E, Req, Type>
 where
     for<'a> E: AuthoritiesExtractor<'a, Req, Type>,
-    Type: PartialEq + Clone + 'static,
+    Type: Eq + Hash + 'static,
 {
     /// Create middleware by [`AuthoritiesExtractor`].
     ///
@@ -69,20 +72,21 @@ where
     /// ```
     /// use actix_web::dev::ServiceRequest;
     /// use actix_web::Error;
+    /// use std::collections::HashSet;
     ///
-    /// async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
+    /// async fn extract(_req: &ServiceRequest) -> Result<HashSet<String>, Error> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token or database
-    ///     Ok(vec!["WRITE_ACCESS".to_string()])
+    ///     Ok(HashSet::from(!["WRITE_ACCESS".to_string()]))
     /// }
     ///
     /// // Or with you own type:
-    /// #[derive(PartialEq, Clone)] // required bounds
+    /// #[derive(Eq, Hash)] // required bounds
     /// enum Permission { WRITE, READ }
-    /// async fn extract_enum(_req: &ServiceRequest) -> Result<Vec<Permission>, Error> {
+    /// async fn extract_enum(_req: &ServiceRequest) -> Result<HashSet<Permission>, Error> {
     ///     // Here is a place for your code to get user permissions/roles/authorities from a request
     ///      // For example from a token, database or external service
-    ///     Ok(vec![Permission::WRITE])
+    ///     Ok(HashSet::from(![Permission::WRITE]))
     /// }
     /// ```
     ///
@@ -100,7 +104,7 @@ impl<S, B, E, Req, Type> Transform<S, ServiceRequest> for GrantsMiddleware<E, Re
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> E: AuthoritiesExtractor<'a, Req, Type> + 'static,
-    Type: PartialEq + Clone + 'static,
+    Type: Eq + Hash + 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
@@ -132,7 +136,7 @@ impl<S, B, E, Req, Type> Service<ServiceRequest> for GrantsService<S, E, Req, Ty
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     for<'a> E: AuthoritiesExtractor<'a, Req, Type>,
-    Type: PartialEq + Clone + 'static,
+    Type: Eq + Hash + 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
@@ -147,7 +151,7 @@ where
         let extractor = Rc::clone(&self.extractor);
 
         Box::pin(async move {
-            let authorities: Vec<Type> = extractor.extract(&mut req).await?;
+            let authorities: HashSet<Type> = extractor.extract(&mut req).await?;
             req.attach(authorities);
 
             service.call(req).await

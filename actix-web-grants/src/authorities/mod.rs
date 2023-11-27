@@ -16,8 +16,11 @@
 use actix_web::dev::Payload;
 use actix_web::error::ErrorUnauthorized;
 use actix_web::{Error, FromRequest, HttpMessage, HttpRequest};
+use std::collections::HashSet;
 use std::future::Future;
+use std::hash::Hash;
 use std::pin::Pin;
+use std::sync::Arc;
 
 mod attache;
 mod extractors;
@@ -25,32 +28,30 @@ mod extractors;
 pub use attache::AttachAuthorities;
 pub use extractors::*;
 
-#[derive(Clone)]
 pub struct AuthDetails<T = String>
 where
-    T: PartialEq,
+    T: Eq + Hash,
 {
-    pub authorities: Vec<T>,
+    pub authorities: Arc<HashSet<T>>,
 }
 
-impl<T> AuthDetails<T>
-where
-    T: PartialEq + Clone,
-{
-    pub fn new(authorities: Vec<T>) -> AuthDetails<T> {
-        AuthDetails { authorities }
+impl<T: Eq + Hash> AuthDetails<T> {
+    pub fn new(authorities: impl IntoIterator<Item = T>) -> AuthDetails<T> {
+        AuthDetails {
+            authorities: Arc::new(authorities.into_iter().collect()),
+        }
     }
 }
 
-pub trait AuthoritiesCheck<T: PartialEq> {
+pub trait AuthoritiesCheck<T: Eq + Hash> {
     fn has_authority(&self, authority: T) -> bool;
     fn has_authorities(&self, authorities: &[T]) -> bool;
     fn has_any_authority(&self, authorities: &[T]) -> bool;
 }
 
-impl<T: PartialEq + Clone> AuthoritiesCheck<&T> for AuthDetails<T> {
+impl<T: Eq + Hash> AuthoritiesCheck<&T> for AuthDetails<T> {
     fn has_authority(&self, authority: &T) -> bool {
-        self.authorities.iter().any(|auth| auth == authority)
+        self.authorities.contains(authority)
     }
 
     fn has_authorities(&self, authorities: &[&T]) -> bool {
@@ -64,9 +65,7 @@ impl<T: PartialEq + Clone> AuthoritiesCheck<&T> for AuthDetails<T> {
 
 impl AuthoritiesCheck<&str> for AuthDetails {
     fn has_authority(&self, authority: &str) -> bool {
-        self.authorities
-            .iter()
-            .any(|auth| auth.as_str() == authority)
+        self.authorities.contains(authority)
     }
 
     fn has_authorities(&self, authorities: &[&str]) -> bool {
@@ -78,7 +77,7 @@ impl AuthoritiesCheck<&str> for AuthDetails {
     }
 }
 
-impl<T: PartialEq + Clone + 'static> FromRequest for AuthDetails<T> {
+impl<T: Eq + Hash + 'static> FromRequest for AuthDetails<T> {
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Error>>>>;
 
@@ -91,5 +90,13 @@ impl<T: PartialEq + Clone + 'static> FromRequest for AuthDetails<T> {
                 .map(AuthDetails::clone)
                 .ok_or_else(|| ErrorUnauthorized("User unauthorized!"))
         })
+    }
+}
+
+impl<T: Eq + Hash> Clone for AuthDetails<T> {
+    fn clone(&self) -> Self {
+        Self {
+            authorities: self.authorities.clone(),
+        }
     }
 }

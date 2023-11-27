@@ -2,19 +2,20 @@ use poem::http::header::{HeaderValue, AUTHORIZATION};
 use poem::test::TestResponse;
 use poem::Request;
 use serde::Deserialize;
+use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 
 pub const ROLE_ADMIN: &str = "ROLE_ADMIN";
 pub const ROLE_MANAGER: &str = "ROLE_MANAGER";
 
-#[derive(PartialEq, Clone)]
+#[derive(Eq, PartialEq, Hash)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum Role {
     ADMIN,
     MANAGER,
 }
 
-pub async fn extract(req: &mut Request) -> poem::Result<Vec<String>> {
+pub async fn extract(req: &mut Request) -> poem::Result<HashSet<String>> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -23,16 +24,11 @@ pub async fn extract(req: &mut Request) -> poem::Result<Vec<String>> {
         .map(Result::unwrap);
 
     Ok(auth_header
-        .map(|header| {
-            header
-                .split(',')
-                .map(str::to_string)
-                .collect::<Vec<String>>()
-        })
+        .map(|header| header.split(',').map(str::to_string).collect())
         .unwrap())
 }
 
-pub async fn enum_extract(req: &mut Request) -> poem::Result<Vec<Role>> {
+pub async fn enum_extract(req: &mut Request) -> poem::Result<HashSet<Role>> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -41,12 +37,7 @@ pub async fn enum_extract(req: &mut Request) -> poem::Result<Vec<Role>> {
         .map(Result::unwrap);
 
     Ok(auth_header
-        .map(|header| {
-            header
-                .split(',')
-                .map(|name| name.into())
-                .collect::<Vec<Role>>()
-        })
+        .map(|header| header.split(',').map(|name| name.into()).collect())
         .unwrap())
 }
 

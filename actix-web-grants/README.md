@@ -26,7 +26,7 @@ The easiest way is to declare a function with the following signature (trait is 
 use actix_web::{dev::ServiceRequest, Error};
 
 // You can use custom type instead of String
-async fn extract(req: &ServiceRequest) -> Result<Vec<String>, Error>
+async fn extract(req: &ServiceRequest) -> Result<HashSet<String>, Error>
 ```
 
 2. Add middleware to your application using the extractor defined in step 1

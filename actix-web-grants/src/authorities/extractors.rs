@@ -1,9 +1,11 @@
 use actix_web::dev::ServiceRequest;
 use actix_web::Error;
+use std::collections::HashSet;
 use std::future::Future;
+use std::hash::Hash;
 
 pub trait AuthoritiesExtractor<'a, Req, Type> {
-    type Future: Future<Output = Result<Vec<Type>, Error>>;
+    type Future: Future<Output = Result<HashSet<Type>, Error>>;
 
     fn extract(&self, request: &'a mut ServiceRequest) -> Self::Future;
 }
@@ -11,8 +13,8 @@ pub trait AuthoritiesExtractor<'a, Req, Type> {
 impl<'a, F, O, Type> AuthoritiesExtractor<'a, &ServiceRequest, Type> for F
 where
     F: Fn(&'a ServiceRequest) -> O,
-    O: Future<Output = Result<Vec<Type>, Error>>,
-    Type: PartialEq + Clone + 'static,
+    O: Future<Output = Result<HashSet<Type>, Error>>,
+    Type: Eq + Hash + 'static,
 {
     type Future = O;
 
@@ -24,8 +26,8 @@ where
 impl<'a, F, O, Type> AuthoritiesExtractor<'a, &mut ServiceRequest, Type> for F
 where
     F: Fn(&'a mut ServiceRequest) -> O,
-    O: Future<Output = Result<Vec<Type>, Error>>,
-    Type: PartialEq + Clone + 'static,
+    O: Future<Output = Result<HashSet<Type>, Error>>,
+    Type: Eq + Hash + 'static,
 {
     type Future = O;
 
@@ -40,8 +42,8 @@ mod tests {
     use actix_web::dev::ServiceRequest;
     use actix_web::test;
 
-    async fn extract(_req: &ServiceRequest) -> Result<Vec<String>, Error> {
-        Ok(vec!["TEST_PERMISSION".to_string()])
+    async fn extract(_req: &ServiceRequest) -> Result<HashSet<String>, Error> {
+        Ok(HashSet::from(["TEST_PERMISSION".to_string()]))
     }
 
     #[actix_rt::test]
@@ -55,8 +57,8 @@ mod tests {
             .for_each(|authority| assert_eq!("TEST_PERMISSION", authority.as_str()));
     }
 
-    async fn mut_extract(_req: &mut ServiceRequest) -> Result<Vec<String>, Error> {
-        Ok(vec!["TEST_PERMISSION".to_string()])
+    async fn mut_extract(_req: &mut ServiceRequest) -> Result<HashSet<String>, Error> {
+        Ok(HashSet::from(["TEST_PERMISSION".to_string()]))
     }
 
     #[actix_rt::test]
