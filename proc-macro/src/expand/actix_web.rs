@@ -14,13 +14,12 @@ impl ProtectEndpoint {
         let fn_generics = &fn_sig.generics;
         let fn_args = &fn_sig.inputs;
         let fn_async = &fn_sig.asyncness.unwrap();
-        let fn_output =
-            match &fn_sig.output {
-                ReturnType::Type(ref _arrow, ref ty) => ty.to_token_stream(),
-                ReturnType::Default => {
-                    quote! {()}
-                }
-            };
+        let fn_output = match &fn_sig.output {
+            ReturnType::Type(ref _arrow, ref ty) => ty.to_token_stream(),
+            ReturnType::Default => {
+                quote! {()}
+            }
+        };
 
         let auth_details = format!("_auth_details_{}", fn_args.len());
         let auth_details: Ident = Ident::new(&auth_details, Span::call_site());

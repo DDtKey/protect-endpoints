@@ -69,7 +69,9 @@ impl ProtectEndpoint {
         let err_resp = if let Some(expr) = &self.args.error_fn {
             quote!(#expr())
         } else {
-            quote!(poem::Error::from(poem_grants::error::AccessError::ForbiddenRequest))
+            quote!(poem::Error::from(
+                poem_grants::error::AccessError::ForbiddenRequest
+            ))
         };
 
         let stream = quote! {
