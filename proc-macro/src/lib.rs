@@ -16,6 +16,7 @@ mod expand;
 /// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```rust,no_run
+/// use actix_web::web::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[actix_web_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
@@ -59,6 +60,7 @@ pub fn protect_actix_web(args: TokenStream, input: TokenStream) -> TokenStream {
 /// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```rust,no_run
+/// use rocket::serde::json::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[rocket_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
@@ -102,6 +104,7 @@ pub fn protect_rocket(args: TokenStream, input: TokenStream) -> TokenStream {
 /// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```rust,no_run
+/// use poem::web::Json;
 ///
 /// // User should be ADMIN with OP_GET_SECRET permission
 /// #[poem_grants::protect("ROLE_ADMIN", "OP_GET_SECRET")]
@@ -144,6 +147,8 @@ pub fn protect_poem(args: TokenStream, input: TokenStream) -> TokenStream {
 ///
 /// # Examples
 /// ```rust,no_run
+/// use poem_openapi::payload::PlainText;
+///
 /// struct Api;
 ///
 /// #[poem_grants::open_api]
@@ -151,7 +156,7 @@ pub fn protect_poem(args: TokenStream, input: TokenStream) -> TokenStream {
 /// impl Api {
 ///     // An example of protection via `proc-macro`.
 ///     // Just use the necessary name of macro provided by `poem-grants` without crate-name:
-///     #[has_permissions("OP_READ_ADMIN_INFO")]
+///     #[protect("OP_READ_ADMIN_INFO")]
 ///     #[oai(path = "/admin", method = "get")]
 ///     async fn macro_secured(&self) -> PlainText<String> {
 ///         PlainText("ADMIN_RESPONSE".to_string())

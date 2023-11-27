@@ -23,7 +23,7 @@ async fn full_path_enum_secure() -> HttpResponse {
 
 // Incorrect endpoint security without Type specification
 #[get("/incorrect_enum_secure")]
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 async fn incorrect_enum_secure() -> HttpResponse {
     HttpResponse::Ok().finish()
 }

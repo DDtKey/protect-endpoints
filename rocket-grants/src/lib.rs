@@ -36,9 +36,8 @@ pub use fairing::GrantsFairing;
 ///    "some secured info"
 /// }
 ///
-/// // Role - is string with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
-/// #[rocket_grants::protect("ADMIN", "MANAGER")]
+/// #[rocket_grants::protect("ROLE_ADMIN", "ROLE_MANAGER")]
 /// #[rocket::get("/role")]
 /// async fn role_macro_secured() -> &'static str {
 ///    "some secured info"

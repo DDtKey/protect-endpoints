@@ -8,13 +8,13 @@ use poem::{EndpointExt, Response, Route};
 use poem_grants::{protect, GrantsMiddleware};
 use serde::{Deserialize, Serialize};
 
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[poem::handler]
 async fn http_response() -> Response {
     Response::builder().status(StatusCode::OK).finish()
 }
 
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[poem::handler]
 async fn str_response() -> &'static str {
     "Hi!"
@@ -25,19 +25,19 @@ struct User {
     id: i32,
 }
 
-#[protect("ADMIN", expr = "*user_id == user.id")]
+#[protect("ROLE_ADMIN", expr = "*user_id == user.id")]
 #[poem::handler]
 async fn secure_user_id(user_id: Path<i32>, user: Json<User>) -> &'static str {
     "Hi!"
 }
 
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[poem::handler]
 async fn return_response() -> &'static str {
     return "Hi!";
 }
 
-#[protect("ADMIN")]
+#[protect("ROLE_ADMIN")]
 #[poem::handler]
 async fn result_response(
     payload: Query<common::NamePayload>,

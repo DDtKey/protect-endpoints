@@ -41,9 +41,8 @@ pub use middleware::GrantsMiddleware;
 ///     HttpResponse::Ok().body("some secured info")
 /// }
 ///
-/// // Role - is permission with prefix "ROLE_".
 /// // User should be ADMIN and MANAGER
-/// #[has_roles["ADMIN", "MANAGER"]]
+/// #[protect("ROLE_ADMIN", "ROLE_MANAGER")]
 /// async fn role_macro_secured() -> HttpResponse {
 ///     HttpResponse::Ok().body("some secured info")
 /// }

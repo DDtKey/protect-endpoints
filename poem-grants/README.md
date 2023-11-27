@@ -44,7 +44,7 @@ Route::new()
 ```rust,no_run
 use poem::{Response, http::StatusCode};
 
-#[poem_grants::has_authorities("OP_READ_SECURED_INFO")]
+#[poem_grants::protect("OP_READ_SECURED_INFO")]
 #[poem::handler]
 async fn macro_secured() -> Response {
     Response::builder().status(StatusCode::OK).body("ADMIN_RESPONSE")
@@ -60,7 +60,7 @@ struct Api;
 #[poem_grants::open_api] // It's important to keep above of `OpenApi`
 #[OpenApi]
 impl Api {
-    #[has_authorities("OP_READ_ADMIN_INFO")]
+    #[protect("OP_READ_ADMIN_INFO")]
     #[oai(path = "/admin", method = "get")]
     async fn macro_secured(&self) -> PlainText<String> {
         PlainText("ADMIN_RESPONSE".to_string())
