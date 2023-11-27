@@ -1,6 +1,6 @@
 [package]
 name = "poem-grants"
-version = "1.0.0-beta.4"
+version = "1.0.0"
 description = "Authorization extension for `poem` to protect your endpoints"
 readme = "README.md"
 keywords = ["poem", "authz", "security", "grants", "permissions"]
