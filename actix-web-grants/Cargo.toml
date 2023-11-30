@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-grants"
-version = "4.0.0"
+version = "4.0.1"
 description = "Authorization extension `actix-web` to protect your endpoints"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
