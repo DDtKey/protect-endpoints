@@ -143,5 +143,5 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 * For `actix-web-grants: 3.*` & `4.*` supported version of `actix-web` is `4.*`
 
 [`actix-web-httpauth`]: https://github.com/DDtKey/protect-endpoints/blob/main/actix-web-grants/examples/jwt-httpauth
-[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-gratns/examples
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-grants/examples
 [`documentation`]: https://docs.rs/actix-web-grants
