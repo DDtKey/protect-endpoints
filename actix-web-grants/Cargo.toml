@@ -24,6 +24,9 @@ actix-web = { version = "4.3", default-features = false, features = ["macros"] }
 protect-endpoints-proc-macro = { workspace = true, features = ["actix-web"], optional = true }
 
 [dev-dependencies]
+actix-web-httpauth = "0.8.0"
 actix-rt = "2"
 serde = { version = "1.0", features = ["derive"] }
 parse-display = "0.8.2"
+jsonwebtoken = "9.1.0"
+chrono = "0.4.19"

@@ -12,7 +12,7 @@
 //! You can find more [`examples`] in the git repository.
 //!
 //! [`GrantsMiddleware`]: GrantsMiddleware
-//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/poem
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/poem-grants/examples
 //! [`authorities`]: authorities
 //! [`proc-macro`]: proc_macro
 #![doc = include_str!("../README.md")]

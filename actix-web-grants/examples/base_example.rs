@@ -1,7 +1,8 @@
 use actix_web::dev::ServiceRequest;
 use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
+use std::collections::HashSet;
 
-use actix_web_grants::authorites::{AuthDetails, AuthoritesCheck};
+use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web_grants::{protect, AuthorityGuard, GrantsMiddleware};
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
@@ -61,10 +62,10 @@ async fn main() -> std::io::Result<()> {
 }
 
 // You can use both &ServiceRequest and &mut ServiceRequest
-async fn extract(_req: &mut ServiceRequest) -> Result<Vec<String>, Error> {
+async fn extract(_req: &mut ServiceRequest) -> Result<HashSet<String>, Error> {
     // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
-    Ok(vec![ROLE_ADMIN.to_string()])
+    Ok(HashSet::from([ROLE_ADMIN.to_string()]))
 }

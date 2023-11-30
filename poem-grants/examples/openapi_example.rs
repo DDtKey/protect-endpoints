@@ -4,6 +4,7 @@ use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 use poem_openapi::payload::PlainText;
 use poem_openapi::{OpenApi, OpenApiService};
+use std::collections::HashSet;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
 const ADMIN_RESPONSE: &str = "Hello Admin!";
@@ -62,10 +63,10 @@ async fn main() -> Result<(), std::io::Error> {
 }
 
 // You can use both `&Request` and `&mut Request`
-async fn extract(_req: &mut Request) -> poem::Result<Vec<String>> {
+async fn extract(_req: &mut Request) -> poem::Result<HashSet<String>> {
     // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
-    Ok(vec![ROLE_ADMIN.to_string()])
+    Ok(HashSet::from([ROLE_ADMIN.to_string()]))
 }

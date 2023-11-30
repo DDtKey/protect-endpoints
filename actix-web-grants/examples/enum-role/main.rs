@@ -3,6 +3,7 @@ use actix_web::dev::ServiceRequest;
 use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web_grants::{protect, AuthorityGuard, GrantsMiddleware};
+use std::collections::HashSet;
 
 mod role;
 
@@ -46,10 +47,10 @@ async fn main() -> std::io::Result<()> {
 }
 
 // You can specify any of your own type (`PartialEq` + `Clone`) for the return type wrapped in a vector: Result<Vec<YOUR_TYPE_HERE>, Error>
-async fn extract(_req: &mut ServiceRequest) -> Result<Vec<Role>, Error> {
+async fn extract(_req: &mut ServiceRequest) -> Result<HashSet<Role>, Error> {
     // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
-    Ok(vec![Role::Admin])
+    Ok(HashSet::from([Role::Admin]))
 }

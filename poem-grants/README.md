@@ -36,7 +36,7 @@ Route::new()
     .with(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-auth example](../examples/poem/jwt-auth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-auth example](examples/jwt-auth/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
@@ -79,7 +79,7 @@ Here is an example using the `ty` and `expr` attributes. But these are independe
 `expr` allows you to include some checks in the macro based on function params, it can be combined with authorities by using `all`/`any`.
 
 `ty` allows you to use a custom type for th authorities (then the middleware needs to be configured). 
-Take a look at an [enum-role example](../examples/poem/enum-role/src/main.rs)
+Take a look at an [enum-role example](examples/enum-role/main.rs)
 
 ```rust,ignore
 use poem::{Response, http::StatusCode, web};
@@ -120,8 +120,8 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 ## Supported `poem` versions
 * For `poem-grants: 1.*` supported version of `poem` is `1.*`
 
-[`jwt-auth`]: https://github.com/DDtKey/protect-endpoints/blob/main/examples/poem/jwt-auth
-[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/poem
+[`jwt-auth`]: https://github.com/DDtKey/protect-endpoints/blob/main/poem-grants/examples/jwt-auth
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/poem-grants/examples
 [`documentation`]: https://docs.rs/poem-grants
 [`poem`]: https://github.com/poem-web/poem
 [`poem-openapi`]: https://github.com/poem-web/poem/tree/master/poem-openapi

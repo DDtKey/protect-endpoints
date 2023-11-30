@@ -3,6 +3,7 @@ use poem::listener::TcpListener;
 use poem::{get, http::StatusCode, EndpointExt, Request, Response, Route, Server};
 use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
+use std::collections::HashSet;
 
 mod role;
 
@@ -38,10 +39,10 @@ async fn main() -> Result<(), std::io::Error> {
 }
 
 // You can specify any of your own type (`PartialEq` + `Clone`) for the return type wrapped in a vector: poem::Result<Vec<YOUR_TYPE_HERE>>
-async fn extract(_req: &mut Request) -> poem::Result<Vec<Role>> {
+async fn extract(_req: &mut Request) -> poem::Result<HashSet<Role>> {
     // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
-    Ok(vec![Role::ADMIN])
+    Ok(HashSet::from([Role::ADMIN]))
 }

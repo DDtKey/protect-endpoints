@@ -4,6 +4,7 @@ use rocket::serde::json::Json;
 use rocket::Request;
 use rocket_grants::GrantsFairing;
 use serde::Deserialize;
+use std::collections::HashSet;
 
 use crate::claims::Claims;
 
@@ -41,10 +42,12 @@ async fn rocket() -> _ {
             "/api",
             rocket::routes![permission_secured, manager_secured, create_token],
         )
-        .attach(GrantsFairing::with_extractor_fn(|req| Box::pin(extract_from_jwt(req))))
+        .attach(GrantsFairing::with_extractor_fn(|req| {
+            Box::pin(extract_from_jwt(req))
+        }))
 }
 
-async fn extract_from_jwt(req: &mut Request<'_>) -> Option<Vec<String>> {
+async fn extract_from_jwt(req: &mut Request<'_>) -> Option<HashSet<String>> {
     req.headers()
         .get(AUTHORIZATION.as_str())
         .next()
@@ -79,5 +82,5 @@ pub async fn create_token(info: Json<UserPermissions>) -> Result<String, &'stati
 #[derive(Deserialize)]
 pub struct UserPermissions {
     pub username: String,
-    pub permissions: Vec<String>,
+    pub permissions: HashSet<String>,
 }

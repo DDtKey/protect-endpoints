@@ -36,7 +36,7 @@ App::new()
     .wrap(GrantsMiddleware::with_extractor(extract))
 ```
 
-> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](../examples/actix-web/jwt-httpauth/src/main.rs)
+> Steps 1 and 2 can be replaced by custom middleware or integration with another libraries. Take a look at an [jwt-httpauth example](examples/jwt-httpauth/main.rs)
 
 3. Protect your endpoints in any convenient way from the examples below:
 
@@ -60,7 +60,7 @@ Here is an example using the `ty` and `expr` attributes. But these are independe
 `expr` allows you to include some checks in the macro based on function params, it can be combined with authorities by using `all`/`any`.
 
 `ty` allows you to use a custom type for th authorities (then the middleware needs to be configured). 
-Take a look at an [enum-role example](../examples/actix-web/enum-role/src/main.rs)
+Take a look at an [enum-role example](examples/enum-role/main.rs)
 
 ```rust,ignore
 use enums::Role::{self, ADMIN};
@@ -142,6 +142,6 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 * For `actix-web-grants: 2.*` supported version of `actix-web` is `3.*`
 * For `actix-web-grants: 3.*` & `4.*` supported version of `actix-web` is `4.*`
 
-[`actix-web-httpauth`]: https://github.com/DDtKey/protect-endpoints/blob/main/examples/actix-web/jwt-httpauth
-[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/actix-web
+[`actix-web-httpauth`]: https://github.com/DDtKey/protect-endpoints/blob/main/actix-web-grants/examples/jwt-httpauth
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-gratns/examples
 [`documentation`]: https://docs.rs/actix-web-grants

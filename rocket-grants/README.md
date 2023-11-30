@@ -57,7 +57,7 @@ Here is an example using the `ty` and `expr` attributes. But these are independe
 `expr` allows you to include some checks in the macro based on function params, it can be combined with authorities by using `all`/`any`.
 
 `ty` allows you to use a custom type for the authority (then the fairing needs to be configured). 
-Take a look at an [enum-role example](../examples/rocket/enum-role/src/main.rs)
+Take a look at an [enum-role example](examples/enum-role/main.rs)
 
 ```rust,ignore
 use enums::Role::{self, ADMIN};
@@ -108,7 +108,7 @@ You can set up custom responses for:
 ## Supported `rocket` versions
 * For `rocket-grants: 0.1.*` supported version of `rocket` is `0.5.*`
 
-[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/rocket
+[`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/rocket-grants/examples
 [`documentation`]: https://docs.rs/rocket-grants
 [`rocket`]: https://github.com/SergioBenitez/Rocket
 [`poem-grants`]: https://github.com/DDtKey/protect-endpoints/tree/main/poem-grants

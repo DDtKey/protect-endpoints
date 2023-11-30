@@ -12,7 +12,7 @@
 //! You can find more [`examples`] in the git repository.
 //!
 //! [`GrantsFairing`]: GrantsFairing
-//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/rocket
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/rocket-grants/examples
 //! [`permissions`]: authorities
 //! [`proc-macro`]: proc_macro
 #![doc = include_str!("../README.md")]

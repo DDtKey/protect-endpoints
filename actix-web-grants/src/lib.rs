@@ -13,7 +13,7 @@
 //!
 //! [`GrantsMiddleware`]: GrantsMiddleware
 //! [`httpauth`]: https://docs.rs/actix-web-httpauth
-//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/examples/actix-web
+//! [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/actix-web-grants/examples
 //! [`authorities`]: authorities
 //! [`proc-macro`]: proc_macro
 //! [`AuthorityGuard`]: AuthorityGuard

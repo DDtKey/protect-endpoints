@@ -1,6 +1,7 @@
 use chrono::{Duration, Utc};
 use jsonwebtoken::{self, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 // Token lifetime and Secret key are hardcoded for clarity
 const JWT_EXPIRATION_HOURS: i64 = 24;
@@ -9,12 +10,12 @@ const SECRET: &str = "SECRET";
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct Claims {
     pub username: String,
-    pub permissions: Vec<String>,
+    pub permissions: HashSet<String>,
     exp: i64,
 }
 
 impl Claims {
-    pub fn new(username: String, permissions: Vec<String>) -> Self {
+    pub fn new(username: String, permissions: HashSet<String>) -> Self {
         Self {
             username,
             permissions,
