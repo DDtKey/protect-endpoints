@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use rocket::http::hyper::header::AUTHORIZATION;
 use rocket::http::Status;
 use rocket::serde::json::Json;
@@ -44,7 +45,7 @@ async fn rocket() -> _ {
         .attach(GrantsFairing::with_extractor_fn(|req| Box::pin(extract_from_jwt(req))))
 }
 
-async fn extract_from_jwt(req: &mut Request<'_>) -> Option<Vec<String>> {
+async fn extract_from_jwt(req: &mut Request<'_>) -> Option<HashSet<String>> {
     req.headers()
         .get(AUTHORIZATION.as_str())
         .next()
@@ -79,5 +80,5 @@ pub async fn create_token(info: Json<UserPermissions>) -> Result<String, &'stati
 #[derive(Deserialize)]
 pub struct UserPermissions {
     pub username: String,
-    pub permissions: Vec<String>,
+    pub permissions: HashSet<String>,
 }

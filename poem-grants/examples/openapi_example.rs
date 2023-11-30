@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use poem::listener::TcpListener;
 use poem::{web, EndpointExt, Request, Route, Server};
 use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
@@ -62,10 +63,10 @@ async fn main() -> Result<(), std::io::Error> {
 }
 
 // You can use both `&Request` and `&mut Request`
-async fn extract(_req: &mut Request) -> poem::Result<Vec<String>> {
+async fn extract(_req: &mut Request) -> poem::Result<HashSet<String>> {
     // Here is a place for your code to get user permissions/roles/authorities from a request
     // For example from a token or database
 
     // Stub example
-    Ok(vec![ROLE_ADMIN.to_string()])
+    Ok(HashSet::from([ROLE_ADMIN.to_string()]))
 }

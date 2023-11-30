@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{self, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
@@ -9,12 +10,12 @@ const SECRET: &str = "SECRET";
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct Claims {
     pub username: String,
-    pub permissions: Vec<String>,
+    pub permissions: HashSet<String>,
     exp: i64,
 }
 
 impl Claims {
-    pub fn new(username: String, permissions: Vec<String>) -> Self {
+    pub fn new(username: String, permissions: HashSet<String>) -> Self {
         Self {
             username,
             permissions,

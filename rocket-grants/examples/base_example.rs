@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use rocket::serde::json::Json;
 use rocket::{get, post};
 use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
@@ -60,7 +61,7 @@ async fn rocket() -> _ {
         )
         .attach(GrantsFairing::with_extractor_fn(|_req| {
             Box::pin(async move {
-                Some(vec![ROLE_ADMIN.to_string()]) // just a stub
+                Some(HashSet::from([ROLE_ADMIN.to_string()])) // just a stub
             })
         }))
 }
