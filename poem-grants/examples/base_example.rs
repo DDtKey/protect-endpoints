@@ -1,9 +1,9 @@
-use std::collections::HashSet;
 use poem::http::StatusCode;
 use poem::listener::TcpListener;
 use poem::{get, web, EndpointExt, Request, Response, Route, Server};
 use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
+use std::collections::HashSet;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
 const ADMIN_RESPONSE: &str = "Hello Admin!";

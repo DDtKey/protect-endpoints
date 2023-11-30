@@ -1,6 +1,6 @@
-use std::collections::HashSet;
 use actix_web::dev::ServiceRequest;
 use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
+use std::collections::HashSet;
 
 use actix_web_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use actix_web_grants::{protect, AuthorityGuard, GrantsMiddleware};

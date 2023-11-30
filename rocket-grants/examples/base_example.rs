@@ -1,8 +1,8 @@
-use std::collections::HashSet;
 use rocket::serde::json::Json;
 use rocket::{get, post};
 use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use rocket_grants::GrantsFairing;
+use std::collections::HashSet;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
 const ADMIN_RESPONSE: &str = "Hello Admin!";

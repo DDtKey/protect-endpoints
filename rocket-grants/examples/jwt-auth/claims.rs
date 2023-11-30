@@ -1,7 +1,7 @@
-use std::collections::HashSet;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{self, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 // Token lifetime and Secret key are hardcoded for clarity
 const JWT_EXPIRATION_HOURS: i64 = 24;

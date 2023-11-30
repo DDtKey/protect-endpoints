@@ -1,10 +1,10 @@
-use std::collections::HashSet;
 use poem::listener::TcpListener;
 use poem::{web, EndpointExt, Request, Route, Server};
 use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
 use poem_openapi::payload::PlainText;
 use poem_openapi::{OpenApi, OpenApiService};
+use std::collections::HashSet;
 
 const ROLE_ADMIN: &str = "ROLE_ADMIN";
 const ADMIN_RESPONSE: &str = "Hello Admin!";

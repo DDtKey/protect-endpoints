@@ -1,9 +1,9 @@
-use std::collections::HashSet;
 use crate::role::Role::{self, ADMIN};
 use poem::listener::TcpListener;
 use poem::{get, http::StatusCode, EndpointExt, Request, Response, Route, Server};
 use poem_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use poem_grants::GrantsMiddleware;
+use std::collections::HashSet;
 
 mod role;
 

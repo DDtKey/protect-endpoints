@@ -1,9 +1,9 @@
-use std::collections::HashSet;
 use crate::role::Role::{self, Admin};
 use rocket::http::Status;
 use rocket::Request;
 use rocket_grants::authorities::{AuthDetails, AuthoritiesCheck};
 use rocket_grants::GrantsFairing;
+use std::collections::HashSet;
 
 mod role;
 
@@ -29,7 +29,9 @@ async fn manual_secure(details: AuthDetails<Role>) -> &'static str {
 async fn rocket() -> _ {
     rocket::build()
         .mount("/api", rocket::routes![macro_secured, manual_secure])
-        .attach(GrantsFairing::with_extractor_fn(|req| Box::pin(extract(req))))
+        .attach(GrantsFairing::with_extractor_fn(|req| {
+            Box::pin(extract(req))
+        }))
 }
 
 // You can specify any of your own type (`PartialEq` + `Clone`) for the return type wrapped in a vector: rocket::Result<Vec<YOUR_TYPE_HERE>>
