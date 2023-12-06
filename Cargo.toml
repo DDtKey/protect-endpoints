@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "core",
     "actix-web-grants",
     "proc-macro",
     "rocket-grants",
