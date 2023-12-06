@@ -1,0 +1,22 @@
+[package]
+name = "protect-endpoints-core"
+version = "0.1.0"
+description = "Core primitives for protecting endpoints within `*-grants` ecosystem"
+readme = "../README.md"
+keywords = ["protect", "endpoint", "authz", "security", "grants"]
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+
+
+[features]
+tower = ["dep:tower", "pin-project", "futures-util"]
+
+[dependencies]
+tower = { version = "0.4.13", optional = true, default-features = false }
+pin-project = { version = "1.1.3", optional = true }
+futures-util = { version = "0.3.8", optional = true }
+
