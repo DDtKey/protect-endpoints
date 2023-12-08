@@ -208,7 +208,7 @@ impl darling::FromMeta for ProtectionArgs {
                             ty = errors.handle(darling::FromMeta::from_expr(value));
                         }
                     } else if path.is_ident("error") {
-                        if ty.is_some() {
+                        if error_fn.is_some() {
                             errors.push(darling::Error::duplicate_field("error"));
                         } else {
                             error_fn = errors.handle(darling::FromMeta::from_expr(value));
