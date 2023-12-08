@@ -1,3 +1,4 @@
+use actix_web::body::{BoxBody, EitherBody};
 use actix_web::dev::ServiceResponse;
 use actix_web::{get, test, App, HttpResponse};
 
@@ -43,7 +44,7 @@ async fn test_forbidden() {
     assert_eq!(StatusCode::FORBIDDEN, test_manager.status());
 }
 
-async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
+async fn get_user_response(uri: &str, role: &str) -> ServiceResponse<EitherBody<BoxBody>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(

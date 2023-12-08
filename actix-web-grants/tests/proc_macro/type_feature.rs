@@ -1,6 +1,7 @@
 use crate::common;
 use crate::common::Permission;
 use crate::common::Role::{self, ADMIN, MANAGER};
+use actix_web::body::{BoxBody, EitherBody};
 use actix_web::dev::ServiceResponse;
 use actix_web::http::header::AUTHORIZATION;
 use actix_web::http::StatusCode;
@@ -76,7 +77,10 @@ async fn test_incorrect_http_response() {
     assert_eq!(StatusCode::UNAUTHORIZED, test.status());
 }
 
-async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
+async fn get_user_response(
+    uri: &str,
+    role: &str,
+) -> ServiceResponse<EitherBody<EitherBody<BoxBody>>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(
