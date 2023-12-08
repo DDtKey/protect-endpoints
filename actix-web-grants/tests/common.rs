@@ -59,7 +59,10 @@ pub async fn enum_extract<T: FromStr + Eq + Hash>(
         .ok_or_else(|| ErrorUnauthorized("Authorization header incorrect!"))
 }
 
-pub async fn test_body(resp: ServiceResponse, expected_body: &str) {
+pub async fn test_body<B: actix_web::body::MessageBody>(
+    resp: ServiceResponse<B>,
+    expected_body: &str,
+) {
     let body = test::read_body(resp).await;
 
     assert_eq!(String::from_utf8(body.to_vec()).unwrap(), expected_body);

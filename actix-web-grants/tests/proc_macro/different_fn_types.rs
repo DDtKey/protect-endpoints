@@ -1,5 +1,5 @@
 use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
-use actix_web::body::BoxBody;
+use actix_web::body::{BoxBody, EitherBody};
 use actix_web::dev::ServiceResponse;
 use actix_web::error::ErrorBadRequest;
 use actix_web::http::{header::AUTHORIZATION, StatusCode};
@@ -123,7 +123,7 @@ async fn test_access_denied_reason() {
     common::test_body(test_manager, "This resource allowed only for ADMIN").await;
 }
 
-async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
+async fn get_user_response(uri: &str, role: &str) -> ServiceResponse<EitherBody<BoxBody>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
@@ -142,7 +142,11 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     test::call_service(&app, req).await
 }
 
-async fn post_user_response<T: Serialize>(uri: &str, role: &str, data: &T) -> ServiceResponse {
+async fn post_user_response<T: Serialize>(
+    uri: &str,
+    role: &str,
+    data: &T,
+) -> ServiceResponse<EitherBody<BoxBody>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
