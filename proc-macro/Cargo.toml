@@ -1,6 +1,6 @@
 [package]
 name = "protect-endpoints-proc-macro"
-version = "0.1.0"
+version = "0.1.1"
 description = "A proc-macro way to protect your endpoints"
 readme = "../README.md"
 keywords = ["rocket", "authz", "security", "grants", "permissions"]
