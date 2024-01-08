@@ -26,7 +26,7 @@ thiserror = "1"
 
 [dev-dependencies]
 poem = {version = "1", features = ["test"]}
-poem-openapi = "3.0.6"
+poem-openapi = "4.0.0"
 serde = {version = "1.0", features = ["derive"]}
 tokio = {version = "1.34.0", features = ["rt-multi-thread"]}
 jsonwebtoken = "9.1.0"
