@@ -11,6 +11,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      poem-dependencies:
+        patterns:
+          - "poem"
+          - "poem-openapi"
     commit-message:
       prefix: build
       prefix-development: test
