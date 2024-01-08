@@ -1,3 +1,4 @@
+use actix_web::body::{BoxBody, EitherBody};
 use actix_web::dev::ServiceResponse;
 use actix_web::{test, web, App, HttpResponse};
 
@@ -23,7 +24,7 @@ async fn test_enum_guard() {
     assert_eq!(StatusCode::NOT_FOUND, test_manager.status());
 }
 
-async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
+async fn get_user_response(uri: &str, role: &str) -> ServiceResponse<EitherBody<BoxBody>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(common::extract))
@@ -42,7 +43,10 @@ async fn get_user_response(uri: &str, role: &str) -> ServiceResponse {
     test::call_service(&app, req).await
 }
 
-async fn get_user_response_with_enum(uri: &str, role: &str) -> ServiceResponse {
+async fn get_user_response_with_enum(
+    uri: &str,
+    role: &str,
+) -> ServiceResponse<EitherBody<BoxBody>> {
     let app = test::init_service(
         App::new()
             .wrap(GrantsMiddleware::with_extractor(
