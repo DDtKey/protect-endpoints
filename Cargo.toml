@@ -17,7 +17,7 @@ repository = "https://github.com/DDtKey/protect-endpoints"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-protect-endpoints-proc-macro = { version = "0.1.0" }
+protect-endpoints-proc-macro = { version = "0.2.0" }
 
 [patch.crates-io]
 protect-endpoints-proc-macro = { path = "proc-macro" }
