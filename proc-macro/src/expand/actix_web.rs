@@ -13,7 +13,9 @@ impl ProtectEndpoint {
         let fn_name = &fn_sig.ident;
         let fn_generics = &fn_sig.generics;
         let fn_args = &fn_sig.inputs;
-        let fn_async = &fn_sig.asyncness.unwrap();
+        let fn_async = &fn_sig
+            .asyncness
+            .expect("only async functions are supported");
         let fn_output = match &fn_sig.output {
             ReturnType::Type(ref _arrow, ref ty) => ty.to_token_stream(),
             ReturnType::Default => {
