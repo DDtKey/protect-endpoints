@@ -124,6 +124,7 @@ async fn get_user_response(uri: &str, role: &str) -> TestResponse {
         .at("/str", str_response)
         .at("/return", return_response)
         .at("/result", result_response)
+        .at("/sync_handler", sync_handler)
         .with(GrantsMiddleware::with_extractor(common::extract));
     let cli = TestClient::new(app);
 

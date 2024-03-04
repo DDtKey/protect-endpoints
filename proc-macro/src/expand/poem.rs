@@ -82,7 +82,7 @@ impl ProtectEndpoint {
             }
         } else {
             quote! {
-                let f = || move #func_block;
+                let f = move || #func_block;
                 let val: #original_out = f();
                 val.into_result()
             }
