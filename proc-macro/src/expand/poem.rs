@@ -12,7 +12,7 @@ impl ProtectEndpoint {
 
         let fn_name = &fn_sig.ident;
         let fn_generics = &fn_sig.generics;
-        let fn_async = &fn_sig.asyncness.unwrap();
+        let fn_async = &fn_sig.asyncness;
 
         let ty = self
             .args
@@ -74,6 +74,20 @@ impl ProtectEndpoint {
             ))
         };
 
+        let body = if fn_async.is_some() {
+            quote! {
+                let f = || async move #func_block;
+                let val: #original_out = f().await;
+                val.into_result()
+            }
+        } else {
+            quote! {
+                let f = || move #func_block;
+                let val: #original_out = f();
+                val.into_result()
+            }
+        };
+
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
@@ -82,9 +96,7 @@ impl ProtectEndpoint {
                 use poem::error::IntoResult;
                 use poem_grants::authorities::AuthoritiesCheck;
                 #condition {
-                    let f = || async move #func_block;
-                    let val: #original_out = f().await;
-                    val.into_result()
+                    #body
                 } else {
                     Err(#err_resp)
                 }
