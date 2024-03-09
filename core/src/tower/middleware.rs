@@ -1,5 +1,4 @@
-use crate::authorities::AttachAuthorities;
-use crate::tower::extractor::AuthoritiesExtractor;
+use crate::authorities::{extractor::AuthoritiesExtractor, AttachAuthorities};
 use futures_util::future::BoxFuture;
 use std::hash::Hash;
 use std::marker::PhantomData;
@@ -9,12 +8,24 @@ use std::{future::Future, pin::Pin};
 use tower::Service;
 
 #[derive(Debug, Clone)]
-pub struct GrantsMiddleware<S, Request, Extractor, Type, Error> {
-    extractor: Arc<Extractor>,
+pub struct TowerGrantsMiddleware<S, Request, Extractor, Type, Error> {
     inner: S,
+    extractor: Arc<Extractor>,
     phantom_req: PhantomData<Request>,
     phantom_type: PhantomData<Type>,
     phantom_error: PhantomData<Error>,
+}
+
+impl<S, Request, Extractor, Type, Error> TowerGrantsMiddleware<S, Request, Extractor, Type, Error> {
+    pub fn new(inner: S, extractor: Arc<Extractor>) -> Self {
+        Self {
+            inner,
+            extractor,
+            phantom_req: PhantomData,
+            phantom_type: PhantomData,
+            phantom_error: PhantomData,
+        }
+    }
 }
 
 #[pin_project::pin_project]
@@ -24,7 +35,7 @@ pub struct ResponseFuture<Output> {
 }
 
 impl<S, Request, Extractor, Type, Error> Service<Request>
-    for GrantsMiddleware<S, Request, Extractor, Type, Error>
+    for TowerGrantsMiddleware<S, Request, Extractor, Type, Error>
 where
     S::Future: Send,
     Type: Eq + Hash + Send + Sync + 'static,

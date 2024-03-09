@@ -6,6 +6,7 @@ members = [
     "proc-macro",
     "rocket-grants",
     "poem-grants",
+    "axum-grants",
 ]
 
 [workspace.package]
@@ -18,7 +19,5 @@ repository = "https://github.com/DDtKey/protect-endpoints"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-protect-endpoints-proc-macro = { version = "0.2.0" }
-
-[patch.crates-io]
-protect-endpoints-proc-macro = { path = "proc-macro" }
+protect-endpoints-proc-macro = { path = "proc-macro", version = "0.2.0" }
+protect-endpoints-core = { path = "core" }

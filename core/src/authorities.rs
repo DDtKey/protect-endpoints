@@ -5,6 +5,7 @@ use std::hash::Hash;
 use std::sync::Arc;
 
 mod attache;
+pub mod extractor;
 
 pub use attache::AttachAuthorities;
 

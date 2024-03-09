@@ -14,5 +14,16 @@
 /// ```
 ///
 pub trait AttachAuthorities<Type> {
-    fn attach(&self, authorities: impl IntoIterator<Item = Type>);
+    fn attach(&mut self, authorities: impl IntoIterator<Item = Type>);
+}
+
+#[cfg(feature = "http")]
+impl<Type, Body> AttachAuthorities<Type> for http::Request<Body>
+where
+    Type: Eq + std::hash::Hash + Send + Sync + 'static,
+{
+    fn attach(&mut self, authorities: impl IntoIterator<Item = Type>) {
+        self.extensions_mut()
+            .insert(super::AuthDetails::new(authorities));
+    }
 }
