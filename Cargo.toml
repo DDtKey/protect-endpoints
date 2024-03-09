@@ -6,7 +6,6 @@ members = [
     "proc-macro",
     "rocket-grants",
     "poem-grants",
-    "axum-grants",
 ]
 
 [workspace.package]
