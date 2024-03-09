@@ -1,8 +1,8 @@
 use crate::authorities::AttachAuthorities;
 use crate::authorities::AuthoritiesExtractor;
+use actix_web::body::EitherBody;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::Error;
-use std::collections::HashSet;
 use std::future::{self, Future, Ready};
 use std::hash::Hash;
 use std::marker::PhantomData;
@@ -106,7 +106,7 @@ where
     for<'a> E: AuthoritiesExtractor<'a, Req, Type> + 'static,
     Type: Eq + Hash + 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type Transform = GrantsService<S, E, Req, Type>;
     type InitError = ();
@@ -138,9 +138,10 @@ where
     for<'a> E: AuthoritiesExtractor<'a, Req, Type>,
     Type: Eq + Hash + 'static,
 {
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Error>>>>;
+    type Response = ServiceResponse<EitherBody<B>>;
+    type Error = S::Error;
+    type Future =
+        Pin<Box<dyn Future<Output = Result<ServiceResponse<EitherBody<B>>, Self::Error>>>>;
 
     fn poll_ready(&self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
@@ -151,10 +152,13 @@ where
         let extractor = Rc::clone(&self.extractor);
 
         Box::pin(async move {
-            let authorities: HashSet<Type> = extractor.extract(&mut req).await?;
-            req.attach(authorities);
-
-            service.call(req).await
+            match extractor.extract(&mut req).await {
+                Ok(authorities) => {
+                    req.attach(authorities);
+                    Ok(service.call(req).await?.map_into_left_body())
+                }
+                Err(err) => Ok(req.error_response(err).map_into_right_body()),
+            }
         })
     }
 }

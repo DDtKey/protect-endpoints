@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-grants"
-version = "4.0.1"
+version = "4.0.3"
 description = "Authorization extension `actix-web` to protect your endpoints"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
@@ -27,6 +27,6 @@ protect-endpoints-proc-macro = { workspace = true, features = ["actix-web"], opt
 actix-web-httpauth = "0.8.0"
 actix-rt = "2"
 serde = { version = "1.0", features = ["derive"] }
-parse-display = "0.8.2"
+parse-display = "0.9.0"
 jsonwebtoken = "9.1.0"
 chrono = "0.4.19"

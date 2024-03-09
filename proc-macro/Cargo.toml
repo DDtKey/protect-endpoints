@@ -1,6 +1,6 @@
 [package]
 name = "protect-endpoints-proc-macro"
-version = "0.1.0"
+version = "0.2.1"
 description = "A proc-macro way to protect your endpoints"
 readme = "../README.md"
 keywords = ["protect", "endpoint", "authz", "security", "grants"]
@@ -28,8 +28,8 @@ syn = { version = "2.0", features = ["full", "derive", "extra-traits"] }
 [dev-dependencies]
 rocket = { version = "0.5.0", features = ["json"] }
 actix-web = { version = "4.4.0" }
-poem = { version = "1.3.59" }
-poem-openapi = { version = "3.0.6" }
+poem = { version = "2.0.0" }
+poem-openapi = { version = "4.0.0" }
 serde = { version = "1.0", features = ["derive"] }
 actix-web-grants = { path = "../actix-web-grants" }
 rocket-grants = { path = "../rocket-grants" }

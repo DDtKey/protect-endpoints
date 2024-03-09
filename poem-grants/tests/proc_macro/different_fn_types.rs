@@ -46,6 +46,12 @@ async fn result_response(
     Ok(format!("Welcome {}!", name))
 }
 
+#[protect("ROLE_ADMIN")]
+#[poem::handler]
+fn sync_handler() -> Response {
+    Response::builder().status(StatusCode::OK).finish()
+}
+
 #[tokio::test]
 async fn test_http_response() {
     let test_admin = get_user_response("/http_response", ROLE_ADMIN).await;
@@ -103,12 +109,22 @@ async fn test_result() {
     common::test_body(test_forbidden, "Forbidden request").await;
 }
 
+#[tokio::test]
+async fn test_sync_handler() {
+    let test_admin = get_user_response("/sync_handler", ROLE_ADMIN).await;
+    let test_manager = get_user_response("/sync_handler", ROLE_MANAGER).await;
+
+    test_admin.assert_status_is_ok();
+    test_manager.assert_status(StatusCode::FORBIDDEN);
+}
+
 async fn get_user_response(uri: &str, role: &str) -> TestResponse {
     let app = Route::new()
         .at("/http_response", http_response)
         .at("/str", str_response)
         .at("/return", return_response)
         .at("/result", result_response)
+        .at("/sync_handler", sync_handler)
         .with(GrantsMiddleware::with_extractor(common::extract));
     let cli = TestClient::new(app);
 
