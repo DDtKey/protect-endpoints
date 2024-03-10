@@ -58,6 +58,18 @@ pub fn protect_actix_web(args: TokenStream, input: TokenStream) -> TokenStream {
 /// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
 ///
 /// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
+#[cfg(feature = "axum")]
+#[cfg_attr(docsrs, doc(cfg(feature = "axum")))]
+#[proc_macro_attribute]
+pub fn protect_axum(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(Framework::Axum, args, input)
+}
+
+/// Macro to сheck that the user has all the specified permissions.
+/// Allow to add a conditional restriction based on handlers parameters.
+/// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
+///
+/// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```rust,no_run
 /// use rocket::serde::json::Json;

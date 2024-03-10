@@ -19,7 +19,7 @@ impl Claims {
         Self {
             username,
             permissions,
-            exp: (Utc::now() + Duration::hours(JWT_EXPIRATION_HOURS)).timestamp(),
+            exp: (Utc::now() + Duration::try_hours(JWT_EXPIRATION_HOURS).unwrap()).timestamp(),
         }
     }
 }

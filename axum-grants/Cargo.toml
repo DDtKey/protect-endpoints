@@ -1,0 +1,36 @@
+[package]
+name = "axum-grants"
+version = "0.1.0"
+description = "Authorization extension `axum` to protect your endpoints"
+readme = "README.md"
+keywords = ["axum", "auth", "security", "grants", "permissions"]
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[lib]
+name = "axum_grants"
+path = "src/lib.rs"
+
+[features]
+default = ["macro-check"]
+macro-check = ["protect-endpoints-proc-macro"]
+
+[dependencies]
+axum = { version = "0.7.2", default-features = false }
+protect-endpoints-core = { workspace = true, features = ["tower"] }
+protect-endpoints-proc-macro = { workspace = true, features = ["axum"], optional = true }
+tower = { version = "0.4.13", default-features = false, features = ["util"] }
+
+[dev-dependencies]
+axum = { version = "0.7.2" }
+chrono = "0.4.35"
+http-body-util = "0.1.0"
+jsonwebtoken = "9.1.0"
+parse-display = "0.9.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.64"
+tokio = { version = "1.34.0", features = ["rt-multi-thread"] }

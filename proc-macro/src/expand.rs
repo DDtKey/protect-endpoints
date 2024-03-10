@@ -6,6 +6,8 @@ use syn::{Block, ItemFn, Meta};
 
 #[cfg(feature = "actix-web")]
 mod actix_web;
+#[cfg(feature = "axum")]
+mod axum;
 #[cfg(feature = "poem")]
 mod poem;
 #[cfg(feature = "rocket")]
@@ -15,10 +17,12 @@ mod rocket;
 pub(crate) enum Framework {
     #[cfg(feature = "actix-web")]
     ActixWeb,
-    #[cfg(feature = "rocket")]
-    Rocket,
+    #[cfg(feature = "axum")]
+    Axum,
     #[cfg(feature = "poem")]
     Poem,
+    #[cfg(feature = "rocket")]
+    Rocket,
 }
 
 #[derive(Debug, Clone)]
@@ -71,6 +75,8 @@ impl ToTokens for ProtectEndpoint {
             Framework::Poem => self.to_tokens_poem(output),
             #[cfg(feature = "rocket")]
             Framework::Rocket => self.to_tokens_rocket(output),
+            #[cfg(feature = "axum")]
+            Framework::Axum => self.to_tokens_axum(output),
         }
     }
 }
