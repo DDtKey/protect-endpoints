@@ -1,7 +1,9 @@
-pub mod authorities;
-mod middleware;
+use protect_endpoints_core::tower::middleware::GrantsLayer as CoreGrantsLayer;
 
-pub use middleware::GrantsLayer;
+pub mod authorities;
+
+pub type GrantsLayer<Extractor, Type, Err> =
+    CoreGrantsLayer<Extractor, axum::extract::Request, Type, Err>;
 
 /// Procedural macros for checking user authorities (permissions or roles).
 ///
