@@ -19,6 +19,7 @@ actix-web = []
 axum = []
 poem = []
 rocket = []
+salvo = []
 
 [dependencies]
 darling = "0.20.3"
