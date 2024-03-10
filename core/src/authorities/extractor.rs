@@ -3,7 +3,7 @@ use std::future::Future;
 use std::hash::Hash;
 
 pub trait AuthoritiesExtractor<'a, Request, Type, Error> {
-    type Future: Future<Output = Result<HashSet<Type>, Error>> + Send + Sync;
+    type Future: Future<Output = Result<HashSet<Type>, Error>> + Send;
 
     fn extract(&self, request: &'a mut Request) -> Self::Future;
 }
@@ -12,7 +12,7 @@ impl<'a, F, O, Request, Type, Error> AuthoritiesExtractor<'a, Request, Type, Err
 where
     F: Fn(&'a mut Request) -> O,
     Request: 'a,
-    O: Future<Output = Result<HashSet<Type>, Error>> + Send + Sync,
+    O: Future<Output = Result<HashSet<Type>, Error>> + Send,
     Type: Eq + Hash + 'static,
 {
     type Future = O;

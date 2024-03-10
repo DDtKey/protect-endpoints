@@ -2,10 +2,11 @@
 resolver = "2"
 members = [
     "core",
-    "actix-web-grants",
     "proc-macro",
-    "rocket-grants",
+    "actix-web-grants",
+    "axum-grants",
     "poem-grants",
+    "rocket-grants",
 ]
 
 [workspace.package]

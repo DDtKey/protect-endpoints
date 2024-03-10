@@ -17,7 +17,6 @@ pub trait AttachAuthorities<Type> {
     fn attach(&mut self, authorities: impl IntoIterator<Item = Type>);
 }
 
-#[cfg(feature = "http")]
 impl<Type, Body> AttachAuthorities<Type> for http::Request<Body>
 where
     Type: Eq + std::hash::Hash + Send + Sync + 'static,

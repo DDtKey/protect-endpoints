@@ -7,7 +7,6 @@ use std::task::{Context, Poll};
 use std::{future::Future, pin::Pin};
 use tower::Service;
 
-#[derive(Debug, Clone)]
 pub struct TowerGrantsMiddleware<S, Request, Extractor, Type, Error> {
     inner: S,
     extractor: Arc<Extractor>,
@@ -34,15 +33,14 @@ pub struct ResponseFuture<Output> {
     future: BoxFuture<'static, Output>,
 }
 
-impl<S, Request, Extractor, Type, Error> Service<Request>
+impl<S, Request, RespBody, Extractor, Type, Error> Service<Request>
     for TowerGrantsMiddleware<S, Request, Extractor, Type, Error>
 where
     S::Future: Send,
     Type: Eq + Hash + Send + Sync + 'static,
-    S: Service<Request> + Clone + Send + Sync + 'static,
+    S: Service<Request, Response = http::Response<RespBody>> + Clone + Send + Sync + 'static,
     Request: AttachAuthorities<Type> + Send + 'static,
-    S::Error: From<Error>,
-    Error: Send,
+    Error: Send + Into<http::Response<RespBody>>,
     for<'a> Extractor: AuthoritiesExtractor<'a, Request, Type, Error> + Send + Sync + 'static,
 {
     type Response = S::Response;
@@ -57,7 +55,10 @@ where
         let mut inner = self.inner.clone();
         let extractor = self.extractor.clone();
         let future = Box::pin(async move {
-            let authorities = extractor.extract(&mut request).await?;
+            let authorities = match extractor.extract(&mut request).await {
+                Ok(res) => res,
+                Err(err) => return Ok(err.into()),
+            };
             request.attach(authorities);
 
             inner.call(request).await
@@ -73,5 +74,13 @@ impl<Output> Future for ResponseFuture<Output> {
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.project();
         this.future.poll(cx)
+    }
+}
+
+impl<S: Clone, Request, Extractor, Type, Error> Clone
+    for TowerGrantsMiddleware<S, Request, Extractor, Type, Error>
+{
+    fn clone(&self) -> Self {
+        Self::new(self.inner.clone(), self.extractor.clone())
     }
 }
