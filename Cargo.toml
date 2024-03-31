@@ -20,4 +20,4 @@ authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
 protect-endpoints-proc-macro = { path = "proc-macro", version = "0.3.0" }
-protect-endpoints-core = { path = "core" }
+protect-endpoints-core = { path = "core", version = "0.1.0" }
