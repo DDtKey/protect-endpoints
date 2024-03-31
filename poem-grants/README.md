@@ -118,6 +118,7 @@ async fn manual_secure(details: AuthDetails) -> Response {
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
 ## Supported `poem` versions
+* For `poem-grants: 3.*` supported version of `poem` is `3.*`
 * For `poem-grants: 2.*` supported version of `poem` is `2.*`
 * For `poem-grants: 1.*` supported version of `poem` is `1.*`
 
