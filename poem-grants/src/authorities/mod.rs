@@ -76,7 +76,6 @@ impl AuthoritiesCheck<&str> for AuthDetails {
     }
 }
 
-#[poem::async_trait]
 impl<'a, T: Eq + Hash + Send + Sync + 'static> FromRequest<'a> for AuthDetails<T> {
     async fn from_request(req: &'a Request, _body: &mut RequestBody) -> poem::Result<Self> {
         req.extensions()
