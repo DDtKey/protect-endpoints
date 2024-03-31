@@ -125,7 +125,6 @@ where
     }
 }
 
-#[poem::async_trait]
 impl<End, Extractor, Req, Type> Endpoint for GrantsEndpoint<End, Extractor, Req, Type>
 where
     End: Endpoint,

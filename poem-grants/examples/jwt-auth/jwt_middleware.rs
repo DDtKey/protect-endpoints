@@ -20,7 +20,6 @@ pub struct JwtMiddlewareImpl<E> {
     ep: E,
 }
 
-#[poem::async_trait]
 impl<E: Endpoint> Endpoint for JwtMiddlewareImpl<E> {
     type Output = E::Output;
 
