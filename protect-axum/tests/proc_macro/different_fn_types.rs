@@ -6,7 +6,7 @@ use axum::http::{Request, StatusCode};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use axum_grants::{protect, GrantsLayer};
+use protect_axum::{protect, GrantsLayer};
 use serde::{Deserialize, Serialize};
 use tower::ServiceExt;
 

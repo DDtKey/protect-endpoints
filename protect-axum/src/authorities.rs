@@ -4,7 +4,7 @@ use protect_endpoints_core::authorities::AuthDetails as AuthDetailsCore;
 use std::hash::Hash;
 use std::ops::Deref;
 
-pub use protect_endpoints_core::authorities::AuthoritiesCheck;
+pub use protect_endpoints_core::authorities::{AttachAuthorities, AuthoritiesCheck};
 
 pub struct AuthDetails<T = String>(AuthDetailsCore<T>)
 where
