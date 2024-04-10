@@ -4,7 +4,7 @@ members = [
     "core",
     "proc-macro",
     "actix-web-grants",
-    "axum-grants",
+    "protect-axum",
     "poem-grants",
     "rocket-grants",
 ]

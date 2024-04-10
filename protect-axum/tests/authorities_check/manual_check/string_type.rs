@@ -4,8 +4,8 @@ use axum::http::header::AUTHORIZATION;
 use axum::http::{Request, StatusCode};
 use axum::routing::get;
 use axum::Router;
-use axum_grants::authorities::{AuthDetails, AuthoritiesCheck};
-use axum_grants::GrantsLayer;
+use protect_axum::authorities::{AuthDetails, AuthoritiesCheck};
+use protect_axum::GrantsLayer;
 use tower::ServiceExt;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";

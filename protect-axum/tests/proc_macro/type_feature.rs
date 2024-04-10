@@ -6,7 +6,7 @@ use axum::http::{Request, StatusCode};
 use axum::response::Response;
 use axum::routing::get;
 use axum::Router;
-use axum_grants::{protect, GrantsLayer};
+use protect_axum::{protect, GrantsLayer};
 use tower::ServiceExt;
 
 // Using imported custom type (in `use` section)
