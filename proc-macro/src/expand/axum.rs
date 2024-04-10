@@ -46,10 +46,10 @@ impl ProtectEndpoint {
         let stream = quote! {
             #(#fn_attrs)*
             #func_vis #fn_async fn #fn_name #fn_generics(
-                #auth_details: axum_grants::authorities::AuthDetails<#ty>,
+                #auth_details: protect_axum::authorities::AuthDetails<#ty>,
                 #fn_args
             ) -> axum::response::Result<#fn_output> {
-                use axum_grants::authorities::AuthoritiesCheck;
+                use protect_axum::authorities::AuthoritiesCheck;
                 #condition {
                     let f = || async move #func_block;
                     Ok(f().await)
