@@ -1,10 +1,10 @@
 use crate::common::{self, Role};
+use protect_salvo::authorities::{AuthDetails, AuthoritiesCheck};
+use protect_salvo::GrantsLayer;
 use salvo::http::header::AUTHORIZATION;
 use salvo::http::{Request, StatusCode};
 use salvo::test::TestClient;
 use salvo::{Depot, Router, TowerLayerCompat};
-use salvo_grants::authorities::{AuthDetails, AuthoritiesCheck};
-use salvo_grants::GrantsLayer;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
 const OTHER_RESPONSE: &str = "Hello!";

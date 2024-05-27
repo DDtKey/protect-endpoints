@@ -4,10 +4,10 @@ members = [
     "core",
     "proc-macro",
     "actix-web-grants",
-    "protect-axum",
     "poem-grants",
+    "protect-axum",
+    "protect-salvo",
     "rocket-grants",
-    "salvo-grants",
 ]
 
 [workspace.package]
