@@ -80,7 +80,7 @@ impl<'a, T: Eq + Hash + Send + Sync + 'static> FromRequest<'a> for AuthDetails<T
     async fn from_request(req: &'a Request, _body: &mut RequestBody) -> poem::Result<Self> {
         req.extensions()
             .get::<AuthDetails<T>>()
-            .map(AuthDetails::clone)
+            .cloned()
             .ok_or(AccessError::UnauthorizedRequest)
             .map_err(Into::into)
     }

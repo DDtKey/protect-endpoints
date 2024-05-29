@@ -87,7 +87,7 @@ impl<T: Eq + Hash + 'static> FromRequest for AuthDetails<T> {
         Box::pin(async move {
             req.extensions()
                 .get::<AuthDetails<T>>()
-                .map(AuthDetails::clone)
+                .cloned()
                 .ok_or_else(|| ErrorUnauthorized("User unauthorized!"))
         })
     }
