@@ -109,11 +109,11 @@ pub fn protect_rocket(args: TokenStream, input: TokenStream) -> TokenStream {
     protect_endpoint(Framework::Rocket, args, input)
 }
 
-/// Macro to сheck that the user has all the specified permissions.
+/// Macro to check that the user has all the specified permissions.
 /// Allow to add a conditional restriction based on handlers parameters.
-/// Add the `expr` attribute followed by the the boolean expression to validate based on parameters
+/// Add the `expr` attribute followed by the boolean expression to validate based on parameters
 ///
-/// Also you can use you own types instead of Strings, just add `ty` attribute with path to type
+/// Also, you can use you own types instead of Strings, just add `ty` attribute with path to type
 /// # Examples
 /// ```rust,no_run
 /// use poem::web::Json;
@@ -218,6 +218,54 @@ pub fn open_api(_args: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     res.into()
+}
+
+/// Macro to check that the user has all the specified permissions.
+/// Allow to add a conditional restriction based on handlers parameters.
+/// Add the `expr` attribute followed by the boolean expression to validate based on parameters
+///
+/// Also, you can use you own types instead of Strings, just add `ty` attribute with path to type
+/// # Examples
+/// ```rust,no_run
+/// use salvo::prelude::*;
+///
+/// // User should be ADMIN with OP_GET_SECRET permission
+/// #[protect_salvo::protect("ROLE_ADMIN", "OP_GET_SECRET")]
+/// async fn macro_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+/// // User should be ADMIN with OP_GET_SECRET permission and the user.id param should be equal
+/// // to the path parameter {user_id}
+/// #[derive(serde::Deserialize, Extractible)]
+/// #[salvo(extract(default_source(from = "body")))]
+/// struct User {id: i32}
+/// #[derive(serde::Deserialize, Extractible)]
+/// #[salvo(extract(default_source(from = "param")))]
+/// struct UserParams { user_id: i32 }
+///
+/// #[protect_salvo::protect("ROLE_ADMIN", "OP_GET_SECRET", expr="params.user_id == user.id")]
+/// async fn macro_secured_params(params: UserParams, user: User, req: &mut Request) -> &'static str {
+///     "some secured info with user_id path equal to user.id"
+///}
+///
+/// #[derive(Hash, PartialEq, Eq)]
+/// enum MyPermissionEnum {
+///   OpGetSecret
+/// }
+///
+/// // User must have MyPermissionEnum::OpGetSecret (you own enum example)
+/// #[protect_salvo::protect("MyPermissionEnum::OpGetSecret", ty = MyPermissionEnum)]
+/// async fn macro_enum_secured() -> &'static str {
+///     "some secured info"
+/// }
+///
+///```
+#[cfg(feature = "salvo")]
+#[cfg_attr(docsrs, doc(cfg(feature = "salvo")))]
+#[proc_macro_attribute]
+pub fn protect_salvo(args: TokenStream, input: TokenStream) -> TokenStream {
+    protect_endpoint(Framework::Salvo, args, input)
 }
 
 fn protect_endpoint(framework: Framework, args: TokenStream, input: TokenStream) -> TokenStream {
