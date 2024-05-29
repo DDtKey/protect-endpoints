@@ -4,7 +4,7 @@
     <img alt="protect-salvo" src="https://github.com/DDtKey/protect-endpoints/raw/main/protect-salvo/logo.png">
 </p>
 
-> Authorization extension for `salvo` to protect your endpoints.
+> Authorization extension for [`salvo`] to protect your endpoints.
 
 [![Crates.io Downloads Badge](https://img.shields.io/crates/d/protect-salvo)](https://crates.io/crates/protect-salvo)
 [![crates.io](https://img.shields.io/crates/v/protect-salvo)](https://crates.io/crates/protect-salvo)
@@ -17,7 +17,7 @@ The library can also be integrated with third-party solutions (e.g. jwt-middlewa
 
 ## How to use
 
-1. Add `tower-compat` feature to `salvo` dependency in your `Cargo.toml`
+1. Add `tower-compat` feature to [`salvo`] dependency in your `Cargo.toml`
 
 2. Declare your
    own [authority extractor](https://docs.rs/protect-endpoints-core/latest/protect_endpoints_core/authorities/extractor/trait.AuthoritiesExtractor.html)
@@ -66,7 +66,6 @@ Here is an example using the `ty` and `expr` attributes. But these are independe
 using `all`/`any`.
 
 `ty` allows you to use a custom type for th authorities (then the middleware needs to be configured).
-Take a look at an [enum-role example](examples/enum-role/main.rs)
 
 ```rust,ignore
 use enums::Role::{self, ADMIN};
@@ -100,3 +99,5 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/protect-salvo/examples
 
 [`documentation`]: https://docs.rs/protect-salvo
+
+[`salvo`]: https://salvo.rs/
