@@ -1,30 +1,32 @@
 use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
-use axum::body::Body;
-use axum::http::header::AUTHORIZATION;
-use axum::http::{Request, StatusCode};
-use axum::routing::get;
-use axum::Router;
-use axum_grants::authorities::{AuthDetails, AuthoritiesCheck};
-use axum_grants::GrantsLayer;
-use tower::ServiceExt;
+use salvo::http::header::AUTHORIZATION;
+use salvo::http::StatusCode;
+use salvo::test::TestClient;
+use salvo::{Response, Router, Service, TowerLayerCompat, Writer};
+
+use protect_endpoints_core::authorities::AuthoritiesCheck;
+use protect_salvo::authorities::AuthDetails;
+use protect_salvo::GrantsLayer;
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
 const OTHER_RESPONSE: &str = "Hello!";
 
 #[salvo::handler]
-async fn different_body(details: AuthDetails) -> (StatusCode, &'static str) {
+async fn different_body(details: AuthDetails, res: &mut Response) {
     if details.has_authority(ROLE_ADMIN) {
-        return (StatusCode::OK, ADMIN_RESPONSE);
+        res.stuff(StatusCode::OK, ADMIN_RESPONSE);
+        return;
     }
-    (StatusCode::OK, OTHER_RESPONSE)
+    res.stuff(StatusCode::OK, OTHER_RESPONSE);
 }
 
 #[salvo::handler]
-async fn only_admin(details: AuthDetails) -> (StatusCode, &'static str) {
+async fn only_admin(details: AuthDetails, res: &mut Response) {
     if details.has_authority(ROLE_ADMIN) {
-        return (StatusCode::OK, ADMIN_RESPONSE);
+        res.stuff(StatusCode::OK, ADMIN_RESPONSE);
+        return;
     }
-    (StatusCode::FORBIDDEN, "")
+    res.stuff(StatusCode::FORBIDDEN, OTHER_RESPONSE);
 }
 
 #[tokio::test]
@@ -41,23 +43,20 @@ async fn test_forbidden() {
     let test_admin = get_user_response("/admin", ROLE_ADMIN).await;
     let test_manager = get_user_response("/admin", ROLE_MANAGER).await;
 
-    assert_eq!(StatusCode::OK, test_admin.status());
-    assert_eq!(StatusCode::FORBIDDEN, test_manager.status());
+    assert_eq!(Some(StatusCode::OK), test_admin.status_code);
+    assert_eq!(Some(StatusCode::FORBIDDEN), test_manager.status_code);
 }
 
-async fn get_user_response(uri: &str, role: &str) -> axum::response::Response {
-    let app = Router::new()
-        .route("/", get(different_body))
-        .route("/admin", get(only_admin))
-        .layer(GrantsLayer::with_extractor(common::extract));
+async fn get_user_response(uri: &str, role: &str) -> Response {
+    let app = Service::new(
+        Router::with_path("/")
+            .hoop(GrantsLayer::with_extractor(common::extract).compat())
+            .get(different_body)
+            .push(Router::with_path("/admin").get(only_admin)),
+    );
 
-    app.oneshot(
-        Request::builder()
-            .header(AUTHORIZATION, role)
-            .uri(uri)
-            .body(Body::empty())
-            .unwrap(),
-    )
-    .await
-    .unwrap()
+    TestClient::get(format!("http://localhost{uri}"))
+        .add_header(AUTHORIZATION, role, true)
+        .send(&app)
+        .await
 }

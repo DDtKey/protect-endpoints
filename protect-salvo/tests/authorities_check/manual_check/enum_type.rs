@@ -2,29 +2,29 @@ use crate::common::{self, Role};
 use protect_salvo::authorities::{AuthDetails, AuthoritiesCheck};
 use protect_salvo::GrantsLayer;
 use salvo::http::header::AUTHORIZATION;
-use salvo::http::{Request, StatusCode};
+use salvo::http::StatusCode;
 use salvo::test::TestClient;
-use salvo::{Depot, Router, TowerLayerCompat};
+use salvo::{Response, Router, Service, TowerLayerCompat, Writer};
 
 const ADMIN_RESPONSE: &str = "Hello Admin!";
 const OTHER_RESPONSE: &str = "Hello!";
 
 #[salvo::handler]
-async fn different_body(req: &mut Request, depot: &mut Depot) -> (StatusCode, &'static str) {
-    let details: AuthDetails<Role> = req.extract();
+async fn different_body(details: AuthDetails<Role>, res: &mut Response) {
     if details.has_authority(&Role::ADMIN) {
-        return (StatusCode::OK, ADMIN_RESPONSE);
+        res.stuff(StatusCode::OK, ADMIN_RESPONSE);
+        return;
     }
-    (StatusCode::OK, OTHER_RESPONSE)
+    res.stuff(StatusCode::OK, OTHER_RESPONSE);
 }
 
 #[salvo::handler]
-async fn only_admin(req: &mut Request) -> (StatusCode, &'static str) {
-    let details: AuthDetails<Role> = req.extract();
+async fn only_admin(details: AuthDetails<Role>, res: &mut Response) {
     if details.has_authority(&Role::ADMIN) {
-        return (StatusCode::OK, ADMIN_RESPONSE);
+        res.stuff(StatusCode::OK, ADMIN_RESPONSE);
+        return;
     }
-    (StatusCode::FORBIDDEN, "")
+    res.stuff(StatusCode::FORBIDDEN, "");
 }
 
 #[tokio::test]
@@ -41,17 +41,19 @@ async fn test_forbidden() {
     let test_admin = get_user_response("/admin", &Role::ADMIN.to_string()).await;
     let test_manager = get_user_response("/admin", &Role::MANAGER.to_string()).await;
 
-    assert_eq!(StatusCode::OK, test_admin.status());
-    assert_eq!(StatusCode::FORBIDDEN, test_manager.status());
+    assert_eq!(Some(StatusCode::OK), test_admin.status_code);
+    assert_eq!(Some(StatusCode::FORBIDDEN), test_manager.status_code);
 }
 
-async fn get_user_response(uri: &str, role: &str) -> salvo::Response {
-    let app = Router::with_path("/")
-        .hoop(GrantsLayer::with_extractor(common::enum_extract).compat())
-        .get(different_body)
-        .push(Router::with_path("/admin").get(only_admin));
+async fn get_user_response(uri: &str, role: &str) -> Response {
+    let app = Service::new(
+        Router::with_path("/")
+            .hoop(GrantsLayer::with_extractor(common::enum_extract).compat())
+            .get(different_body)
+            .push(Router::with_path("/admin").get(only_admin)),
+    );
 
-    TestClient::get(uri)
+    TestClient::get(format!("http://localhost{uri}"))
         .add_header(AUTHORIZATION, role, true)
         .send(&app)
         .await

@@ -1,9 +1,8 @@
 use protect_endpoints_core::authorities::AuthDetails as AuthDetailsCore;
 use salvo::extract::{Extractible, Metadata};
 use salvo::http::StatusCode;
-use salvo::{Request, Writer};
+use salvo::{Request, Response, Writer};
 use std::fmt::Debug;
-use std::future::Future;
 use std::hash::Hash;
 use std::ops::Deref;
 
@@ -14,9 +13,9 @@ where
     T: Eq + Hash;
 
 #[derive(Debug)]
-struct AuthDetailsNotFound;
+pub struct AuthDetailsNotFound;
 
-const METADATA: Metadata = Metadata::new("AuthDetails");
+static METADATA: Metadata = Metadata::new("AuthDetails");
 
 impl<'ex, T> Extractible<'ex> for AuthDetails<T>
 where
@@ -26,25 +25,20 @@ where
         &METADATA
     }
 
-    fn extract(
-        req: &'ex mut Request,
-    ) -> impl Future<Output = Result<Self, impl Writer + Send + Debug + 'static>> + Send
+    async fn extract(req: &'ex mut Request) -> Result<Self, impl Writer + Send + Debug + 'static>
     where
         Self: Sized,
     {
-        async {
-            req.extensions()
-                .get::<AuthDetailsCore<T>>()
-                .cloned()
-                .map(AuthDetails)
-                .ok_or(AuthDetailsNotFound)
-        }
+        req.extensions()
+            .get::<AuthDetailsCore<T>>()
+            .cloned()
+            .map(AuthDetails)
+            .ok_or(AuthDetailsNotFound)
     }
 }
 
-#[salvo::async_trait]
-impl Writer for AuthDetailsNotFound {
-    async fn write(self, _req: &mut Request, _depot: &mut salvo::Depot, res: &mut salvo::Response) {
+impl salvo::Scribe for AuthDetailsNotFound {
+    fn render(self, res: &mut Response) {
         res.status_code(StatusCode::UNAUTHORIZED);
     }
 }

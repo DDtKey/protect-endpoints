@@ -12,6 +12,8 @@ mod axum;
 mod poem;
 #[cfg(feature = "rocket")]
 mod rocket;
+#[cfg(feature = "salvo")]
+mod salvo;
 
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum Framework {
@@ -23,6 +25,8 @@ pub(crate) enum Framework {
     Poem,
     #[cfg(feature = "rocket")]
     Rocket,
+    #[cfg(feature = "salvo")]
+    Salvo,
 }
 
 #[derive(Debug, Clone)]
@@ -77,6 +81,8 @@ impl ToTokens for ProtectEndpoint {
             Framework::Rocket => self.to_tokens_rocket(output),
             #[cfg(feature = "axum")]
             Framework::Axum => self.to_tokens_axum(output),
+            #[cfg(feature = "salvo")]
+            Framework::Salvo => self.to_tokens_salvo(output),
         }
     }
 }

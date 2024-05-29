@@ -1,7 +1,7 @@
 use http_body_util::BodyExt;
 use salvo::http::header::{HeaderValue, AUTHORIZATION};
-use salvo::Request;
-use salvo::Response;
+use salvo::http::{ReqBody, ResBody};
+use salvo::macros::Extractible;
 use serde::Deserialize;
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
@@ -16,7 +16,9 @@ pub enum Role {
     MANAGER,
 }
 
-pub async fn extract(req: &mut Request) -> Result<HashSet<String>, Response> {
+pub async fn extract(
+    req: &mut salvo::hyper::Request<ReqBody>,
+) -> Result<HashSet<String>, salvo::hyper::Response<ResBody>> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -24,12 +26,19 @@ pub async fn extract(req: &mut Request) -> Result<HashSet<String>, Response> {
         .filter(Result::is_ok)
         .map(Result::unwrap);
 
-    Ok(auth_header
+    auth_header
         .map(|header| header.split(',').map(str::to_string).collect())
-        .unwrap())
+        .ok_or_else(|| {
+            salvo::hyper::Response::builder()
+                .status(salvo::http::StatusCode::UNAUTHORIZED)
+                .body(ResBody::None)
+                .unwrap()
+        })
 }
 
-pub async fn enum_extract(req: &mut Request) -> Result<HashSet<Role>, Response> {
+pub async fn enum_extract(
+    req: &mut salvo::hyper::Request<ReqBody>,
+) -> Result<HashSet<Role>, salvo::hyper::Response<ResBody>> {
     let auth_header: Option<&str> = req
         .headers()
         .get(AUTHORIZATION)
@@ -37,14 +46,19 @@ pub async fn enum_extract(req: &mut Request) -> Result<HashSet<Role>, Response> 
         .filter(Result::is_ok)
         .map(Result::unwrap);
 
-    Ok(auth_header
+    auth_header
         .map(|header| header.split(',').map(|name| name.into()).collect())
-        .unwrap())
+        .ok_or_else(|| {
+            salvo::hyper::Response::builder()
+                .status(salvo::http::StatusCode::UNAUTHORIZED)
+                .body(ResBody::None)
+                .unwrap()
+        })
 }
 
-pub async fn test_body(resp: Response, expected_body: &str) {
+pub async fn test_body(mut resp: salvo::Response, expected_body: &str) {
     let body = resp
-        .into_body()
+        .take_body()
         .collect()
         .await
         .expect("Failed to collect body")
@@ -53,7 +67,8 @@ pub async fn test_body(resp: Response, expected_body: &str) {
     assert_eq!(expected_body, &body);
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Extractible)]
+#[salvo(extract(default_source(from = "query")))]
 pub struct NamePayload {
     pub name: Option<String>,
 }
