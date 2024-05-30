@@ -1,3 +1,17 @@
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/protect-salvo/logo.png"
+)]
+//! A crate to protect your endpoints in [`salvo`].
+//!
+//! For built-in configuration, you can use [`GrantsLayer`] tower compatible middleware.
+//!
+//! To check user access to specific services, you can use [`proc-macro`] or manual.
+//!
+//! [`permissions`]: authorities
+//! [`proc-macro`]: proc_macro
+//! [`salvo`]: https://github.com/salvo-rs/salvo
+#![doc = include_str!("../README.md")]
+
 use protect_endpoints_core::tower::middleware::GrantsLayer as CoreGrantsLayer;
 use salvo::http::ReqBody;
 

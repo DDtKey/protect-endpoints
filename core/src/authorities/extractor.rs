@@ -2,6 +2,9 @@ use std::collections::HashSet;
 use std::future::Future;
 use std::hash::Hash;
 
+/// Trait for extracting authorities from the request.
+/// By default, is implemented for functions with signature `fn(&mut Request) -> Result<HashSet<Type>, Into<Response>`.
+/// But can be implemented for custom structures and enums.
 pub trait AuthoritiesExtractor<'a, Request, Type, Error> {
     type Future: Future<Output = Result<HashSet<Type>, Error>> + Send;
 

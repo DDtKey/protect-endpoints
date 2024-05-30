@@ -9,12 +9,14 @@ pub mod extractor;
 
 pub use attache::AttachAuthorities;
 
+/// Trait to check if the user has the required authorities.
 pub trait AuthoritiesCheck<T: Eq + Hash> {
     fn has_authority(&self, authority: T) -> bool;
     fn has_authorities(&self, authorities: &[T]) -> bool;
     fn has_any_authority(&self, authorities: &[T]) -> bool;
 }
 
+/// Storage for user authorities to keep them as an extension of request.
 pub struct AuthDetails<T = String>
 where
     T: Eq + Hash,

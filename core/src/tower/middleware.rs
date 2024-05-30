@@ -7,6 +7,7 @@ use std::task::{Context, Poll};
 use std::{future::Future, pin::Pin};
 use tower::{Layer, Service};
 
+/// Tower compatible middleware for attaching custom authorities to the request (based on [`AuthoritiesExtractor`].
 pub struct GrantsLayer<Extractor, Request, Type, Err> {
     extractor: Arc<Extractor>,
     phantom_req: PhantomData<Request>,
