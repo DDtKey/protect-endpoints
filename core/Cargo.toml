@@ -1,6 +1,6 @@
 [package]
 name = "protect-endpoints-core"
-version = "0.1.1"
+version = "0.1.2"
 description = "Core primitives for protecting endpoints within `*-grants` ecosystem"
 readme = "../README.md"
 keywords = ["protect", "endpoint", "authz", "security", "grants"]
