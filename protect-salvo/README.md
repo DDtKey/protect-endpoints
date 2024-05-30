@@ -100,4 +100,4 @@ You can find more [`examples`] in the git repository folder and [`documentation`
 
 [`documentation`]: https://docs.rs/protect-salvo
 
-[`salvo`]: https://salvo.rs/
+[`salvo`]: https://github.com/salvo-rs/salvo

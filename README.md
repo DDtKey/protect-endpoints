@@ -17,7 +17,7 @@
 
 [`actix-web`]: https://github.com/actix/actix-web
 
-[`axum`]:https://github.com/tokio-rs/axum
+[`axum`]: https://github.com/tokio-rs/axum
 
 [`poem`]: https://github.com/poem-web/poem
 

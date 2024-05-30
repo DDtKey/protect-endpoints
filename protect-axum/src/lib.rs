@@ -1,3 +1,17 @@
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/DDtKey/protect-endpoints/main/protect-axum/logo.png"
+)]
+//! A crate to protect your endpoints in [`axum`].
+//!
+//! For built-in configuration, you can use [`GrantsLayer`] tower compatible middleware.
+//!
+//! To check user access to specific services, you can use [`proc-macro`] or manual.
+//!
+//! [`permissions`]: authorities
+//! [`proc-macro`]: proc_macro
+//! [`axum`]: https://github.com/tokio-rs/axum
+#![doc = include_str!("../README.md")]
+
 use protect_endpoints_core::tower::middleware::GrantsLayer as CoreGrantsLayer;
 
 pub mod authorities;
