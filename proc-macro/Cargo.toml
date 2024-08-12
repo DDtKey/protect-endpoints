@@ -37,4 +37,4 @@ rocket = { version = "0.5.0", features = ["json"] }
 rocket-grants = { path = "../rocket-grants" }
 serde = { version = "1.0", features = ["derive"] }
 protect-salvo = { path = "../protect-salvo" }
-salvo = { version = "0.68.1" }
+salvo = { version = "0.69.0" }
