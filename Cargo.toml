@@ -20,5 +20,5 @@ repository = "https://github.com/DDtKey/protect-endpoints"
 authors = ["DDtKey <ddttkey@gmail.com>"]
 
 [workspace.dependencies]
-protect-endpoints-proc-macro = { path = "proc-macro", version = "0.3.2" }
+protect-endpoints-proc-macro = { path = "proc-macro", version = "0.4.0" }
 protect-endpoints-core = { path = "core", version = "0.1.2" }

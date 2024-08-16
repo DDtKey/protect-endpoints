@@ -1,6 +1,6 @@
 [package]
 name = "protect-salvo"
-version = "0.1.1"
+version = "0.2.0"
 description = "Authorization extension `salvo` to protect your endpoints"
 readme = "README.md"
 keywords = ["salvo", "auth", "security", "grants", "permissions"]
