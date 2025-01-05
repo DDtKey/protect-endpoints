@@ -96,6 +96,11 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
+
+## Supported `actix-web` versions
+* For `protect-salvo: 0.1.*` supported version of `salvo` is `0.70.*`
+* For `protect-salvo: 0.2.*` supported version of `salvo` is `0.75.*`
+
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/protect-salvo/examples
 [`documentation`]: https://docs.rs/protect-salvo
 [`salvo`]: https://github.com/salvo-rs/salvo
