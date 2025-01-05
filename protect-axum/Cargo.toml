@@ -27,7 +27,7 @@ tower = { version = "0.5", default-features = false }
 
 [dev-dependencies]
 axum = { version = "0.8.1" }
-chrono = "0.4.35"
+chrono = "0.4"
 http-body-util = "0.1.0"
 jsonwebtoken = "9.1.0"
 parse-display = "0.10.0"
