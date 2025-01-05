@@ -1,6 +1,6 @@
 [package]
 name = "protect-axum"
-version = "0.1.2"
+version = "0.2.0"
 description = "Authorization extension for `axum` to protect your endpoints"
 readme = "README.md"
 keywords = ["axum", "auth", "security", "grants", "permissions"]
