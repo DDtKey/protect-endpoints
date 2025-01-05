@@ -84,9 +84,12 @@ impl<Type: Eq + Hash + Send + Sync + 'static> GrantsFairing<Type> {
     /// }
     /// ```
     ///
-    pub fn with_extractor_fn<F: Send + Sync + 'static>(extractor_fn: F) -> Self
+    pub fn with_extractor_fn<F>(extractor_fn: F) -> Self
     where
-        F: for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<HashSet<Type>>>,
+        F: for<'a> Fn(&'a mut Request<'_>) -> BoxFuture<'a, Option<HashSet<Type>>>
+            + Send
+            + Sync
+            + 'static,
     {
         Self {
             extractor: Box::new(extractor_fn),

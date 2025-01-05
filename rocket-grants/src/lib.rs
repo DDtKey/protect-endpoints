@@ -25,7 +25,7 @@ pub use fairing::GrantsFairing;
 /// Procedural macros for checking user authorities (permissions or roles).
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rocket::{Response, http::Status};
 /// use rocket::serde::json::Json;
 ///
@@ -63,7 +63,6 @@ pub use fairing::GrantsFairing;
 /// enum Role { Admin, Manager }
 ///
 /// ```
-
 #[cfg(feature = "macro-check")]
 pub mod proc_macro {
     pub use protect_endpoints_proc_macro::protect_rocket as protect;

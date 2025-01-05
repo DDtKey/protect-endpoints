@@ -25,7 +25,7 @@ pub trait AttachAuthorities<Type> {
     fn attach(&mut self, authorities: Option<impl IntoIterator<Item = Type>>);
 }
 
-impl<'r, Type: Eq + Hash + Send + Sync + 'static> AttachAuthorities<Type> for &mut Request<'r> {
+impl<Type: Eq + Hash + Send + Sync + 'static> AttachAuthorities<Type> for &mut Request<'_> {
     fn attach(&mut self, authorities: Option<impl IntoIterator<Item = Type>>) {
         let auth_details = authorities
             .map(AuthDetails::new)
