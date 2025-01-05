@@ -10,10 +10,10 @@ pub struct AuthDetails<T = String>(AuthDetailsCore<T>)
 where
     T: Eq + Hash;
 
-#[axum::async_trait]
 impl<S, T> FromRequestParts<S> for AuthDetails<T>
 where
     T: Eq + Hash + Send + Sync + 'static,
+    S: Send + Sync,
 {
     type Rejection = axum::http::StatusCode;
 
