@@ -3,6 +3,7 @@ use protect_salvo::{protect, GrantsLayer};
 use salvo::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use salvo::prelude::*;
 use salvo::test::TestClient;
+use salvo_extra::TowerLayerCompat;
 use serde::{Deserialize, Serialize};
 
 #[protect("ROLE_ADMIN")]

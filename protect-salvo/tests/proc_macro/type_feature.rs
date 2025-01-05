@@ -5,6 +5,7 @@ use protect_salvo::GrantsLayer;
 use salvo::http::header::AUTHORIZATION;
 use salvo::prelude::*;
 use salvo::test::TestClient;
+use salvo_extra::TowerLayerCompat;
 
 // Using imported custom type (in `use` section)
 #[protect("ADMIN", ty = "Role")]
