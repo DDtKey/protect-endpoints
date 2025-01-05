@@ -125,7 +125,7 @@ async fn get_user_response(uri: &str, role: &str) -> Response {
 
 async fn post_user_response<T: Serialize>(uri: &str, role: &str, data: &T) -> Response {
     let app = Router::new()
-        .route("/secure/:user_id", post(secure_user_id))
+        .route("/secure/{user_id}", post(secure_user_id))
         .layer(GrantsLayer::with_extractor(common::extract));
 
     app.oneshot(
