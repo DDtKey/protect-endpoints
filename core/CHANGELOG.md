@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-- [**breaking**] Support `0.8` version
+- [**breaking**] Support `axum 0.8` version
 
 ### Miscellaneous Tasks
 

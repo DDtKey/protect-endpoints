@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - [**breaking**] Support `salvo 0.75` (#120)
-- [**breaking**] Support `0.8` version
 
 ### Miscellaneous Tasks
 
