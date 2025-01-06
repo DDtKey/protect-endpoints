@@ -17,9 +17,7 @@ The library can also be integrated with third-party solutions (e.g. jwt-middlewa
 
 ## How to use
 
-1. Add `tower-compat` feature to [`salvo`] dependency in your `Cargo.toml`
-
-2. Declare your
+1. Declare your
    own [authority extractor](https://docs.rs/protect-endpoints-core/latest/protect_endpoints_core/authorities/extractor/trait.AuthoritiesExtractor.html)
 
 The easiest way is to declare a function with the following signature (trait is already implemented for such Fn):
@@ -32,9 +30,12 @@ use salvo::prelude::*;
 pub async fn extract(req: &mut salvo::hyper::Request<ReqBody>) -> Result<HashSet<String>, salvo::hyper::Response<ResBody>>
 ```
 
-3. Add middleware to your application using the extractor defined in step 1
+2. Add middleware to your application using the extractor defined in step 1
 
 ```rust,ignore
+// You can use [`salvo_extra`] directly for Tower compatibility or re-exported one
+use protect_salvo::salvo_extra::TowerLayerCompat;
+
 Router::with_path("/")
     .hoop(GrantsLayer::with_extractor(extract).compat())
     .push(Router::with_path("/endpoint").get(your_handler))
@@ -42,7 +43,7 @@ Router::with_path("/")
 
 > Steps 2 and 3 can be replaced by custom middleware or integration with another libraries.
 
-4. Protect your endpoints in any convenient way from the examples below:
+3. Protect your endpoints in any convenient way from the examples below:
 
 ### Example of `proc-macro` way protection
 
@@ -95,9 +96,12 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
+## Supported `salvo` versions
+
+* For `protect-salvo: 0.1.*` supported version of `salvo` is `0.70.*`
+* For `protect-salvo: 0.2.*` supported version of `salvo` is `0.75.*`
 
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/protect-salvo/examples
-
 [`documentation`]: https://docs.rs/protect-salvo
-
 [`salvo`]: https://github.com/salvo-rs/salvo
+[`salvo_extra`]: https://crates.io/crates/salvo_extra

@@ -100,7 +100,10 @@ async fn manual_secure(details: AuthDetails) -> &'static str {
 
 You can find more [`examples`] in the git repository folder and [`documentation`].
 
+## Supported `axum` versions
+
+* For `protect-axum: 0.1` supported version of `axum` is `0.7.*`
+* For `protect-axum: 0.2.*` supported version of `axum` is `0.8.*`
 
 [`examples`]: https://github.com/DDtKey/protect-endpoints/tree/main/protect-axum/examples
-
 [`documentation`]: https://docs.rs/protect-axum

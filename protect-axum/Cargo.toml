@@ -1,6 +1,6 @@
 [package]
 name = "protect-axum"
-version = "0.1.2"
+version = "0.2.0"
 description = "Authorization extension for `axum` to protect your endpoints"
 readme = "README.md"
 keywords = ["axum", "auth", "security", "grants", "permissions"]
@@ -20,14 +20,14 @@ default = ["macro-check"]
 macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
-axum = { version = "0.7.5", default-features = false }
+axum = { version = "0.8.1", default-features = false }
 protect-endpoints-core = { workspace = true, features = ["tower"] }
 protect-endpoints-proc-macro = { workspace = true, features = ["axum"], optional = true }
-tower = { version = "0.4.13", default-features = false }
+tower = { version = "0.5", default-features = false }
 
 [dev-dependencies]
-axum = { version = "0.7.2" }
-chrono = "0.4.35"
+axum = { version = "0.8.1" }
+chrono = "0.4"
 http-body-util = "0.1.0"
 jsonwebtoken = "9.1.0"
 parse-display = "0.10.0"

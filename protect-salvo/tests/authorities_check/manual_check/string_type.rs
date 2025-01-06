@@ -2,7 +2,8 @@ use crate::common::{self, ROLE_ADMIN, ROLE_MANAGER};
 use salvo::http::header::AUTHORIZATION;
 use salvo::http::StatusCode;
 use salvo::test::TestClient;
-use salvo::{Response, Router, Service, TowerLayerCompat, Writer};
+use salvo::{Response, Router, Service, Writer};
+use salvo_extra::TowerLayerCompat;
 
 use protect_endpoints_core::authorities::AuthoritiesCheck;
 use protect_salvo::authorities::AuthDetails;

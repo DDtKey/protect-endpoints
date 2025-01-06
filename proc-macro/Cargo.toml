@@ -1,6 +1,6 @@
 [package]
 name = "protect-endpoints-proc-macro"
-version = "0.3.2"
+version = "0.4.0"
 description = "A proc-macro way to protect your endpoints"
 readme = "../README.md"
 keywords = ["protect", "endpoint", "authz", "security", "grants"]
@@ -37,4 +37,4 @@ rocket = { version = "0.5.0", features = ["json"] }
 rocket-grants = { path = "../rocket-grants" }
 serde = { version = "1.0", features = ["derive"] }
 protect-salvo = { path = "../protect-salvo" }
-salvo = { version = "0.70.0" }
+salvo = { version = "0.75" }

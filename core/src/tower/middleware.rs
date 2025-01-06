@@ -10,17 +10,18 @@ use tower::{Layer, Service};
 /// Tower compatible middleware for attaching custom authorities to the request (based on [`AuthoritiesExtractor`]).
 pub struct GrantsLayer<Extractor, Request, Type, Err> {
     extractor: Arc<Extractor>,
-    phantom_req: PhantomData<Request>,
     phantom_ty: PhantomData<Type>,
-    phantom_err: PhantomData<Err>,
+    // We don't use mutexes, but we want `Layer` to be `Sync` if possible
+    phantom_req: PhantomData<std::sync::Mutex<Request>>,
+    phantom_err: PhantomData<std::sync::Mutex<Err>>,
 }
 
 pub struct TowerGrantsMiddleware<S, Request, Extractor, Type, Error> {
     inner: S,
     extractor: Arc<Extractor>,
-    phantom_req: PhantomData<Request>,
     phantom_type: PhantomData<Type>,
-    phantom_error: PhantomData<Error>,
+    phantom_req: PhantomData<std::sync::Mutex<Request>>,
+    phantom_error: PhantomData<std::sync::Mutex<Error>>,
 }
 
 impl<S, Request, Extractor, Type, Error> TowerGrantsMiddleware<S, Request, Extractor, Type, Error> {
@@ -45,8 +46,8 @@ impl<S, Request, RespBody, Extractor, Type, Error> Service<Request>
     for TowerGrantsMiddleware<S, Request, Extractor, Type, Error>
 where
     S::Future: Send,
-    Type: Eq + Hash + Send + Sync + 'static,
-    S: Service<Request, Response = http::Response<RespBody>> + Clone + Send + Sync + 'static,
+    Type: Eq + Hash + Send + 'static,
+    S: Service<Request, Response = http::Response<RespBody>> + Clone + Send + 'static,
     Request: AttachAuthorities<Type> + Send + 'static,
     Error: Send + Into<http::Response<RespBody>>,
     for<'a> Extractor: AuthoritiesExtractor<'a, Request, Type, Error> + Send + Sync + 'static,

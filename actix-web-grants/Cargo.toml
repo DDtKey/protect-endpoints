@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-grants"
-version = "4.1.1"
+version = "4.1.2"
 description = "Authorization extension `actix-web` to protect your endpoints"
 readme = "README.md"
 keywords = ["actix", "auth", "security", "grants", "permissions"]
@@ -29,4 +29,4 @@ actix-rt = "2"
 serde = { version = "1.0", features = ["derive"] }
 parse-display = "0.10.0"
 jsonwebtoken = "9.1.0"
-chrono = "0.4.19"
+chrono = "0.4"

@@ -10,10 +10,14 @@
 //! [`permissions`]: authorities
 //! [`proc-macro`]: proc_macro
 //! [`salvo`]: https://github.com/salvo-rs/salvo
+//! [`salvo_extra`]: https://crates.io/crates/salvo_extra
 #![doc = include_str!("../README.md")]
 
 use protect_endpoints_core::tower::middleware::GrantsLayer as CoreGrantsLayer;
 use salvo::http::ReqBody;
+
+/// Re-export of the `salvo_extra` crate with enabled tower-compatibility.
+pub use salvo_extra;
 
 pub mod authorities;
 
