@@ -22,7 +22,7 @@ macro-check = ["protect-endpoints-proc-macro"]
 [dependencies]
 poem = "3"
 protect-endpoints-proc-macro = { workspace = true, features = ["poem"], optional = true }
-thiserror = "1"
+thiserror = "2"
 
 [dev-dependencies]
 poem = {version = "3", features = ["test"]}
