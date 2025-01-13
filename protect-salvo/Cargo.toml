@@ -22,7 +22,7 @@ macro-check = ["protect-endpoints-proc-macro"]
 
 [dependencies]
 salvo = { version = "0.75.0", default-features = false }
-salvo_extra = { version = "0.75.0", default-features = false, features = ["tower-compat"] }
+salvo_extra = { version = "0.76.0", default-features = false, features = ["tower-compat"] }
 protect-endpoints-core = { workspace = true, features = ["tower"] }
 protect-endpoints-proc-macro = { workspace = true, features = ["salvo"], optional = true }
 tower = { version = "0.5", default-features = false }
