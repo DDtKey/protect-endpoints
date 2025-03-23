@@ -41,24 +41,27 @@ pub enum Type<T> {
 }
 
 impl<T: Eq + Hash + 'static> AuthorityGuard<T> {
-    pub fn new(allow_authority: Type<T>) -> AuthorityGuard<T> {
-        AuthorityGuard { allow_authority }
-    }
-
-    pub fn contains(&self, allow_authority: T) -> AuthorityGuard<T> {
-        Self::new(Type::Single(allow_authority))
-    }
-
-    pub fn all(allow_authority: impl Into<Vec<T>>) -> AuthorityGuard<T> {
+     pub fn create(allow_authority: Type<T>) -> AuthorityGuard<T> {
         AuthorityGuard {
-            allow_authority: Type::All(allow_authority.into()),
+            allow_authority: allow_authority,
         }
     }
+    
+    #[deprecated]
+    pub fn new(allow_authority: T) -> AuthorityGuard<T> {
+        Self::contains(allow_authority)
+    }
 
-    pub fn any(allow_authority: impl Into<Vec<T>>) -> AuthorityGuard<T> {
-        AuthorityGuard {
-            allow_authority: Type::Any(allow_authority.into()),
-        }
+    pub fn contains(allow_authority: T) -> AuthorityGuard<T> {
+        Self::create(Type::Single(allow_authority))
+    }
+
+    pub fn all(allow_authority: impl IntoIterator<Item = T>) -> AuthorityGuard<T> {
+        Self::create(Type::All(allow_authority.into_iter().collect()))
+    }
+
+    pub fn any(allow_authority: impl IntoIterator<Item = T>) -> AuthorityGuard<T> {
+        Self::create(Type::Any(allow_authority.into_iter().collect()))
     }
 }
 
