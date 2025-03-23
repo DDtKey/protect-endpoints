@@ -17,7 +17,7 @@ use std::hash::Hash;
 ///             .wrap(GrantsMiddleware::with_extractor(extract))
 ///             .service(web::resource("/admin")
 ///                     .to(|| async { HttpResponse::Ok().finish() })
-///                     .guard(AuthorityGuard::new("ROLE_ADMIN".to_string())))
+///                     .guard(AuthorityGuard::contains("ROLE_ADMIN".to_string())))
 ///     });
 /// }
 ///
@@ -29,22 +29,54 @@ use std::hash::Hash;
 ///    Ok(HashSet::from(["ROLE_ADMIN".to_string()]))
 /// }
 /// ```
-pub struct AuthorityGuard<Type> {
-    allow_authority: Type,
+
+pub struct AuthorityGuard<T> {
+    allow_authority: Type<T>,
 }
 
-impl<Type: Eq + Hash + 'static> AuthorityGuard<Type> {
-    pub fn new(allow_authority: Type) -> AuthorityGuard<Type> {
+pub enum Type<T> {
+    Single(T),
+    Any(Vec<T>),
+    All(Vec<T>),
+}
+
+impl<T: Eq + Hash + 'static> AuthorityGuard<T> {
+    pub fn new(allow_authority: Type<T>) -> AuthorityGuard<T> {
         AuthorityGuard { allow_authority }
     }
-}
 
-impl<Type: Eq + Hash + 'static> Guard for AuthorityGuard<Type> {
-    fn check(&self, request: &GuardContext) -> bool {
-        request
-            .req_data()
-            .get::<AuthDetails<Type>>()
-            .filter(|details| details.has_authority(&self.allow_authority))
-            .is_some()
+    pub fn contains(&self, allow_authority: T) -> AuthorityGuard<T> {
+        Self::new(Type::Single(allow_authority))
+    }
+
+    pub fn all(allow_authority: impl Into<Vec<T>>) -> AuthorityGuard<T> {
+        AuthorityGuard {
+            allow_authority: Type::All(allow_authority.into()),
+        }
+    }
+
+    pub fn any(allow_authority: impl Into<Vec<T>>) -> AuthorityGuard<T> {
+        AuthorityGuard {
+            allow_authority: Type::Any(allow_authority.into()),
+        }
     }
 }
+
+impl<T: Eq + Hash + 'static> Guard for AuthorityGuard<T> {
+    fn check(&self, request: &GuardContext) -> bool {
+        let req_data = request.req_data();
+        let details = req_data.get::<AuthDetails<T>>();
+        match &self.allow_authority {
+            Type::Single(s) => details
+                .filter(|details| details.has_authority(&s))
+                .is_some(),
+            Type::Any(items) => details
+                .filter(|details| details.has_any_authority(&items.iter().collect::<Vec<_>>()))
+                .is_some(),
+            Type::All(items) => details
+                .filter(|details| details.has_authorities(&items.iter().collect::<Vec<_>>()))
+                .is_some(),
+        }
+    }
+}
+
