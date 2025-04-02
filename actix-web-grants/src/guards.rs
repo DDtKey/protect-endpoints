@@ -41,7 +41,7 @@ pub enum Type<T> {
 }
 
 impl<T: Eq + Hash + 'static> AuthorityGuard<T> {
-     pub fn create(allow_authority: Type<T>) -> AuthorityGuard<T> {
+     fn create(allow_authority: Type<T>) -> AuthorityGuard<T> {
         AuthorityGuard {
             allow_authority: allow_authority,
         }
