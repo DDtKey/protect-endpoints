@@ -34,3 +34,6 @@ impl<T: Eq + Hash> Deref for AuthDetails<T> {
         &self.0
     }
 }
+
+#[cfg(feature = "aide")]
+impl<T: Eq + Hash> aide::OperationInput for AuthDetails<T> {}

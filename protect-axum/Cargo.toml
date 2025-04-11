@@ -18,8 +18,10 @@ path = "src/lib.rs"
 [features]
 default = ["macro-check"]
 macro-check = ["protect-endpoints-proc-macro"]
+aide = ["dep:aide"]
 
 [dependencies]
+aide = { version = "0.14", optional = true }
 axum = { version = "0.8.1", default-features = false }
 protect-endpoints-core = { workspace = true, features = ["tower"] }
 protect-endpoints-proc-macro = { workspace = true, features = ["axum"], optional = true }
