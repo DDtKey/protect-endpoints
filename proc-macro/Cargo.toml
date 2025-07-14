@@ -22,7 +22,7 @@ rocket = []
 salvo = []
 
 [dependencies]
-darling = "0.20.3"
+darling = "0.21.0"
 proc-macro2 = "1.0"
 quote = "1"
 syn = { version = "2.0", features = ["full", "derive", "extra-traits"] }
