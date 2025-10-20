@@ -28,5 +28,5 @@ actix-web-httpauth = "0.8.0"
 actix-rt = "2"
 serde = { version = "1.0", features = ["derive"] }
 parse-display = "0.10.0"
-jsonwebtoken = "9.1.0"
+jsonwebtoken = "10.1.0"
 chrono = "0.4"
